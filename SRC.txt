@@ -1,0 +1,14 @@
+-------------------------------------------------------------------------------
+NXP Software Content Register
+
+Package:                    NXP NNStreamer examples
+Version:                    1.0
+
+Location:                   ./*
+Type of content:            Source code
+Outgoing License:           BSD-3-Clause
+License file:               LICENSE
+Description and comments:   NNStreamer examples for i.MX platforms
+Origin:                     NXP (BSD-3-Clause)
+
+-------------------------------------------------------------------------------
