@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# SPDX-License-Identifier:BSD-3-Clause
+# SPDX-License-Identifier: BSD-3-Clause
 # Copyright 2022 NXP
 
 import ctypes
