@@ -4,10 +4,10 @@ Purpose of this repository is to provide, for demonstration purpose, functional 
 # How to run examples
 ## Models and metadata download
 Models and metadata files used by examples are not archived in this repository.
-Therefore they have to be downloaded over the network, prior to execution of the examples on the target. Download of those files is to be done from the host PC, running Jupyter Notebook [download.ipynb](.\downloads).
-Refer to [download instruction](.\downloads\README.md) for details.
+Therefore they have to be downloaded over the network, prior to execution of the examples on the target. Download of those files is to be done from the host PC, running Jupyter Notebook [download.ipynb](./downloads).
+Refer to [download instruction](./downloads/README.md) for details.
 ## Execution on target
-Once models have been fetched locally on host PC, repository will contain both examples and downloaded artifacts. Thus it can be uploaded to the target board for individual examples execution. Complete repository can either be uploaded from host PC to target using regular `scp` command or only the necessary directories using [upload.sh](.\tools\upload.sh) script provided for host:
+Once models have been fetched locally on host PC, repository will contain both examples and downloaded artifacts. Thus it can be uploaded to the target board for individual examples execution. Complete repository can either be uploaded from host PC to target using regular `scp` command or only the necessary directories using [upload.sh](./tools/upload.sh) script provided for host:
 ```bash
 # replace <target ip address> by relevant value
 $ cd /path/to/nxp-nnstreamer-examples
