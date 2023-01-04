@@ -65,4 +65,4 @@ $ jupyter notebook
 $ python -m notebook
 ```
 To run the notebook, from the Jupyter Notebook web page use browser to open [download.ipynb](./download.ipynb).
-Within this notebook, execute all sections by pressing the `>>` button.
+Within this notebook, execute all sections by pressing the `▶▶` button.
