@@ -20,7 +20,7 @@ Note that examples may not run on all platforms - check table below for platform
 
 Snapshot | Name | Platforms | Features
 --- | --- | --- | ---
-[![object detection demo](./detection/detection_demo.webp)](./detection/) | [Object detection](./detection/) | i.MX 8M Plus <br> i.MX 93| MobileNet SSD <br> TFLite / DeepViewRT <br> v4l2 camera <br> gst-launch
+[![object detection demo](./detection/detection_demo.webp)](./detection/) | [Object detection](./detection/) | i.MX 8M Plus <br> i.MX 93| MobileNet SSD <br> Yolov4-tiny <br> TFLite / DeepViewRT <br> v4l2 camera <br> gst-launch <br> [custom python tensor_filter](./detection/postprocess_yolov4_tiny.py)
 [![image classification demo](./classification/classification_demo.webp)](./classification/) | [Image classification](./classification/) | i.MX 8M Plus <br> i.MX 93| MobileNet <br> TFLite / DeepViewRT <br> v4l2 camera <br> gst-launch
 [![image segmentation demo](./segmentation/segmentation_demo.webp)](./segmentation/) | [Image segmentation](./segmentation/) | i.MX 8M Plus | DeepLab<br> TFLite<br> jpeg files slideshow<br> gst-launch
 [![pose detection demo](./pose/pose_demo.webp)](./pose/) | [Pose detection](./pose/) |i.MX 8M Plus | MoveNet<br> TFLite <br> video file decoding <br> python
