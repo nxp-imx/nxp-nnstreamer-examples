@@ -7,53 +7,49 @@ This Notebook execution requires:
 
 # eIQ Toolkit install and environment setup
 Last version of eIQ Toolkit installer can be downloaded from [NXP eIQ website](https://www.nxp.com/eiq).
-It is available for Windows and Ubuntu OS patforms.
-For more information, refer to eIQ Toolkit User Guide available from top level `docs` folder within its install directory.
+It is available for Windows and Ubuntu OS platforms.<br>
+For more information, refer to eIQ Toolkit User Guide available on [the documentation section of NXP eIQ website](https://www.nxp.com/design/software/development-software/eiq-ml-development-environment/eiq-toolkit-for-end-to-end-model-development-and-deployment:EIQ-TOOLKIT#documentation), and also from top level `docs` folder within its install directory.
 
 ## Quick install procedure example on Ubuntu:
-Download eIQ Toolkit install package from [NXP eIQ website](https://www.nxp.com/eiq) then enter commands:
+Download eIQ Toolkit install package from [DOWNLOADS section of NXP eIQ website](https://www.nxp.com/design/software/development-software/eiq-ml-development-environment/eiq-toolkit-for-end-to-end-model-development-and-deployment:EIQ-TOOLKIT#downloads).
+Type `1.6.9` on the Downloads search bar and select the eIQ Toolkit 1.6.9 Installer for Ubuntu.
+No additional Extension is needed.<br>
+Login to an NXP account is required to start the download, it will be possible to create one directly when the installer is selected.
+
+Then open a terminal and enter following commands:
 ```bash
 # paths below to be adapted according to package version
 # make package executable and execute with root privilege
-$ chmod a+x ~/Downloads/eiq-toolkit-v1.4.5.61-1_amd64_b220712.deb.bin
-$ sudo ~/Downloads/eiq-toolkit-v1.4.5.61-1_amd64_b220712.deb.bin
+$ chmod a+x ~/Downloads/eiq-toolkit-v1.6.9.310-1_amd64_b230201.deb.bin
+$ sudo ~/Downloads/eiq-toolkit-v1.6.9.310-1_amd64_b230201.deb.bin
 
 # eIQ Toolkit fixups - adapt base path according to your install
-$ EIQ_BASE="/opt/nxp/eIQ_Toolkit_v1.4.5"
+$ EIQ_BASE="/opt/nxp/eIQ_Toolkit_v1.6.9"
 $ EIQ_ENV="${EIQ_BASE}/bin/eiqenv.sh"
 
-# fixup eIQ directories access rights
-$ sudo find "${EIQ_BASE}" -type d -exec chmod a+rx {} \;
-# fixup toco_from_protos python shebang (use ''#!/usr/bin/env python')
+# fixup toco_from_protos and vela python shebang (use ''#!/usr/bin/env python')
 $ sudo sed -i 's/#!\/python\/bin\/python/#!\/usr\/bin\/env python/' "${EIQ_BASE}"/python/bin/toco_from_protos
-# fixup eIQ env to include binaries from eIQ python userbase packages
-$ sudo bash -c "echo -e '\nexport PATH=\"\${PYTHONUSERBASE}/bin:\${PATH}\"' >> \"${EIQ_ENV}\""
+$ sudo sed -i 's/#!\/python\/bin\/python/#!\/usr\/bin\/env python/' "${EIQ_BASE}"/python/bin/vela
 ```
 
 ## eIQ Toolkit environment setup
+
 eIQ Toolkit environment configures specific python interpreter and packages to be used. It shall be done only once within same shell session:
 ```bash
 # adapt base path according to your install
-$ EIQ_BASE="/opt/nxp/eIQ_Toolkit_v1.4.5"
+$ EIQ_BASE="/opt/nxp/eIQ_Toolkit_v1.6.9"
 $ EIQ_ENV="${EIQ_BASE}/bin/eiqenv.sh"
 $ source "${EIQ_ENV}"
 ```
 
 ## Add supplementary packages
-Additional packages (jupyter, vela) shall be installed on top of eIQ Portal after from a shell after [setting the eIQ environment](#eiq-toolkit-environment-setup) if not already done.
+Additional packages shall be installed on top of eIQ Portal after [setting the eIQ environment](#eiq-toolkit-environment-setup) if not already done.
 ```bash
+# Executed from eIQ environment-enabled shell
 # cleanup obsolete eIQ python userbase packages to avoid conflicts from past installs 
 $ rm -rf "${PYTHONUSERBASE}"
-
-# add jupyter package
-$ python -m pip install jupyter
-
-# clone and install (NXP version) of vela
-# Public github hosting NXP version
-$ git -C /tmp clone "https://github.com/nxp-imx/ethos-u-vela.git"
-# ignore pip's dependency resolver errors on deepview-validator / deepview-datastore...
-$ python -m pip install /tmp/ethos-u-vela
-$ rm -rf /tmp/ethos-u-vela
+# install required packages in the nxp-nnstreamer-examples downloads directory
+$ python -m pip install -r <nxp-nnstreamer-examples>/downloads/requirements.txt
 ```
 
 # Jupyter Notebook setup
@@ -61,8 +57,9 @@ Notebook will make use of eIQ Toolkit tools, therefore Jupyter must be started a
 
 ```bash
 # Executed from eIQ environment-enabled shell
+# go to the nxp-nnstreamer-examples downloads directory
+$ cd <nxp-nnstreamer-examples>/downloads
 # Startup Jupyter Notebook web application
-$ cd /path/to/nxp-nnstreamer-examples/downloads
 $ jupyter notebook
 # or alternatively use
 $ python -m notebook
