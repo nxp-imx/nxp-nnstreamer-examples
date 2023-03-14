@@ -9,11 +9,11 @@ Name | Platforms | Model | ML engine | Backend | Features
 
 NOTES:
 * No GPU support on i.MX 93
-* DeepVIewRT support is restricted to CPU on i.MX 93
+* DeepViewRT support is restricted to CPU on i.MX 93
 * Yolov4-tiny output does not directly work with the Yolov5 mode of tensor_decoder element, so a python filter is used to post-process and reshape this output as required
  
 ## Execution 
-Example script can be called from target console with no further restriction. For examples that support multiple backend, default value can be overriden by explicitly defining BACKEND variable, for instance:
+Example script can be called from target console with no further restriction. For examples that support multiple backends, default value can be overriden by explicitly defining BACKEND variable, for instance:
 ```
 # BACKEND=CPU ./detection/example_detection_mobilenet_ssd_v2_tflite.sh
 ```

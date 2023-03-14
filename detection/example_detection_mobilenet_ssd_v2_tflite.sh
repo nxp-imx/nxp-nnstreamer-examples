@@ -47,7 +47,7 @@ FILTER_COMMON="tensor_filter framework=${FRAMEWORK} model=${MODEL}"
 
 declare -A FILTER_BACKEND_NPU
 FILTER_BACKEND_NPU[IMX8MP]=" custom=Delegate:External,ExtDelegateLib:libvx_delegate.so ! "
-FILTER_BACKEND_NPU[IMX93]=" ! "
+FILTER_BACKEND_NPU[IMX93]=" custom=Delegate:External,ExtDelegateLib:libethosu_delegate.so ! "
 
 declare -A FILTER_BACKEND
 FILTER_BACKEND[CPU]="${FILTER_COMMON}"
