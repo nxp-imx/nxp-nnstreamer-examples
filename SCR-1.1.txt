@@ -4,7 +4,7 @@ NXP Software Content Register
 Package:                    NXP NNStreamer examples
 Version:                    1.1
 
-Location:                   ./*
+Release Location:           https://github.com/nxp-imx/nxp-nnstreamer-examples
 Type of content:            Source code
 Outgoing License:           BSD-3-Clause
 License file:               LICENSE
