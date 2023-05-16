@@ -3,8 +3,8 @@
 ## Overview
 Name | Platforms | Model | ML engine | Backend | Features
 --- | --- | --- | --- | --- | ---
-[example_face_detection_tflite.sh](./example_face_detection_tflite.py) | i.MX 8M Plus <br> i.MX 93 | UltraFace | TFLite | NPU | camera<br>gst-launch<br>
-[example_face_recognition_tflite.sh](./example_face_recognition_tflite.py) | i.MX 8M Plus <br> i.MX 93 | UltraFace <br> FaceNet512 <br> | TFLite | NPU | camera<br>gst-launch<br>
+[example_face_detection_tflite.py](./example_face_detection_tflite.py) | i.MX 8M Plus <br> i.MX 93 | UltraFace | TFLite | NPU | camera<br>gst-launch<br>
+[example_face_recognition_tflite.py](./example_face_recognition_tflite.py) | i.MX 8M Plus <br> i.MX 93 | UltraFace <br> FaceNet512 <br> | TFLite | NPU | camera<br>gst-launch<br>
 
 Those examples use 2 GStreamer pipelines that are running concurrently.
 

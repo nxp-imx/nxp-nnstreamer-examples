@@ -21,7 +21,7 @@ class FNModel:
         """
         # Face detection definitions
         self.MODEL_FACENET_WIDTH = 160
-        self.MODEL_FACENET_HEIGTH = 160
+        self.MODEL_FACENET_HEIGHT = 160
         self.MODEL_FACENET_EMBEDDING_LEN = 512
 
         self.match_threshold = match_threshold
@@ -49,7 +49,7 @@ class FNModel:
     def get_model_input_shape(self):
         """Get dimensions of model input tensor.
         """
-        return (self.MODEL_FACENET_HEIGTH, self.MODEL_FACENET_WIDTH, 3)
+        return (self.MODEL_FACENET_HEIGHT, self.MODEL_FACENET_WIDTH, 3)
 
     def get_model_output_shape(self):
         """Get dimensions of model output tensors (list).

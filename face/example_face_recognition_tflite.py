@@ -122,7 +122,7 @@ class FaceRecoPipe(FaceDetectPipe):
 
         Default overlay callback is changed to implement specificities of this
         example:
-        - detected name affixed to face bouding box
+        - detected name affixed to face bounding box
         - option to enter a name for first detected box to create a new entry
           in embeddings database.
         """

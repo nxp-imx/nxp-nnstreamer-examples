@@ -134,7 +134,7 @@ class UFModel:
                100 boxes filtered by model built-in NMS operator
             output0 (no post processing): tensor (1,4480,6)
                4480 raw boxes
-            With and without post procecessing, box format
+            With and without post processing, box format
                [...,0:2] classifier output
                [...,2:6] decoded box (x1,y2,x2,y2)
         return: array (N, 4)
