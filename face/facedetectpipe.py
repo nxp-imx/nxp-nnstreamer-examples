@@ -4,12 +4,10 @@
 
 import argparse
 import cairo
-import datetime
 import gi
 import logging
 import math
 import numpy as np
-import re
 import termios
 import ultraface
 import os
@@ -166,8 +164,12 @@ class SecondaryPipe(Pipe):
         cmdline += '    emit-signals=false max-buffers=1 leaky_type=2 ! '
         cmdline += '  {:s} ! '.format(video_caps)
 
-        h, w, _ = secondary_model.get_model_input_shape()
-        cmdline += gstvideoimx.videocrop_to_rgb('video_crop', w, h)
+        h, w, num_channels = secondary_model.get_model_input_shape()
+        if num_channels == 3:
+            format = 'RGB'
+        elif num_channels == 1:
+            format = 'GRAY8'
+        cmdline += gstvideoimx.videocrop_to_format('video_crop', w, h, format=format)
 
         cmdline += '  tensor_converter ! '
 
@@ -326,7 +328,7 @@ class FaceDetectPipe(Pipe):
         cmdline += '  tee name=tvideo '
         cmdline += 'tvideo. ! queue max-size-buffers=1 leaky=2 ! '
 
-        cmdline += gstvideoimx.videoscale_to_rgb(ufw, ufh)
+        cmdline += gstvideoimx.accelerated_videoscale(ufw, ufh, 'RGB')
 
         cmdline += '  tensor_converter ! '
 
@@ -338,7 +340,7 @@ class FaceDetectPipe(Pipe):
         cmdline += 'tvideo. ! queue max-size-buffers=1 leaky=2 ! '
 
         # cairo overlay format restricted to BGRx, BGRA, RGB16
-        cmdline += gstvideoimx.videoscale_to_format('RGB16')
+        cmdline += gstvideoimx.accelerated_videoscale(format='RGB16')
 
         cmdline += '  cairooverlay name=cairooverlay ! '
         cmdline += '  autovideosink sync=false '.format(vw, vh)

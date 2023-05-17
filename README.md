@@ -24,7 +24,7 @@ Snapshot | Name | Platforms | Features
 [![image classification demo](./classification/classification_demo.webp)](./classification/) | [Image classification](./classification/) | i.MX 8M Plus <br> i.MX 93| MobileNet <br> TFLite / DeepViewRT <br> v4l2 camera <br> gst-launch
 [![image segmentation demo](./segmentation/segmentation_demo.webp)](./segmentation/) | [Image segmentation](./segmentation/) | i.MX 8M Plus | DeepLab<br> TFLite<br> jpeg files slideshow<br> gst-launch
 [![pose detection demo](./pose/pose_demo.webp)](./pose/) | [Pose detection](./pose/) |i.MX 8M Plus | MoveNet<br> TFLite <br> video file decoding <br> python
-[![faces demo](./face/face_demo.webp)](./face/) | [Face](./face/) | i.MX 8M Plus <br> i.MX 93| UltraFace <br> FaceNet512 <vr> TFLite <br> v4l2 camera <br> python
+[![faces demo](./face/face_demo.webp)](./face/) | [Face](./face/) | i.MX 8M Plus <br> i.MX 93| UltraFace <br> FaceNet512 <br> Deepface-emotion <br> TFLite <br> v4l2 camera <br> python
 
 *Images and video used have been released under Creative Commons CC0 1.0 license or belong to Public Domain*
 

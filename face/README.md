@@ -1,10 +1,11 @@
 # Faces demos
 
 ## Overview
-Name | Platforms | Model | ML engine | Backend | Features
---- | --- | --- | --- | --- | ---
-[example_face_detection_tflite.py](./example_face_detection_tflite.py) | i.MX 8M Plus <br> i.MX 93 | UltraFace | TFLite | NPU | camera<br>gst-launch<br>
-[example_face_recognition_tflite.py](./example_face_recognition_tflite.py) | i.MX 8M Plus <br> i.MX 93 | UltraFace <br> FaceNet512 <br> | TFLite | NPU | camera<br>gst-launch<br>
+Name | Platforms | Model                                | ML engine | Backend | Features
+--- | --- |--------------------------------------| --- | --- | ---
+[example_face_detection_tflite.py](./example_face_detection_tflite.py) | i.MX 8M Plus <br> i.MX 93 | UltraFace                            | TFLite | NPU | camera<br>gst-launch<br>
+[example_face_recognition_tflite.py](./example_face_recognition_tflite.py) | i.MX 8M Plus <br> i.MX 93 | UltraFace <br> FaceNet512 <br>       | TFLite | NPU | camera<br>gst-launch<br>
+[example_emotion_detection_tflite.py](./example_emotion_detection_tflite.py) | i.MX 8M Plus <br> i.MX 93 | UltraFace <br> Deepface-emotion <br> | TFLite | NPU | camera<br>gst-launch<br>
 
 Those examples use 2 GStreamer pipelines that are running concurrently.
 
@@ -30,6 +31,14 @@ It draws bounding boxes around the detected faces, and displays number of detect
 ```
 # ./face/example_face_detection_tflite.py [--camera_device=</dev/videoN>]
 ```
+## Emotion detection
+Demo application is to be started from Linux. Camera device node may be configured via command line argument (default: `/dev/video3` on i.MX 8M Plus, `/dev/video0` on i.MX 93 ).
+It draws bounding boxes around the detected faces, and displays predicted emotion and confidence score on each face.
+```
+# ./face/example_emotion_detection_tflite.py [--camera_device=</dev/videoN>]
+```
+7 emotions can be recognised : angry, disgust, fear, happy, sad, surprise and neutral.
+
 ## Face recognition
 Demo application is to be started from Linux. Camera device node may be configured via command line argument (default: `/dev/video3` on i.MX 8M Plus, `/dev/video0` on i.MX 93 ).
 It draws bounding boxes around the detected faces, and displays associated name and confidence score if face matches an embedding from the database. 

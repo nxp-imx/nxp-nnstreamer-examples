@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # SPDX-License-Identifier: BSD-3-Clause
-# Copyright 2022 NXP
+# Copyright 2022-2023 NXP
 
 import os
 import sys
@@ -9,65 +9,85 @@ from . import imx_dev
 
 
 class GstVideoImx:
-    def __init__(self, imx):
-        """Helper class for video pipeline segments handling.
+    """Helper class for video pipeline segments handling.
 
-        imx: imxdev.Imx() instance
-        """
+    imx: imxdev.Imx() instance
+    """
+    def __init__(self, imx):
         assert (isinstance(imx, imx_dev.Imx))
         self.imx = imx
 
-    def videoscale_to_format(self, format, width=None, height=None):
+    def videoscale_to_format(self, format=None, width=None, height=None, hardware=None):
         """Create pipeline segment for accelerated video formatting and csc.
 
+        hardware: corresponding hardware to accelerate video composition
         format: GStreamer video format
         width: output video width after rescale
         height: output video height after rescale
         return: GStreamer pipeline segment string
         """
-        if self.imx.has_g2d():
-            cmd = 'imxvideoconvert_g2d ! '
-        elif self.imx.has_pxp():
-            cmd = 'imxvideoconvert_pxp ! '
+        valid_dimensions = width is not None and height is not None
+        required_format = format is not None
+
+        if hardware is not None:
+            cmd = f'imxvideoconvert_{hardware} ! '
         else:
             # no acceleration
-            cmd = 'videoscale ! videoconvert ! '
+            if valid_dimensions:
+                cmd = 'videoscale ! '
+            if required_format:
+                cmd += 'videoconvert ! '
 
-        if width is not None and height is not None:
-            cmd += f'video/x-raw,width={width},'
-            cmd += f'height={height},format={format} ! '
-        else:
-            cmd += f'video/x-raw,format={format} ! '
+        cmd += f'video/x-raw'
+        if valid_dimensions:
+            cmd += f',width={width},height={height}'
+        if required_format:
+            cmd += f',format={format}'
+        cmd += ' ! '
 
         return cmd
 
-    def videoscale_to_rgb(self, width, height):
-        """Create pipeline segment for accelerated video scaling and
-        conversion to RGB format.
+    def accelerated_videoscale(self, width=None, height=None, format=None):
+        """Create pipeline segment for accelerated video scaling and conversion
+        to a given GStreamer video format.
 
         width: output video width after rescale
         height: output video height after rescale
+        format: GStreamer video format
         return: GStreamer pipeline segment string
         """
-        if self.imx.has_g2d():
-            # imxvideoconvert_g2d does not support RGB sink
+        valid_dim_g2d = valid_dim_pxp = True
+        valid_dimensions = width is not None and height is not None
+        if valid_dimensions:
+            # g2d and pxp can't resize under 64 pixels
+            valid_dim_g2d = valid_dim_pxp = width >= 64 and height >= 64
+
+        if self.imx.has_g2d() and valid_dim_g2d:
+            # imxvideoconvert_g2d does not support RGB nor GRAY8 sink
             # use acceleration to RGBA
-            cmd = self.videoscale_to_format('RGBA', width, height)
-            cmd += f'videoconvert ! video/x-raw,format=RGB ! '
-        elif self.imx.has_pxp():
-            # imxvideoconvert_pxp does not support RGB sink
-            # use acceleration to BGR
-            cmd = self.videoscale_to_format('BGR', width, height)
-            cmd += f'videoconvert ! video/x-raw,format=RGB ! '
+            if format == 'RGB' or format == 'GRAY8':
+                cmd = self.videoscale_to_format('RGBA', width, height, 'g2d')
+                cmd += f'videoconvert ! video/x-raw,format={format} ! '
+            else:
+                cmd = self.videoscale_to_format(format, width, height, 'g2d')
+        elif self.imx.has_pxp() and valid_dim_pxp:
+            if format == 'RGB':
+                # imxvideoconvert_pxp does not support RGB sink
+                # use acceleration to BGR
+                cmd = self.videoscale_to_format('BGR', width, height, 'pxp')
+                cmd += f'videoconvert ! video/x-raw,format={format} ! '
+            else:
+                cmd = self.videoscale_to_format(format, width, height, 'pxp')
+
         else:
-            # no acceleration
-            cmd = self.videoscale_to_format('RGB', width, height)
+            # no hardware acceleration
+            cmd = self.videoscale_to_format(format, width, height)
         return cmd
 
-    def videocrop_to_rgb(self, videocrop_name, width, height,
-                         top=None, bottom=None, left=None, right=None):
-        """Create pipeline segment for accelerated video cropping and
-        conversion to RGB format.
+    def videocrop_to_format(self, videocrop_name, width, height, top=None, bottom=None,
+                            left=None, right=None, format=None):
+        """Create pipeline segment for accelerated video cropping and conversion
+        to a given GStreamer video format.
 
         videocrop_name: GStreamer videocrop element name
         width: output video width after rescale
@@ -76,6 +96,7 @@ class GstVideoImx:
         bottom: bottom pixels to be cropped - may be setup via property later
         left: left pixels to be cropped - may be setup via property later
         right: right pixels to be cropped - may be setup via property later
+        format: GStreamer video format
         return: GStreamer pipeline segment string
         """
         cmd = f'  videocrop name={videocrop_name} '
@@ -89,7 +110,7 @@ class GstVideoImx:
             cmd += f'right={right} '
         cmd += '! '
 
-        cmd += self.videoscale_to_rgb(width, height)
+        cmd += self.accelerated_videoscale(width, height, format)
 
         return cmd
 
