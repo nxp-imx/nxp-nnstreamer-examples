@@ -224,14 +224,14 @@ if __name__ == '__main__':
 
     imx = Imx()
     soc = imx.id()
-    if not (soc == SocId.IMX8MP or soc == SocId.IMX93):
-        name = imx.name()
-        raise NotImplementedError(f'Platform not supported [{name}]')
 
     if soc == SocId.IMX8MP:
         default_camera = '/dev/video3'
-    else:
+    elif soc == SocId.IMX93:
         default_camera = '/dev/video0'
+    else :
+        name = imx.name()
+        raise NotImplementedError(f'Platform not supported [{name}]')
 
     parser = argparse.ArgumentParser(description='Emotion detection')
     parser.add_argument('--camera_device', type=str,

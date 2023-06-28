@@ -146,3 +146,17 @@ class GstVideoImx:
             cmd += f'latency={latency} min-upstream-latency={latency} '
         cmd += '! '
         return cmd
+
+
+def store_vx_graph_compilation(imx):
+    """Store on disk .nb files that contains the result of the OpenVX graph compilation
+    This feature is only available for iMX8 platforms to get the warmup time only once
+
+    imx: imxdev.Imx() instance
+    """
+    is_vsi_platform = imx.has_npu_vsi() or imx.has_gpu_vsi()
+    if is_vsi_platform:
+        # Set the environment variables to store graph compilation on home directory
+        os.environ['VIV_VX_ENABLE_CACHE_GRAPH_BINARY'] = '1'
+        HOME = os.getenv('HOME')
+        os.environ['VIV_VX_CACHE_BINARY_GRAPH_DIR'] = HOME

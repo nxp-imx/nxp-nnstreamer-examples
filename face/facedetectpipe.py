@@ -22,7 +22,7 @@ python_path = os.path.join(os.path.dirname(os.path.abspath(__file__)),
                            '../common/python')
 sys.path.append(python_path)
 from imxpy.imx_dev import Imx, SocId  # noqa
-from imxpy.common_utils import GstVideoImx  # noqa
+from imxpy.common_utils import GstVideoImx, store_vx_graph_compilation  # noqa
 
 
 class StdInHelper:
@@ -70,6 +70,7 @@ class Pipe:
             Gst.init(None)
 
         self.imx = Imx()
+        store_vx_graph_compilation(self.imx)
 
     def dump_gst_dot_file(self, name=None):
         """Dump GStreamer .dot file.

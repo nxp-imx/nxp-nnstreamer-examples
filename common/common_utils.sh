@@ -1,6 +1,6 @@
 #!/bin/bash
 # SPDX-License-Identifier: BSD-3-Clause
-# Copyright 2022 NXP
+# Copyright 2022-2023 NXP
 
 function error {
    local message="$1"
@@ -16,6 +16,10 @@ function setup_env {
   local UNAME=$(uname -a)
   if [[ "${UNAME}" =~ "imx8mp" ]]; then
     IMX="IMX8MP"
+    # Store on disk .nb files that contains the result of the OpenVX graph compilation
+    # This feature is only available for iMX8MPlus to get the warmup time only once
+    export VIV_VX_ENABLE_CACHE_GRAPH_BINARY="1"
+    export VIV_VX_CACHE_BINARY_GRAPH_DIR=$HOME
   fi
   if [[ "${UNAME}" =~ "imx93" ]]; then
     IMX="IMX93"
