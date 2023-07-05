@@ -19,7 +19,7 @@ declare -A MODEL_BACKEND_NPU
 MODEL_BACKEND_NPU[IMX8MP]="${MODELS_DIR}/yolov4-tiny_416_quant.tflite"
 MODEL_BACKEND_NPU[IMX93]="${MODELS_DIR}/yolov4-tiny_416_quant_vela.tflite"
 
-MODEL_BACKEND[CPU]="${MODELS_DIR}/yolov4-tiny_416_quant.tflite"
+MODEL_BACKEND[CPU]="${MODELS_DIR}/yolov4-tiny_416.tflite"
 MODEL_BACKEND[NPU]=${MODEL_BACKEND_NPU[${IMX}]}
 MODEL=${MODEL_BACKEND[${BACKEND}]}
 
@@ -67,7 +67,7 @@ fi
 
 # tensor preprocessing configuration: normalize video for float input models
 declare -A PREPROCESS_BACKEND
-PREPROCESS_BACKEND[CPU]="tensor_transform mode=arithmetic option=typecast:int8,add:-128 ! "
+PREPROCESS_BACKEND[CPU]="tensor_transform mode=arithmetic option=typecast:float32,div:255 !"
 PREPROCESS_BACKEND[NPU]="tensor_transform mode=arithmetic option=typecast:int8,add:-128 ! "
 TENSOR_PREPROCESS=${PREPROCESS_BACKEND[${BACKEND}]}
 

@@ -39,12 +39,13 @@ def post_process_yolo(features, output_tensor, offset, anchors, factor, threshol
 
         box_positions = np.floor_divide(indices, num_anchors)
 
-        list_xy = np.array(np.divmod(box_positions, cell_size))
-        boxes_xy = np.reshape(list_xy, (int(list_xy.size / 2), 2))
+        list_xy = np.array(np.divmod(box_positions, cell_size)).T
+        list_yx = list_xy[..., ::-1]
+        boxes_yx = np.reshape(list_yx, (int(list_yx.size / 2), 2))
 
         # boxes center coordinates
         output_tensor[indices_offset, :2] = \
-            ((np_sigmoid(features[indices, :2] * factor) - 0.5 * (factor - 1) + boxes_xy) * stride) / image_dim
+            ((np_sigmoid(features[indices, :2] * factor) - 0.5 * (factor - 1) + boxes_yx) * stride) / image_dim
 
         # boxes width and height
         output_tensor[indices_offset, 2:4] = \

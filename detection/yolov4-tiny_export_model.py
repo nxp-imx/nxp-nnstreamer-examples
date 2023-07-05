@@ -283,8 +283,15 @@ def dummy_dataset():
 
 converter = tf.lite.TFLiteConverter.from_keras_model(model)
 
+# regular model
+tflite_path = args.output_path + '/yolov4-tiny_416.tflite'
+
+tflite_model = converter.convert()
+with open(tflite_path, 'wb') as f:
+    f.write(tflite_model)
+
 # quantized model
-tflite_quant = args.output_path + '/yolov4-tiny_416_quant.tflite'
+tflite_quant_path = args.output_path + '/yolov4-tiny_416_quant.tflite'
 
 converter.optimizations = [tf.lite.Optimize.DEFAULT]
 if args.images_path != None:
@@ -295,6 +302,6 @@ converter.target_spec.supported_ops = [tf.lite.OpsSet.TFLITE_BUILTINS_INT8]
 converter.inference_input_type = tf.int8
 converter.inference_output_type = tf.float32
 
-tflite_model = converter.convert()
-with open(tflite_quant, 'wb') as f:
-    f.write(tflite_model)
+tflite_quant_model = converter.convert()
+with open(tflite_quant_path, 'wb') as f:
+    f.write(tflite_quant_model)
