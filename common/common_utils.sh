@@ -31,22 +31,25 @@ function setup_env {
     error "Invalid combination ${IMX}/${BACKEND}"
   fi
 
-  # default camera configuration (can also be overriden by user)
-  declare -A CAMERA_DEVICE_DEFAULT
-  CAMERA_DEVICE_DEFAULT[IMX8MP]="/dev/video3"
-  CAMERA_DEVICE_DEFAULT[IMX93]="/dev/video0"
-  local CAMERA_DEVICE_DEFAULT_IMX=${CAMERA_DEVICE_DEFAULT[${IMX}]}
+  REQUIRED_CAMERA=${REQUIRED_CAMERA:-1}
+  if [ "${REQUIRED_CAMERA}" -gt 0 ] ; then
+    # default camera configuration (can also be overriden by user)
+    declare -A CAMERA_DEVICE_DEFAULT
+    CAMERA_DEVICE_DEFAULT[IMX8MP]="/dev/video3"
+    CAMERA_DEVICE_DEFAULT[IMX93]="/dev/video0"
+    local CAMERA_DEVICE_DEFAULT_IMX=${CAMERA_DEVICE_DEFAULT[${IMX}]}
 
-  CAMERA_DEVICE="${CAMERA_DEVICE:-${CAMERA_DEVICE_DEFAULT_IMX}}"
-  if [ ! -c ${CAMERA_DEVICE} ]; then
-    local MSG="Camera device ${CAMERA_DEVICE} not found."
-    MSG="$MSG Check device and set CAMERA_DEVICE variable appropriately."
-    error "$MSG"
+    CAMERA_DEVICE="${CAMERA_DEVICE:-${CAMERA_DEVICE_DEFAULT_IMX}}"
+    if [ ! -c ${CAMERA_DEVICE} ]; then
+      local MSG="Camera device ${CAMERA_DEVICE} not found."
+      MSG="$MSG Check device and set CAMERA_DEVICE variable appropriately."
+      error "$MSG"
+    fi
+
+    CAMERA_WIDTH="${CAMERA_WIDTH:-640}"
+    CAMERA_HEIGHT="${CAMERA_HEIGHT:-480}"
+    CAMERA_FPS="${CAMERA_FPS:-30}"
   fi
-
-  CAMERA_WIDTH="${CAMERA_WIDTH:-640}"
-  CAMERA_HEIGHT="${CAMERA_HEIGHT:-480}"
-  CAMERA_FPS="${CAMERA_FPS:-30}"
  
   # backend default configuration
   BACKEND="${BACKEND:-NPU}"

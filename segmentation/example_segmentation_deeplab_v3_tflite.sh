@@ -9,6 +9,7 @@ BASEDIR="$(dirname "${REALPATH}")/.."
 MODELS_DIR="${BASEDIR}/downloads/models/segmentation"
 MEDIA_DIR="${BASEDIR}/downloads/media"
 IMAGES_DIR="${MEDIA_DIR}/pascal_voc_2012_images"
+REQUIRED_CAMERA=0
 
 source "${BASEDIR}/common/common_utils.sh"
 source "${BASEDIR}/segmentation/segmentation_utils.sh"
