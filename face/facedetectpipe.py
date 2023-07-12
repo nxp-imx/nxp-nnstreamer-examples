@@ -11,6 +11,7 @@ import numpy as np
 import termios
 import ultraface
 import os
+import signal
 import sys
 
 gi.require_version('Gst', '1.0')
@@ -350,6 +351,8 @@ class FaceDetectPipe(Pipe):
                     'name=appsink_video sync=false max-buffers=1 drop=true '
                     'emit-signals=true ')
 
+        signal.signal(signal.SIGINT, self.sigint_handler)
+
         logging.info('main pipeline: %s', cmdline)
         self.pipeline = Gst.parse_launch(cmdline)
 
@@ -569,6 +572,11 @@ class FaceDetectPipe(Pipe):
         self.running = False
 
         self.bus.remove_signal_watch()
+
+    def sigint_handler(self, signal, frame):
+        print("handling interrupt.")
+        self.pipeline.set_state(Gst.State.NULL)
+        self.mainloop.quit()
 
     def timeout_function(self):
         """GLib timer callback function implementation.

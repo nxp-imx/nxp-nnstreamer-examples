@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # SPDX-License-Identifier: BSD-3-Clause
-# Copyright 2022 NXP
+# Copyright 2022-2023 NXP
 
 import ctypes
 import cairo
@@ -9,11 +9,40 @@ import gi
 import logging
 import math
 import numpy as np
+import termios
 import os
+import signal
 import sys
 
 gi.require_version('Gst', '1.0')
 from gi.repository import Gst, GLib
+
+
+class StdInHelper:
+
+    def __init__(self):
+        """Configure stdin read blocking mode.
+        """
+        self.old_attributes = None
+
+    def set_attr_non_blocking(self):
+        """Configure stdin tty in non-blocking mode.
+        """
+        _attr = termios.tcgetattr(sys.stdin)
+        attr = _attr.copy()
+
+        attr[3] = attr[3] & ~(termios.ICANON | termios.ECHO)
+        attr[3] = attr[3] & ~(termios.ICANON)
+        attr[6][termios.VMIN] = 0
+        attr[6][termios.VTIME] = 0
+        termios.tcsetattr(sys.stdin, termios.TCSADRAIN, attr)
+        self.old_attributes = _attr
+
+    def set_attr_restore(self):
+        """Restore stdin configuration.
+        """
+        termios.tcsetattr(sys.stdin, termios.TCSANOW, self.old_attributes)
+
 
 class PoseExample:
 
@@ -115,10 +144,16 @@ class PoseExample:
         if not os.path.exists(self.video_path):
             raise FileExistsError(f'cannot find video [{self.video_path}]')
 
+        signal.signal(signal.SIGINT, self.sigint_handler)
+
         Gst.init(argv)
 
     # @brief main loop execution routine
     def run(self):
+        stdin = StdInHelper()
+        logging.info('Press <ESC> to quit.')
+        stdin.set_attr_non_blocking()
+
         self.mainloop = GLib.MainLoop()
 
         cmdline =  'filesrc location={:s} ! matroskademux ! vpudec !' \
@@ -147,7 +182,7 @@ class PoseExample:
 
         print(cmdline)
 
-        self.pipeline = Gst.parse_launch(cmdline);
+        self.pipeline = Gst.parse_launch(cmdline)
 
         # pipeline bus and message callback
         bus = self.pipeline.get_bus()
@@ -166,6 +201,8 @@ class PoseExample:
         self.pipeline.set_state(Gst.State.PLAYING)
         self.running = True
 
+        GLib.timeout_add(100, self.timeout_function)
+
         # run main loop until EOS or error reported
         self.mainloop.run()
 
@@ -173,6 +210,8 @@ class PoseExample:
         self.pipeline.set_state(Gst.State.NULL)
 
         bus.remove_signal_watch()
+
+        stdin.set_attr_restore()
 
 
     # @brief callback for tensor sink signal.
@@ -299,6 +338,23 @@ class PoseExample:
             logging.warning('bus warning %s %s', err.message, debug)
         elif type == Gst.MessageType.STREAM_START:
             logging.info('bus start')
+
+    def sigint_handler(self, signal, frame):
+        print("handling interrupt.")
+        self.pipeline.set_state(Gst.State.NULL)
+        self.mainloop.quit()
+
+    def timeout_function(self):
+        """GLib timer callback function implementation.
+        """
+        restart = True
+        c = sys.stdin.read(1)
+        if len(c) > 0:
+            if c == '\x1b':  # escape
+                self.mainloop.quit()
+                restart = False
+
+        return restart
 
 
 if __name__ == '__main__':
