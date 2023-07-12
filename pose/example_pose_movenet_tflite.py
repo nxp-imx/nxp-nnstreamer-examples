@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: BSD-3-Clause
 # Copyright 2022-2023 NXP
 
-import ctypes
+import argparse
 import cairo
 import datetime
 import gi
@@ -46,7 +46,7 @@ class StdInHelper:
 
 class PoseExample:
 
-    def __init__(self, video_file, video_dims, argv = []):
+    def __init__(self, video_file, video_dims, argv=[]):
         # video input definitions
         self.VIDEO_INPUT_WIDTH = video_dims[0]
         self.VIDEO_INPUT_HEIGHT = video_dims[1]
@@ -82,24 +82,24 @@ class PoseExample:
         # keypoints definition
         # https://github.com/tensorflow/tfjs-models/tree/master/pose-detection#keypoint-diagram
         self.keypoints_def = [
-            {'label': 'nose',               'connections': [1, 2,]},
-            {'label': 'left_eye',           'connections': [0, 3,]},
-            {'label': 'right_eye',          'connections': [0, 4,]},
-            {'label': 'left_ear',           'connections': [1,]},
-            {'label': 'right_ear',          'connections': [2,]},
-            {'label': 'left_shoulder',      'connections': [6, 7, 11,]},
-            {'label': 'right_shoulder',     'connections': [5, 8, 12,]},
-            {'label': 'left_elbow',         'connections': [5, 9,]},
-            {'label': 'right_elbow',        'connections': [6, 10,]},
-            {'label': 'left_wrist',         'connections': [7,]},
-            {'label': 'right_wrist',        'connections': [8,]},
-            {'label': 'left_hip',           'connections': [5, 12, 13,]},
-            {'label': 'right_hip',          'connections': [6, 11, 14,]},
-            {'label': 'left_knee',          'connections': [11, 15,]},
-            {'label': 'right_knee',         'connections': [12, 16,]},
-            {'label': 'left_ankle',         'connections': [13,]},
-            {'label': 'right_ankle',        'connections': [14,]},
-            ]
+            {'label': 'nose', 'connections': [1, 2, ]},
+            {'label': 'left_eye', 'connections': [0, 3, ]},
+            {'label': 'right_eye', 'connections': [0, 4, ]},
+            {'label': 'left_ear', 'connections': [1, ]},
+            {'label': 'right_ear', 'connections': [2, ]},
+            {'label': 'left_shoulder', 'connections': [6, 7, 11, ]},
+            {'label': 'right_shoulder', 'connections': [5, 8, 12, ]},
+            {'label': 'left_elbow', 'connections': [5, 9, ]},
+            {'label': 'right_elbow', 'connections': [6, 10, ]},
+            {'label': 'left_wrist', 'connections': [7, ]},
+            {'label': 'right_wrist', 'connections': [8, ]},
+            {'label': 'left_hip', 'connections': [5, 12, 13, ]},
+            {'label': 'right_hip', 'connections': [6, 11, 14, ]},
+            {'label': 'left_knee', 'connections': [11, 15, ]},
+            {'label': 'right_knee', 'connections': [12, 16, ]},
+            {'label': 'left_ankle', 'connections': [13, ]},
+            {'label': 'right_ankle', 'connections': [14, ]},
+        ]
 
         assert len(self.keypoints_def) == self.MODEL_KEYPOINT_SIZE
 
@@ -112,25 +112,25 @@ class PoseExample:
         try:
             transform = {
                 'CPU': ' tensor_transform mode=typecast option=int32 ! ',
-                }
+            }
             self.tensor_transform = transform[self.backend]
 
             model = {
-                'CPU':'movenet_single_pose_lightning.tflite',
-                }
+                'CPU': 'movenet_single_pose_lightning.tflite',
+            }
             tflite_model = model[self.backend]
 
             custom = {
-                'NPU':'custom=Delegate:External,ExtDelegateLib:libvx_delegate.so',
-                'GPU':'custom=Delegate:External,ExtDelegateLib:libvx_delegate.so',
-                'CPU':f'custom=Delegate:XNNPACK,NumThreads:{os.cpu_count()}'
-                }
+                'NPU': 'custom=Delegate:External,ExtDelegateLib:libvx_delegate.so',
+                'GPU': 'custom=Delegate:External,ExtDelegateLib:libvx_delegate.so',
+                'CPU': f'custom=Delegate:XNNPACK,NumThreads:{os.cpu_count()}'
+            }
             self.tensor_filter_custom = custom[self.backend]
 
-            gpu_inference = {'NPU': '0', 'GPU': '1', 'CPU': '0',}
+            gpu_inference = {'NPU': '0', 'GPU': '1', 'CPU': '0', }
             os.environ['USE_GPU_INFERENCE'] = gpu_inference[self.backend]
         except Exception:
-           raise ValueError('unknown backend [%s]', self.backend)
+            raise ValueError('unknown backend [%s]', self.backend)
 
         current_folder = os.path.dirname(os.path.abspath(__file__))
 
@@ -156,25 +156,25 @@ class PoseExample:
 
         self.mainloop = GLib.MainLoop()
 
-        cmdline =  'filesrc location={:s} ! matroskademux ! vpudec !' \
-                       .format(self.video_path)
+        cmdline = 'filesrc location={:s} ! matroskademux ! vpudec !' \
+            .format(self.video_path)
         cmdline += '  videocrop left=-1 right=-1 top=-1 bottom=-1 ! '
         # crop for square video format
         cmdline += '  video/x-raw,width={:d},height={:d} ! ' \
-                       .format(self.VIDEO_INPUT_HEIGHT, self.VIDEO_INPUT_HEIGHT)
+            .format(self.VIDEO_INPUT_HEIGHT, self.VIDEO_INPUT_HEIGHT)
         cmdline += '  imxvideoconvert_g2d videocrop-meta-enable=true ! '
         cmdline += '  video/x-raw,width={:d},height={:d},format=RGBA ! ' \
-                       .format(self.VIDEO_INPUT_HEIGHT, self.VIDEO_INPUT_HEIGHT)
+            .format(self.VIDEO_INPUT_HEIGHT, self.VIDEO_INPUT_HEIGHT)
         cmdline += '  tee name=t '
         cmdline += 't. ! queue name=thread-nn max-size-buffers=2 leaky=2 ! '
         cmdline += '  imxvideoconvert_g2d ! '
         cmdline += '  video/x-raw,width={:d},height={:d},format=RGBA ! ' \
-                      .format(self.MODEL_INPUT_WIDTH, self.MODEL_INPUT_HEIGHT)
+            .format(self.MODEL_INPUT_WIDTH, self.MODEL_INPUT_HEIGHT)
         cmdline += '  videoconvert ! video/x-raw,format=RGB ! '
         cmdline += '  tensor_converter ! '
         cmdline += self.tensor_transform
         cmdline += '  tensor_filter framework=tensorflow-lite model={:s} {:s} ! ' \
-                       .format(self.tflite_path, self.tensor_filter_custom)
+            .format(self.tflite_path, self.tensor_filter_custom)
         cmdline += '  tensor_sink name=tensor_sink '
         cmdline += 't. ! queue name=thread-img max-size-buffers=2 ! '
         cmdline += '  videoconvert ! cairooverlay name=cairooverlay ! '
@@ -213,7 +213,6 @@ class PoseExample:
 
         stdin.set_attr_restore()
 
-
     # @brief callback for tensor sink signal.
     def new_data_cb(self, sink, buffer):
         if self.running:
@@ -235,12 +234,12 @@ class PoseExample:
 
             if result:
                 assert info.size == self.MODEL_KEYPOINT_SIZE * \
-                                        3 * np.dtype(np.float32).itemsize
+                       3 * np.dtype(np.float32).itemsize
 
                 # convert buffer to [1:1:17:3] numpy array
-                np_kpts = np.frombuffer(info.data, dtype = np.float32) \
-                          .reshape(self.MODEL_KEYPOINT_SIZE, -1) \
-                          .copy()
+                np_kpts = np.frombuffer(info.data, dtype=np.float32) \
+                    .reshape(self.MODEL_KEYPOINT_SIZE, -1) \
+                    .copy()
 
                 # rescale normalized keypoints (x,y) per video resolution
                 np_kpts[:, self.MODEL_KEYPOINT_INDEX_X] *= \
@@ -279,7 +278,7 @@ class PoseExample:
             np_kpt = self.np_kpts[i]
             valid = np_kpt[self.MODEL_KEYPOINT_INDEX_SCORE]
             if not valid:
-               continue
+                continue
 
             keypoint_def = self.keypoints_def[i]
 
@@ -319,7 +318,7 @@ class PoseExample:
             context.set_source_rgb(0.85, 0, 1)
             context.move_to(14, 14)
             context.select_font_face('Arial',
-                         cairo.FONT_SLANT_NORMAL, cairo.FONT_WEIGHT_NORMAL)
+                                     cairo.FONT_SLANT_NORMAL, cairo.FONT_WEIGHT_NORMAL)
             context.set_font_size(11.0)
             context.show_text(f'FPS ({self.backend}): {self.fps:.1f}')
 
@@ -358,9 +357,16 @@ class PoseExample:
 
 
 if __name__ == '__main__':
-    video_file = 'Conditioning_Drill_1-_Power_Jump.webm.480p.vp9.webm'
+    default_video = 'Conditioning_Drill_1-_Power_Jump.webm.480p.vp9.webm'
     video_dims = (854, 480)
-    example = PoseExample(video_file, video_dims, sys.argv[1:])
+
+    parser = argparse.ArgumentParser(description='Pose Detection')
+    parser.add_argument('--video_file',
+                        type=str,
+                        help='input video file',
+                        default=default_video)
+    args = parser.parse_args()
+
+    video_file = args.video_file
+    example = PoseExample(video_file, video_dims, sys.argv[2:])
     example.run()
-
-
