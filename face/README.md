@@ -9,6 +9,8 @@ Name | Platforms | Model                                | ML engine | Backend | 
 
 Those examples use 2 GStreamer pipelines that are running concurrently.
 
+Note: for i.MX 93, issue with face demos on Linux release 6.1.22_2.0.0
+
 ### Main pipeline
 - Captures video from camera
 - Run face detection (UltraFace) model and decode results
