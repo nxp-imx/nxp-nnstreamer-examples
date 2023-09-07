@@ -198,7 +198,7 @@
 <text text-anchor="middle" x="4299" y="-405.6" font-family="Bitstream Vera Sans" font-size="8.00">outputlayout=&quot;ANY&quot;</text>
 <text text-anchor="middle" x="4299" y="-396.6" font-family="Bitstream Vera Sans" font-size="8.00">outputranks=&quot;2&quot;</text>
 <text text-anchor="middle" x="4299" y="-387.6" font-family="Bitstream Vera Sans" font-size="8.00">custom=&quot;Delegate:External,ExtDelegateLib:libvx_delegate.so&quot;</text>
-<text text-anchor="middle" x="4299" y="-378.6" font-family="Bitstream Vera Sans" font-size="8.00">sub&#45;plugins=&quot;custom,tensorflow2&#45;lite,custom&#45;easy,tvm,deepview&#45;rt,cpp,python3&quot;</text>
+<text text-anchor="middle" x="4299" y="-378.6" font-family="Bitstream Vera Sans" font-size="8.00">sub&#45;plugins=&quot;custom,tensorflow2&#45;lite,custom&#45;easy,tvm,cpp,python3&quot;</text>
 <text text-anchor="middle" x="4299" y="-369.6" font-family="Bitstream Vera Sans" font-size="8.00">latency=&#45;1</text>
 <text text-anchor="middle" x="4299" y="-360.6" font-family="Bitstream Vera Sans" font-size="8.00">throughput=&#45;1</text>
 <text text-anchor="middle" x="4299" y="-351.6" font-family="Bitstream Vera Sans" font-size="8.00">shared&#45;tensor&#45;filter&#45;key=&quot;&quot;</text>
