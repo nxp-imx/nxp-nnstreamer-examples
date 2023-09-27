@@ -24,24 +24,36 @@ class StdInHelper:
         """Configure stdin read blocking mode.
         """
         self.old_attributes = None
+        self.background_execution = False
 
     def set_attr_non_blocking(self):
         """Configure stdin tty in non-blocking mode.
+        Ignored if the pipeline is executed in background.
         """
-        _attr = termios.tcgetattr(sys.stdin)
-        attr = _attr.copy()
+        try :
+            _attr = termios.tcgetattr(sys.stdin)
+            attr = _attr.copy()
 
-        attr[3] = attr[3] & ~(termios.ICANON | termios.ECHO)
-        attr[3] = attr[3] & ~(termios.ICANON)
-        attr[6][termios.VMIN] = 0
-        attr[6][termios.VTIME] = 0
-        termios.tcsetattr(sys.stdin, termios.TCSADRAIN, attr)
-        self.old_attributes = _attr
+            attr[3] = attr[3] & ~(termios.ICANON | termios.ECHO)
+            attr[3] = attr[3] & ~(termios.ICANON)
+            attr[6][termios.VMIN] = 0
+            attr[6][termios.VTIME] = 0
+            termios.tcsetattr(sys.stdin, termios.TCSADRAIN, attr)
+            self.old_attributes = _attr
+            self.background_execution = False
+        except termios.error as e:
+            background_related_error_msg = "(25, 'Inappropriate ioctl for device')"
+            assert str(e) == background_related_error_msg, (
+                    "termios error " + str(e) + " not related to background execution")
+            self.background_execution = True
+
 
     def set_attr_restore(self):
         """Restore stdin configuration.
+        Ignored if the pipeline is executed in background.
         """
-        termios.tcsetattr(sys.stdin, termios.TCSANOW, self.old_attributes)
+        if not self.background_execution :
+            termios.tcsetattr(sys.stdin, termios.TCSANOW, self.old_attributes)
 
 
 class PoseExample:
