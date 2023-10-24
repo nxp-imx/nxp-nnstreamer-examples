@@ -32,8 +32,16 @@ $ mkdir build
 $ cd build
 $ cmake ..
 $ make
-# Send classification example to your board, replace <target ip address> by relevant value
+# Send classification example to target, replacing <target ip address> by relevant value
 $ scp ./classification/example_classification_mobilenet_v1_tflite root@<target ip address>
+```
+### Compile models on target
+Quantized TFLite models must be compiled with vela for i.MX 93 Ethos-U NPU.
+This can be done directly on the target :
+```bash
+# To do directly on target
+$ cd /path/to/nxp-nnstreamer-examples
+$ ./downloads/compile_models.sh
 ```
 
 Examples can then be run directly on the target. More information on individual examples execution is available in relevant sections.
