@@ -30,7 +30,7 @@ class StdInHelper:
         """Configure stdin tty in non-blocking mode.
         Ignored if the pipeline is executed in background.
         """
-        try :
+        try:
             _attr = termios.tcgetattr(sys.stdin)
             attr = _attr.copy()
 
@@ -47,12 +47,11 @@ class StdInHelper:
                     "termios error " + str(e) + " not related to background execution")
             self.background_execution = True
 
-
     def set_attr_restore(self):
         """Restore stdin configuration.
         Ignored if the pipeline is executed in background.
         """
-        if not self.background_execution :
+        if not self.background_execution:
             termios.tcsetattr(sys.stdin, termios.TCSANOW, self.old_attributes)
 
 
@@ -74,7 +73,7 @@ class PoseExample:
         self.MODEL_KEYPOINT_INDEX_Y = 0
         self.MODEL_KEYPOINT_INDEX_X = 1
         self.MODEL_KEYPOINT_INDEX_SCORE = 2
-        self.MODEL_SCORE_THRESHOLD = 0.5
+        self.MODEL_SCORE_THRESHOLD = 0.4
 
         # pipeline variables
         self.mainloop = None
@@ -83,6 +82,7 @@ class PoseExample:
         self.time = datetime.datetime.now()
         self.fps = 0
         self.backend = None
+        self.source = None
 
         self.tflite_path = None
         self.video_path = None
@@ -115,20 +115,18 @@ class PoseExample:
 
         assert len(self.keypoints_def) == self.MODEL_KEYPOINT_SIZE
 
-        # XXX: only CPU backend for now
         self.backend = os.getenv('BACKEND', 'CPU')
-        if self.backend != 'CPU':
-            raise ValueError('CPU backend only is supported')
 
-        # TODO: backend-specific configurations
         try:
             transform = {
                 'CPU': ' tensor_transform mode=typecast option=int32 ! ',
+                'NPU': ' tensor_transform mode=typecast option=uint8 ! ',
             }
             self.tensor_transform = transform[self.backend]
 
             model = {
                 'CPU': 'movenet_single_pose_lightning.tflite',
+                'NPU': 'movenet_quant.tflite',
             }
             tflite_model = model[self.backend]
 
@@ -168,12 +166,20 @@ class PoseExample:
 
         self.mainloop = GLib.MainLoop()
 
-        cmdline = 'filesrc location={:s} ! matroskademux ! vpudec !' \
-            .format(self.video_path)
-        cmdline += '  videocrop left=-1 right=-1 top=-1 bottom=-1 ! '
-        # crop for square video format
-        cmdline += '  video/x-raw,width={:d},height={:d} ! ' \
-            .format(self.VIDEO_INPUT_HEIGHT, self.VIDEO_INPUT_HEIGHT)
+        self.source = os.getenv('SOURCE', 'VIDEO')
+
+        if self.source == 'VIDEO':
+            cmdline = 'filesrc location={:s} ! matroskademux ! vpudec !' \
+                .format(self.video_path)
+            cmdline += '  videocrop left=-1 right=-1 top=-1 bottom=-1 ! '
+            # crop for square video format
+            cmdline += '  video/x-raw,width={:d},height={:d} ! ' \
+                .format(self.VIDEO_INPUT_HEIGHT, self.VIDEO_INPUT_HEIGHT)
+        elif self.source == 'CAMERA':
+            cmdline = 'v4l2src name=cam_src device=/dev/video3 num-buffers=-1 !'
+        else:
+            raise ValueError('Wrong source, must be VIDEO or CAMERA')
+
         cmdline += '  imxvideoconvert_g2d videocrop-meta-enable=true ! '
         cmdline += '  video/x-raw,width={:d},height={:d},format=RGBA ! ' \
             .format(self.VIDEO_INPUT_HEIGHT, self.VIDEO_INPUT_HEIGHT)

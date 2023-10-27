@@ -7,7 +7,8 @@ Name | Platforms | Model                                | ML engine | Backend | 
 [example_face_recognition_tflite.py](./example_face_recognition_tflite.py) | i.MX 8M Plus <br> i.MX 93 | UltraFace <br> FaceNet512 <br>       | TFLite | NPU | camera<br>gst-launch<br>
 [example_emotion_detection_tflite.py](./example_emotion_detection_tflite.py) | i.MX 8M Plus <br> i.MX 93 | UltraFace <br> Deepface-emotion <br> | TFLite | NPU | camera<br>gst-launch<br>
 
-Those examples use 2 GStreamer pipelines that are running concurrently.
+Those examples use 2 GStreamer pipelines that are running concurrently.<br>
+Esc or ctrl+C key presses stop the execution of all the pipelines. 
 
 Note: for i.MX 93, issue with face demos on Linux release 6.1.22_2.0.0
 
