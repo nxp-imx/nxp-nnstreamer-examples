@@ -15,21 +15,18 @@ $ cd /path/to/nxp-nnstreamer-examples
 $ ./tools/upload.sh root@<target ip address>
 ```
 ### C++ with cross-compilation
-1- Fetch the models locally on host PC
-2- Download or build a Yocto BSP SDK for the i.MX platform where example will be run on
-3- Open a terminal and navigate to the sources of the nxp-nnstreamer-example git tree
-4- SDK environment setup script must be executed before the SDK can be used
-5- Once the SDK is setup, the right path to the models must be specified in example files
-6- Build the project with CMake, then push the required artifacts on the board (the scp command can be used for this purpose)
-
+1- Fetch the models locally on host PC. <br>
+2- Build a Yocto BSP SDK for the dedicated i.MX platform. Refer to the [imx-manifest](https://github.com/nxp-imx/imx-manifest) to setup the correct building environment, SDK needs to be compiled with bitbake using `imx-image-multimedia`.<br>
+3- The SDK environment setup script located in `/path/to/yocto/bld-xwayland/tmp/deploy/sdk/` must be executed before being able to source its environment. <br>
+4- Source the SDK environment and compile C++ examples with CMake, then push the required artifacts in its expected folder on the board (the scp command can be used for this purpose). <br>
+Note: path to the folder containing the data can be changed in CMakeLists.txt file as well as model and label names in the cpp example source file.
 Example :
 ```bash
-# Source the SDK
+# Source the SDK (installed by default in /opt/fsl-imx-xwayland/<LF version>/)
 $ .  /path/to/sdk/environment-setup-armv8-poky-linux
 # Cross-compile examples
 $ cd /path/to/nxp-nnstreamer-examples
-$ mkdir build
-$ cd build
+$ mkdir build && cd $_
 $ cmake ..
 $ make
 # Send classification example to target, replacing <target ip address> by relevant value

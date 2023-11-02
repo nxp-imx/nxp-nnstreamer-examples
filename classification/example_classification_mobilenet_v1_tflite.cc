@@ -27,16 +27,12 @@ const int CAMERA_INPUT_FRAMERATE = 30;
 const int MODEL_INPUT_WIDTH = 224;
 const int MODEL_INPUT_HEIGHT = 224;
 
-/* Specify the right path to your models */
-const char *PATH_TO_CLASSIFICATION = "/tmp/models/classification";
-const char *LABEL_NAME = "labels_mobilenet_quant_v1_224.txt";
-
 /* Models used for different backends */
 const char *MODEL_CPU = "mobilenet_v1_1.0_224.tflite";
 const char *MODEL_GPU_VSI = "mobilenet_v1_1.0_224.tflite";
 const char *MODEL_NPU_VSI = "mobilenet_v1_1.0_224_quant_uint8_float32.tflite";
 const char *MODEL_NPU_ETHOS = "mobilenet_v1_1.0_224_quant_uint8_float32_vela.tflite";
-
+const char *LABEL_NAME = "labels_mobilenet_quant_v1_224.txt";
 
 /** 
  * @brief i.MX Backend enumeration.
@@ -126,7 +122,7 @@ class ClassificationExample
          * @param camera_device: camera device used
          * @param imx: i.MX used.
          */
-        void run(char *backend, char *camera_device, GError *error, _GOptionContext *context, imx::Imx imx, bool error_allocated)
+        void run(char *backend, char *camera_device, GError *error, _GOptionContext *context, imx::Imx imx, bool error_allocated, const char* DATA_PATH)
         {
             log_info("Start app...\n");
 
@@ -139,7 +135,7 @@ class ClassificationExample
             try
             {
                 set_tensor_filter_config(backend, imx);
-                tflite_init_info(&g_app.tflite_info, PATH_TO_CLASSIFICATION, this->tflite_model_name, LABEL_NAME);
+                tflite_init_info(&g_app.tflite_info, DATA_PATH, this->tflite_model_name, LABEL_NAME);
             }
             catch(const std::exception& e)
             {
@@ -380,9 +376,20 @@ int main(int argc, char **argv)
         ClassificationExample classification_example(argc, argv);
 
         bool error_allocated = false;
+        const char* DATA_PATH;
 
         /* selecting the right camera by default */
         int soc_id = imx.soc_id();
+
+        /* Select path to data using environment variable */
+        if(getenv("CLASSIFICATION_DATA_PATH"))
+        {
+            DATA_PATH = getenv("CLASSIFICATION_DATA_PATH");
+        }
+        else
+        {
+            DATA_PATH = CLASSIFICATION_MODELS_DEFAULT_PATH;
+        }
 
         gchar *camera_device = (soc_id == imx::IMX8MP) ? g_strdup("/dev/video3") : g_strdup("/dev/video0");
         gchar *backend = g_strdup("NPU");
@@ -407,7 +414,7 @@ int main(int argc, char **argv)
             return 1;
         }
 
-        classification_example.run(backend, camera_device, error, context, imx, error_allocated);
+        classification_example.run(backend, camera_device, error, context, imx, error_allocated, DATA_PATH);
     }
     catch(const std::runtime_error& e)
     {

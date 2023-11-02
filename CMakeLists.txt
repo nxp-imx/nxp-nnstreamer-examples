@@ -19,6 +19,7 @@ link_directories(
 )
 
 add_executable(example_classification_mobilenet_v1_tflite classification/example_classification_mobilenet_v1_tflite.cc)
+add_definitions(-DCLASSIFICATION_MODELS_DEFAULT_PATH="/tmp/models")
 target_include_directories(example_classification_mobilenet_v1_tflite PRIVATE ./common/cpp)
 target_link_libraries(example_classification_mobilenet_v1_tflite ${GSTREAMER_LIBRARIES})
 set_target_properties(example_classification_mobilenet_v1_tflite PROPERTIES RUNTIME_OUTPUT_DIRECTORY ./classification)
