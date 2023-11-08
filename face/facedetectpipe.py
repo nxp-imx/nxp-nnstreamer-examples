@@ -38,7 +38,7 @@ class StdInHelper:
         """Configure stdin tty in non-blocking mode.
         Ignored if the pipeline is executed in background.
         """
-        try :
+        try:
             _attr = termios.tcgetattr(sys.stdin)
             attr = _attr.copy()
 
@@ -55,12 +55,11 @@ class StdInHelper:
                     "termios error " + str(e) + " not related to background execution")
             self.background_execution = True
 
-
     def set_attr_restore(self):
         """Restore stdin configuration.
         Ignored if the pipeline is executed in background.
         """
-        if not self.background_execution :
+        if not self.background_execution:
             termios.tcsetattr(sys.stdin, termios.TCSANOW, self.old_attributes)
 
 

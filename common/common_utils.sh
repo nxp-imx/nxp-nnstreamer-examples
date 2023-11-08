@@ -98,7 +98,7 @@ function video_scale_rgb_str {
   PXP)
     # pxp-based
     VIDEO_SCALE="\
-      imxvideoconvert_pxp ! videoconvert ! \
+      imxvideoconvert_pxp ! \
       video/x-raw,width=${OUTPUT_WIDTH},height=${OUTPUT_HEIGHT},format=BGR ! \
       videoconvert ! video/x-raw,format=RGB !\
     "

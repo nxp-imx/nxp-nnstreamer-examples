@@ -321,7 +321,7 @@ if __name__ == '__main__':
         default_camera = '/dev/video3'
     elif soc == SocId.IMX93:
         default_camera = '/dev/video0'
-    else :
+    else:
         name = imx.name()
         raise NotImplementedError(f'Platform not supported [{name}]')
 
