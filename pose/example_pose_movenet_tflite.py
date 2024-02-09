@@ -175,6 +175,7 @@ class PoseExample:
 
         self.mainloop = GLib.MainLoop()
 
+        # Default source: VIDEO
         self.source = os.getenv('SOURCE', 'VIDEO')
         gstvideoimx = GstVideoImx(self.imx)
 
@@ -182,28 +183,28 @@ class PoseExample:
             cmdline = 'filesrc location={:s} ! matroskademux ! vpudec !' \
                 .format(self.video_path)
             # crop for square video format
-            cmdline += '  videocrop left=-1 right=-1 top=-1 bottom=-1 ! '
-            cmdline += '  video/x-raw,width={:d},height={:d} ! ' \
+            cmdline += ' videocrop left=-1 right=-1 top=-1 bottom=-1 !'
+            cmdline += ' video/x-raw,width={:d},height={:d} !' \
                 .format(self.VIDEO_INPUT_HEIGHT, self.VIDEO_INPUT_HEIGHT)
         elif self.source == 'CAMERA':
-            cmdline = 'v4l2src name=cam_src device=/dev/video3 num-buffers=-1 ! '
+            cmdline = 'v4l2src name=cam_src device=/dev/video3 num-buffers=-1 !'
+            cmdline += gstvideoimx.accelerated_videoscale(
+                self.VIDEO_INPUT_HEIGHT, self.VIDEO_INPUT_HEIGHT, flip=self.flip)
         else:
             raise ValueError('Wrong source, must be VIDEO or CAMERA')
 
-        cmdline += gstvideoimx.accelerated_videoscale(
-            self.VIDEO_INPUT_HEIGHT, self.VIDEO_INPUT_HEIGHT, flip=self.flip)
-        cmdline += '  tee name=t '
-        cmdline += 't. ! queue name=thread-nn max-size-buffers=2 leaky=2 ! '
+        cmdline += ' tee name=t'
+        cmdline += ' t. ! queue name=thread-nn max-size-buffers=2 leaky=2 !'
         cmdline += gstvideoimx.accelerated_videoscale(
             self.MODEL_INPUT_WIDTH, self.MODEL_INPUT_HEIGHT, 'RGB')
-        cmdline += '  tensor_converter ! '
+        cmdline += ' tensor_converter !'
         cmdline += self.tensor_transform
-        cmdline += '  tensor_filter framework=tensorflow-lite model={:s} {:s} ! ' \
+        cmdline += ' tensor_filter framework=tensorflow-lite model={:s} {:s} !' \
             .format(self.tflite_path, self.tensor_filter_custom)
-        cmdline += '  tensor_sink name=tensor_sink '
-        cmdline += 't. ! queue name=thread-img max-size-buffers=2 ! '
-        cmdline += '  videoconvert ! cairooverlay name=cairooverlay ! '
-        cmdline += '  autovideosink'
+        cmdline += ' tensor_sink name=tensor_sink'
+        cmdline += ' t. ! queue name=thread-img max-size-buffers=2 !'
+        cmdline += ' videoconvert ! cairooverlay name=cairooverlay !'
+        cmdline += ' autovideosink'
 
         print(cmdline)
 
