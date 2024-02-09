@@ -69,8 +69,8 @@ class PoseExample:
         self.VIDEO_INPUT_HEIGHT = video_dims[1]
         # video input is cropped to be squared for model
         cropped_wh = min(self.VIDEO_INPUT_WIDTH, self.VIDEO_INPUT_HEIGHT)
-        self.VIDEO_INPUT_CROPPED_WIDTH = cropped_wh
-        self.VIDEO_INPUT_CROPPED_HEIGHT = cropped_wh
+        self.VIDEO_INPUT_RESIZED_WIDTH = cropped_wh
+        self.VIDEO_INPUT_RESIZED_HEIGHT = cropped_wh
         self.flip = flip
 
         # model constants
@@ -185,11 +185,11 @@ class PoseExample:
             # crop for square video format
             cmdline += ' videocrop left=-1 right=-1 top=-1 bottom=-1 !'
             cmdline += ' video/x-raw,width={:d},height={:d} !' \
-                .format(self.VIDEO_INPUT_HEIGHT, self.VIDEO_INPUT_HEIGHT)
+                .format(self.VIDEO_INPUT_RESIZED_WIDTH, self.VIDEO_INPUT_RESIZED_HEIGHT)
         elif self.source == 'CAMERA':
             cmdline = 'v4l2src name=cam_src device=/dev/video3 num-buffers=-1 !'
             cmdline += gstvideoimx.accelerated_videoscale(
-                self.VIDEO_INPUT_HEIGHT, self.VIDEO_INPUT_HEIGHT, flip=self.flip)
+                self.VIDEO_INPUT_RESIZED_HEIGHT, self.VIDEO_INPUT_RESIZED_HEIGHT, flip=self.flip)
         else:
             raise ValueError('Wrong source, must be VIDEO or CAMERA')
 
@@ -269,9 +269,9 @@ class PoseExample:
 
                 # rescale normalized keypoints (x,y) per video resolution
                 np_kpts[:, self.MODEL_KEYPOINT_INDEX_X] *= \
-                    self.VIDEO_INPUT_CROPPED_WIDTH
+                    self.VIDEO_INPUT_RESIZED_WIDTH
                 np_kpts[:, self.MODEL_KEYPOINT_INDEX_Y] *= \
-                    self.VIDEO_INPUT_CROPPED_HEIGHT
+                    self.VIDEO_INPUT_RESIZED_HEIGHT
 
                 # score confidence criteria
                 for np_kpt in np_kpts:
