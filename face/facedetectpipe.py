@@ -275,6 +275,7 @@ class FaceDetectPipe(Pipe):
                  camera_device,
                  video_resolution=(640, 480),
                  video_fps=30,
+                 flip=False,
                  secondary_pipe=None,
                  model_directory=None):
         """Main GStreamer pipeline running face detection on video stream.
@@ -295,6 +296,7 @@ class FaceDetectPipe(Pipe):
         self.video_input_width = video_resolution[0]
         self.video_input_height = video_resolution[1]
         self.video_rate = video_fps
+        self.flip = flip
 
         if not os.path.exists(self.camera_device):
             raise FileExistsError(f'cannot find camera [{self.camera_device}]')
@@ -337,6 +339,9 @@ class FaceDetectPipe(Pipe):
             .format(vw, vh, vr)
 
         cmdline = 'v4l2src device={:s} ! '.format(self.camera_device)
+        if self.flip:
+            cmdline += gstvideoimx.accelerated_videoscale(vw, vh, flip=True)
+            cmdline += ' videoconvert !'
         cmdline += '  {:s} ! '.format(video_caps)
         cmdline += '  tee name=tvideo '
         cmdline += 'tvideo. ! queue max-size-buffers=1 leaky=2 ! '
@@ -638,6 +643,8 @@ if __name__ == '__main__':
                         type=str,
                         help='camera device node',
                         default=default_camera)
+    parser.add_argument('--mirror',  default=False, action='store_true',
+                        help='flip image to display as a mirror')
     args = parser.parse_args()
 
     format = '%(asctime)s.%(msecs)03d %(levelname)s:\t%(message)s'
@@ -646,6 +653,7 @@ if __name__ == '__main__':
 
     # pipeline parameters - no secondary pipeline
     camera_device = args.camera_device
+    flip = args.mirror
     vr = (640, 480)
     fps = 30
     secondary = None
@@ -653,5 +661,6 @@ if __name__ == '__main__':
     pipe = FaceDetectPipe(camera_device=camera_device,
                           video_resolution=vr,
                           video_fps=fps,
+                          flip=flip,
                           secondary_pipe=secondary)
     pipe.run()

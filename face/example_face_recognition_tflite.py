@@ -31,7 +31,7 @@ from imxpy.imx_dev import Imx, SocId  # noqa
 class FaceRecoPipe(FaceDetectPipe):
 
     def __init__(self, camera_device, video_resolution=(640, 480),
-                 video_fps=30, secondary_pipe=None, model_directory=None):
+                 video_fps=30, flip=False, secondary_pipe=None, model_directory=None):
         """Subclass FaceDetectPipe.
 
         Derived class implements specific functions relevant to this example:
@@ -51,6 +51,7 @@ class FaceRecoPipe(FaceDetectPipe):
             camera_device,
             video_resolution,
             video_fps,
+            flip,
             secondary_pipe,
             model_directory)
 
@@ -328,6 +329,8 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Face Identification')
     parser.add_argument('--camera_device', type=str,
                         help='camera device node', default=default_camera)
+    parser.add_argument('--mirror',  default=False, action='store_true',
+                        help='flip image to display as a mirror')
     args = parser.parse_args()
 
     format = '%(asctime)s.%(msecs)03d %(levelname)s:\t%(message)s'
@@ -336,6 +339,7 @@ if __name__ == '__main__':
 
     # pipelines parameters
     camera_device = args.camera_device
+    flip = args.mirror
     vr = (640, 480)
     fps = 30
 
@@ -350,6 +354,6 @@ if __name__ == '__main__':
 
     # main pipeline for face detection
     pipe = FaceRecoPipe(camera_device=camera_device, video_resolution=vr,
-                        video_fps=fps, secondary_pipe=secondary,
+                        video_fps=fps, flip=flip, secondary_pipe=secondary,
                         model_directory=models_dir)
     pipe.run()

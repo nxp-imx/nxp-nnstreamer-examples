@@ -30,6 +30,8 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Face Identification')
     parser.add_argument('--camera_device', type=str,
                         help='camera device node', default=default_camera)
+    parser.add_argument('--mirror',  default=False, action='store_true',
+                        help='flip image to display as a mirror')
     args = parser.parse_args()
 
     format = '%(asctime)s.%(msecs)03d %(levelname)s:\t%(message)s'
@@ -38,10 +40,11 @@ if __name__ == '__main__':
 
     # pipeline parameters - no secondary pipeline
     camera_device = args.camera_device
+    flip = args.mirror
     vr = (640, 480)
     fps = 30
     secondary = None
 
     pipe = FaceDetectPipe(camera_device=camera_device, video_resolution=vr,
-                          video_fps=fps, secondary_pipe=secondary)
+                          video_fps=fps, flip=flip, secondary_pipe=secondary)
     pipe.run()

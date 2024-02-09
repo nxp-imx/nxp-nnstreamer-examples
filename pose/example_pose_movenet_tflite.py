@@ -14,6 +14,12 @@ import os
 import signal
 import sys
 
+python_path = os.path.join(os.path.dirname(os.path.abspath(__file__)),
+                           '../common/python')
+sys.path.append(python_path)
+from imxpy.imx_dev import Imx, SocId  # noqa
+from imxpy.common_utils import GstVideoImx, store_vx_graph_compilation  # noqa
+
 gi.require_version('Gst', '1.0')
 from gi.repository import Gst, GLib
 
@@ -57,7 +63,7 @@ class StdInHelper:
 
 class PoseExample:
 
-    def __init__(self, video_file, video_dims, argv=[]):
+    def __init__(self, video_file, video_dims, flip=False, argv=[]):
         # video input definitions
         self.VIDEO_INPUT_WIDTH = video_dims[0]
         self.VIDEO_INPUT_HEIGHT = video_dims[1]
@@ -65,6 +71,7 @@ class PoseExample:
         cropped_wh = min(self.VIDEO_INPUT_WIDTH, self.VIDEO_INPUT_HEIGHT)
         self.VIDEO_INPUT_CROPPED_WIDTH = cropped_wh
         self.VIDEO_INPUT_CROPPED_HEIGHT = cropped_wh
+        self.flip = flip
 
         # model constants
         self.MODEL_KEYPOINT_SIZE = 17
@@ -116,6 +123,8 @@ class PoseExample:
         assert len(self.keypoints_def) == self.MODEL_KEYPOINT_SIZE
 
         self.backend = os.getenv('BACKEND', 'CPU')
+        self.imx = Imx()
+        store_vx_graph_compilation(self.imx)
 
         try:
             transform = {
@@ -167,28 +176,26 @@ class PoseExample:
         self.mainloop = GLib.MainLoop()
 
         self.source = os.getenv('SOURCE', 'VIDEO')
+        gstvideoimx = GstVideoImx(self.imx)
 
         if self.source == 'VIDEO':
             cmdline = 'filesrc location={:s} ! matroskademux ! vpudec !' \
                 .format(self.video_path)
-            cmdline += '  videocrop left=-1 right=-1 top=-1 bottom=-1 ! '
             # crop for square video format
+            cmdline += '  videocrop left=-1 right=-1 top=-1 bottom=-1 ! '
             cmdline += '  video/x-raw,width={:d},height={:d} ! ' \
                 .format(self.VIDEO_INPUT_HEIGHT, self.VIDEO_INPUT_HEIGHT)
         elif self.source == 'CAMERA':
-            cmdline = 'v4l2src name=cam_src device=/dev/video3 num-buffers=-1 !'
+            cmdline = 'v4l2src name=cam_src device=/dev/video3 num-buffers=-1 ! '
         else:
             raise ValueError('Wrong source, must be VIDEO or CAMERA')
 
-        cmdline += '  imxvideoconvert_g2d videocrop-meta-enable=true ! '
-        cmdline += '  video/x-raw,width={:d},height={:d},format=RGBA ! ' \
-            .format(self.VIDEO_INPUT_HEIGHT, self.VIDEO_INPUT_HEIGHT)
+        cmdline += gstvideoimx.accelerated_videoscale(
+            self.VIDEO_INPUT_HEIGHT, self.VIDEO_INPUT_HEIGHT, flip=self.flip)
         cmdline += '  tee name=t '
         cmdline += 't. ! queue name=thread-nn max-size-buffers=2 leaky=2 ! '
-        cmdline += '  imxvideoconvert_g2d ! '
-        cmdline += '  video/x-raw,width={:d},height={:d},format=RGBA ! ' \
-            .format(self.MODEL_INPUT_WIDTH, self.MODEL_INPUT_HEIGHT)
-        cmdline += '  videoconvert ! video/x-raw,format=RGB ! '
+        cmdline += gstvideoimx.accelerated_videoscale(
+            self.MODEL_INPUT_WIDTH, self.MODEL_INPUT_HEIGHT, 'RGB')
         cmdline += '  tensor_converter ! '
         cmdline += self.tensor_transform
         cmdline += '  tensor_filter framework=tensorflow-lite model={:s} {:s} ! ' \
@@ -314,6 +321,12 @@ class PoseExample:
             context.set_font_size(10.0)
             context.move_to(x_kpt + 5, y_kpt + 5)
             label = keypoint_def['label']
+            # invert left and right if video is flipped
+            if self.flip:
+                if "left" in label:
+                    label = label.replace("left", "right")
+                elif "right" in label:
+                    label = label.replace("right", "left")
             context.show_text(label)
 
             # draw keypoint connections
@@ -383,8 +396,11 @@ if __name__ == '__main__':
                         type=str,
                         help='input video file',
                         default=default_video)
+    parser.add_argument('--mirror',  default=False, action='store_true',
+                        help='flip image to display as a mirror')
     args = parser.parse_args()
 
     video_file = args.video_file
-    example = PoseExample(video_file, video_dims, sys.argv[2:])
+    flip = args.mirror
+    example = PoseExample(video_file, video_dims, flip, sys.argv[2:])
     example.run()

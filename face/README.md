@@ -8,7 +8,8 @@ Name | Platforms | Model                                | ML engine | Backend | 
 [example_emotion_detection_tflite.py](./example_emotion_detection_tflite.py) | i.MX 8M Plus <br> i.MX 93 | UltraFace <br> Deepface-emotion <br> | TFLite | NPU | camera<br>gst-launch<br>
 
 Those examples use 2 GStreamer pipelines that are running concurrently.<br>
-Esc or ctrl+C key presses stop the execution of all the pipelines. 
+Esc or ctrl+C key presses stop the execution of all the pipelines.<br>
+Display can be flipped using the --mirror option.<br>
 
 Note: for i.MX 93, issue with face demos on Linux release 6.1.22_2.0.0
 
@@ -58,7 +59,7 @@ drwxrwxr-x 4 nxa24178 nxa24178 4096 déc.  15 15:27 ..
 -rw-rw-r-- 1 nxa24178 nxa24178 2176 déc.  14 09:50 brad_pitt.npy
 -rw-rw-r-- 1 nxa24178 nxa24178 2176 déc.  14 09:50 thispersondoesnotexist.npy
 ```
-New entries can simply be created in two differents ways:
+New entries can simply be created in two different ways:
 1. From within example application when running on target board: press \<ENTER\> in Linux console and enter name for the face detected on camera. 
 2. Create an entry from a still image, typically in host PC, inferencing the image and storing the resulting embedding. Provided script [face/facenet_create_embedding.py](./facenet_create_embedding.py) can be used for this purpose.
 

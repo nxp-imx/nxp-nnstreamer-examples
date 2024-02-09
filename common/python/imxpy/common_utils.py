@@ -17,7 +17,7 @@ class GstVideoImx:
         assert (isinstance(imx, imx_dev.Imx))
         self.imx = imx
 
-    def videoscale_to_format(self, format=None, width=None, height=None, hardware=None):
+    def videoscale_to_format(self, format=None, width=None, height=None, hardware=None, flip=False):
         """Create pipeline segment for accelerated video formatting and csc.
 
         hardware: corresponding hardware to accelerate video composition
@@ -30,11 +30,17 @@ class GstVideoImx:
         required_format = format is not None
 
         if hardware is not None:
-            cmd = f'imxvideoconvert_{hardware} ! '
+            cmd = f'imxvideoconvert_{hardware} '
+            if flip:
+                cmd += 'rotation=4 ! '
+            else:
+                cmd += '! '
         else:
             # no acceleration
             if valid_dimensions:
                 cmd = 'videoscale ! '
+            if flip:
+                cmd += 'videoflip video-direction=4 ! '
             if required_format:
                 cmd += 'videoconvert ! '
 
@@ -47,7 +53,7 @@ class GstVideoImx:
 
         return cmd
 
-    def accelerated_videoscale(self, width=None, height=None, format=None):
+    def accelerated_videoscale(self, width=None, height=None, format=None, flip=False):
         """Create pipeline segment for accelerated video scaling and conversion
         to a given GStreamer video format.
 
@@ -66,22 +72,22 @@ class GstVideoImx:
             # imxvideoconvert_g2d does not support RGB nor GRAY8 sink
             # use acceleration to RGBA
             if format == 'RGB' or format == 'GRAY8':
-                cmd = self.videoscale_to_format('RGBA', width, height, 'g2d')
+                cmd = self.videoscale_to_format('RGBA', width, height, 'g2d', flip)
                 cmd += f'videoconvert ! video/x-raw,format={format} ! '
             else:
-                cmd = self.videoscale_to_format(format, width, height, 'g2d')
+                cmd = self.videoscale_to_format(format, width, height, 'g2d', flip)
         elif self.imx.has_pxp() and valid_dim_pxp:
             if format == 'RGB':
                 # imxvideoconvert_pxp does not support RGB sink
                 # use acceleration to BGR
-                cmd = self.videoscale_to_format('BGR', width, height, 'pxp')
+                cmd = self.videoscale_to_format('BGR', width, height, 'pxp', flip)
                 cmd += f'videoconvert ! video/x-raw,format={format} ! '
             else:
-                cmd = self.videoscale_to_format(format, width, height, 'pxp')
+                cmd = self.videoscale_to_format(format, width, height, 'pxp', flip)
 
         else:
             # no hardware acceleration
-            cmd = self.videoscale_to_format(format, width, height)
+            cmd = self.videoscale_to_format(format, width, height, flip=flip)
         return cmd
 
     def videocrop_to_format(self, videocrop_name, width, height, top=None, bottom=None,
