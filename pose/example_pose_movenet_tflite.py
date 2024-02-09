@@ -390,18 +390,25 @@ class PoseExample:
 
 if __name__ == '__main__':
     default_video = 'Conditioning_Drill_1-_Power_Jump.webm.480p.vp9.webm'
-    video_dims = (854, 480)
+    default_dims = (854, 480)
 
     parser = argparse.ArgumentParser(description='Pose Detection')
-    parser.add_argument('--video_file',
+    parser.add_argument('--video_file', '-f',
                         type=str,
                         help='input video file',
                         default=default_video)
     parser.add_argument('--mirror',  default=False, action='store_true',
                         help='flip image to display as a mirror')
+    parser.add_argument('--video_dims', '-d',
+                        metavar=('WIDTH', 'HEIGHT'),
+                        nargs=2,
+                        type=int,
+                        help='input resolution (width x height)',
+                        default=default_dims)
     args = parser.parse_args()
 
     video_file = args.video_file
+    video_dims = tuple(args.video_dims)
     flip = args.mirror
     example = PoseExample(video_file, video_dims, flip, sys.argv[2:])
     example.run()
