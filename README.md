@@ -16,7 +16,11 @@ $ ./tools/upload.sh root@<target ip address>
 ```
 ### C++ with cross-compilation
 1- Fetch the models locally on host PC. <br>
-2- Build a Yocto BSP SDK for the dedicated i.MX platform. Refer to the [imx-manifest](https://github.com/nxp-imx/imx-manifest) to setup the correct building environment, SDK needs to be compiled with bitbake using `imx-image-multimedia`.<br>
+2- Build a Yocto BSP SDK for the dedicated i.MX platform. Refer to the [imx-manifest](https://github.com/nxp-imx/imx-manifest) to setup the correct building environment, SDK needs to be compiled with bitbake using `imx-image-multimedia` and `populate_sdk` command as followed :<br>
+```bash
+# Build the image recipe imx-image-multimedia
+$ bitbake imx-image-multimedia -c populate_sdk
+```
 3- The SDK environment setup script located in `/path/to/yocto/bld-xwayland/tmp/deploy/sdk/` must be executed before being able to source its environment. <br>
 4- Source the SDK environment and compile C++ examples with CMake, then push the required artifacts in its expected folder on the board (the scp command can be used for this purpose). <br>
 Note: path to the folder containing the data can be changed in CMakeLists.txt file as well as model and label names in the cpp example source file.

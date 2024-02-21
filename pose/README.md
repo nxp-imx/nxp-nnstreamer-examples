@@ -13,7 +13,7 @@ Default backend can be overriden by explicitly defining BACKEND variable, and so
 # BACKEND=NPU SOURCE=CAMERA ./example_pose_movenet_tflite.py
 ```
 
-The following execution parameters are available (Run ``` ./example_pose_movenet_tflite.py -h``` to see options detail):
+The following execution parameters are available (Run ``` ./example_pose_movenet_tflite.py -h``` to see option details):
 
 Option | Description
 --- | ---
@@ -21,4 +21,4 @@ Option | Description
 --video_dims WIDTH HEIGHT | Provides the video source resolution
 --mirror | Flips the camera stream when using a front camera
 
-Esc or ctrl+C key presses stop the execution of the pipeline.
+Press ```Esc or ctrl+C``` to stop the execution of the pipeline.
