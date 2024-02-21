@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # SPDX-License-Identifier: BSD-3-Clause
-# Copyright 2023 NXP
+# Copyright 2023-2024 NXP
 
 import argparse
 import cairo
@@ -235,9 +235,10 @@ if __name__ == '__main__':
         raise NotImplementedError(f'Platform not supported [{name}]')
 
     parser = argparse.ArgumentParser(description='Emotion detection')
-    parser.add_argument('--camera_device', type=str,
+    parser.add_argument('--camera_device', '-c', type=str,
                         help='camera device node', default=default_camera)
-    parser.add_argument('--mirror',  default=False, action='store_true',
+    parser.add_argument('--mirror', '-m',
+                        default=False, action='store_true',
                         help='flip image to display as a mirror')
     args = parser.parse_args()
 

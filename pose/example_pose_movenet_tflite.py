@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # SPDX-License-Identifier: BSD-3-Clause
-# Copyright 2022-2023 NXP
+# Copyright 2022-2024 NXP
 
 import argparse
 import cairo
@@ -429,7 +429,7 @@ if __name__ == '__main__':
                         type=str,
                         help='input video file',
                         default=default_video)
-    parser.add_argument('--mirror',
+    parser.add_argument('--mirror', '-m',
                         default=False, action='store_true',
                         help='flip image to display as a mirror')
     parser.add_argument('--video_dims', '-d',
