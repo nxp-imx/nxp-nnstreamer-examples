@@ -124,6 +124,7 @@ class PoseExample:
 
         self.backend = os.getenv('BACKEND', 'CPU')
         self.imx = Imx()
+        vela = self.imx.has_npu_ethos()
         store_vx_graph_compilation(self.imx)
 
         try:
@@ -133,14 +134,27 @@ class PoseExample:
             }
             self.tensor_transform = transform[self.backend]
 
+            if vela:
+                quantized_model = 'movenet_quant_vela.tflite'
+            else:
+                quantized_model = 'movenet_quant.tflite'
             model = {
                 'CPU': 'movenet_single_pose_lightning.tflite',
-                'NPU': 'movenet_quant.tflite',
+                'NPU': quantized_model,
             }
             tflite_model = model[self.backend]
 
+            if self.imx.has_npu_vsi():
+                custom_ops = ('custom=Delegate:External,'
+                        'ExtDelegateLib:libvx_delegate.so')
+            elif vela:
+                custom_ops = ('custom=Delegate:External,'
+                        'ExtDelegateLib:libethosu_delegate.so')
+            else:
+                custom_ops = ''
+
             custom = {
-                'NPU': 'custom=Delegate:External,ExtDelegateLib:libvx_delegate.so',
+                'NPU': custom_ops,
                 'GPU': 'custom=Delegate:External,ExtDelegateLib:libvx_delegate.so',
                 'CPU': f'custom=Delegate:XNNPACK,NumThreads:{os.cpu_count()}'
             }
@@ -179,20 +193,38 @@ class PoseExample:
         self.source = os.getenv('SOURCE', 'VIDEO')
         gstvideoimx = GstVideoImx(self.imx)
 
+        # i.MX93 does not support video file decoding
+        if self.imx.id() == SocId.IMX93:
+            print('video file cannot be decoded, use camera source instead')
+            self.source = 'CAMERA'
+
         if self.source == 'VIDEO':
-            cmdline = 'filesrc location={:s} ! matroskademux ! vpudec !' \
-                .format(self.video_path)
+            cmdline = 'filesrc location={:s} !'.format(self.video_path)
+            extension = os.path.splitext(self.video_file)[1]
+            print('extension', extension)
+            if extension == '.webm' or extension == '.mkv':
+                if self.imx.id() == SocId.IMX8MP:
+                    cmdline += 'matroskademux ! vpudec !'
+            else:
+                print('only .mkv or .webm video format can be decoded by this pipeline')
+                return
             # crop for square video format
             cmdline += ' videocrop left=-1 right=-1 top=-1 bottom=-1 !'
             cmdline += ' video/x-raw,width={:d},height={:d} !' \
                 .format(self.VIDEO_INPUT_RESIZED_WIDTH, self.VIDEO_INPUT_RESIZED_HEIGHT)
+
         elif self.source == 'CAMERA':
-            cmdline = 'v4l2src name=cam_src device=/dev/video3 num-buffers=-1 !'
-            cmdline += gstvideoimx.accelerated_videoscale(
-                self.VIDEO_INPUT_RESIZED_HEIGHT, self.VIDEO_INPUT_RESIZED_HEIGHT, flip=self.flip)
+            if self.imx.id() == SocId.IMX8MP:
+                default_camera = '/dev/video3'
+            else:
+                default_camera = '/dev/video0'
+            cmdline = 'v4l2src name=cam_src device={:s} num-buffers=-1 ! '.format(default_camera)
+
         else:
             raise ValueError('Wrong source, must be VIDEO or CAMERA')
 
+        cmdline += gstvideoimx.accelerated_videoscale(
+            self.VIDEO_INPUT_HEIGHT, self.VIDEO_INPUT_HEIGHT, flip=self.flip)
         cmdline += ' tee name=t'
         cmdline += ' t. ! queue name=thread-nn max-size-buffers=2 leaky=2 !'
         cmdline += gstvideoimx.accelerated_videoscale(
@@ -397,7 +429,8 @@ if __name__ == '__main__':
                         type=str,
                         help='input video file',
                         default=default_video)
-    parser.add_argument('--mirror',  default=False, action='store_true',
+    parser.add_argument('--mirror',
+                        default=False, action='store_true',
                         help='flip image to display as a mirror')
     parser.add_argument('--video_dims', '-d',
                         metavar=('WIDTH', 'HEIGHT'),
