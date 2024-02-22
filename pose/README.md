@@ -3,7 +3,7 @@
 ## Overview
 Name | Platforms | Model | ML engine | Backend    | Features
 --- | --- | --- | --- |------------| ---
-[example_pose_movenet_tflite.py](./example_pose_movenet_tflite.py) | i.MX 8M Plus | PoseNet Lightning | TFLite | CPU<br>NPU | video file decoding<br>camera<br>gst-launch<br>python<br>
+[example_pose_movenet_tflite.py](./example_pose_movenet_tflite.py) | i.MX 8M Plus <br> i.MX 93| PoseNet Lightning | TFLite | CPU<br>NPU | video file decoding (i.MX 8M Plus only)<br>camera<br>gst-launch<br>python<br>
 
 ## Execution
 Example script can be called from target console with no further restriction.
