@@ -19,7 +19,7 @@ $ BACKEND=CPU ./classification/example_classification_mobilenet_v1_tflite.sh
 ```bash
 # Set the path to classification data in CLASSIFICATION_DATA_PATH variable (default location : /tmp/models)
 $ export CLASSIFICATION_DATA_PATH="/path/to/nxp-nnstreamer-examples/downloads/models/classification/"
-$ ./example_classification_mobilenet_v1_tflite
+$ ./classification/example_classification_mobilenet_v1_tflite
 ```
 The following execution parameters are available (Run ``` ./example_classification_mobilenet_v1_tflite -h``` to see option details):
 

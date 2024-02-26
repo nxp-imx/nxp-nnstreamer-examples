@@ -8,9 +8,9 @@ Name | Platforms | Model | ML engine | Backend    | Features
 ## Execution
 Example script can be called from target console with no further restriction.
 Default backend can be overriden by explicitly defining BACKEND variable, and source can be selected as VIDEO or CAMERA, for instance:
-
-```
-# BACKEND=NPU SOURCE=CAMERA ./example_pose_movenet_tflite.py
+### Python
+```bash
+$ BACKEND=NPU SOURCE=CAMERA ./pose/example_pose_movenet_tflite.py
 ```
 
 The following execution parameters are available (Run ``` ./example_pose_movenet_tflite.py -h``` to see option details):
