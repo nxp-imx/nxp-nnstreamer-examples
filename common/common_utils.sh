@@ -1,6 +1,6 @@
 #!/bin/bash
 # SPDX-License-Identifier: BSD-3-Clause
-# Copyright 2022-2023 NXP
+# Copyright 2022-2024 NXP
 
 function error {
    local message="$1"
@@ -78,41 +78,70 @@ function setup_env {
   fi
 }
 
-# accelerated scaling/conversion
+# Create pipeline segment for accelerated video formatting and csc
+# $1 video output width
+# $2 video output height
+# $3 video output format
+function accelerated_video_scale_str {
+  local VIDEO_SCALE
+  local OUTPUT_WIDTH=$1
+  local OUTPUT_HEIGHT=$2
+  local OUTPUT_FORMAT=$3
+
+  if [[ -z "${OUTPUT_FORMAT}" ]]
+  then
+    FORMAT=""
+  else
+    FORMAT=",format=${OUTPUT_FORMAT}"
+  fi
+
+  case "${GPU2D_API}" in
+  G2D)
+    # g2d-based
+    VIDEO_SCALE="imxvideoconvert_g2d ! "
+    
+    ;;
+  PXP)
+    # pxp-based
+    VIDEO_SCALE="imxvideoconvert_pxp ! "
+    ;;
+  *)
+    # cpu-based
+    VIDEO_SCALE="videoscale ! videoconvert ! "
+    ;;
+  esac
+  VIDEO_SCALE+="video/x-raw,width=${OUTPUT_WIDTH},height=${OUTPUT_HEIGHT}${FORMAT} !"
+
+  echo "${VIDEO_SCALE}"
+}
+
+
+# Create pipeline segment for accelerated video scaling and conversion to RGB format
 # $1 video output width
 # $2 video output height
 function video_scale_rgb_str {
-  local VIDEO_SCALE
+  local VIDEO_SCALE_RGB
   local OUTPUT_WIDTH=$1
   local OUTPUT_HEIGHT=$2
 
   case "${GPU2D_API}" in
   G2D)
     # g2d-based
-    VIDEO_SCALE="\
-      imxvideoconvert_g2d ! \
-      video/x-raw,width=${OUTPUT_WIDTH},height=${OUTPUT_HEIGHT},format=RGBA ! \
-      videoconvert ! video/x-raw,format=RGB !\
-    "
+    VIDEO_SCALE_RGB=$(accelerated_video_scale_str ${MODEL_WIDTH} ${MODEL_HEIGHT} "RGBA")
+    VIDEO_SCALE_RGB+="videoconvert ! video/x-raw,format=RGB ! "
     ;;
   PXP)
     # pxp-based
-    VIDEO_SCALE="\
-      imxvideoconvert_pxp ! \
-      video/x-raw,width=${OUTPUT_WIDTH},height=${OUTPUT_HEIGHT},format=BGR ! \
-      videoconvert ! video/x-raw,format=RGB !\
-    "
+    VIDEO_SCALE_RGB=$(accelerated_video_scale_str ${MODEL_WIDTH} ${MODEL_HEIGHT} "BGR")
+    VIDEO_SCALE_RGB+="videoconvert ! video/x-raw,format=RGB ! "
     ;;
   *)
     # cpu-based
-    VIDEO_SCALE="\
-      videoscale ! videoconvert ! \
-      video/x-raw,width=${OUTPUT_WIDTH},height=${OUTPUT_HEIGHT},format=RGB ! \
-    "
+    VIDEO_SCALE_RGB=$(accelerated_video_scale_str ${MODEL_WIDTH} ${MODEL_HEIGHT} "RGB")
     ;;
   esac
 
-  echo "${VIDEO_SCALE}"
+  echo "${VIDEO_SCALE_RGB}"
 }
 
 
