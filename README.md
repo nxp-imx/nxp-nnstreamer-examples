@@ -16,10 +16,10 @@ $ ./tools/upload.sh root@<target ip address>
 ```
 ### C++ with cross-compilation
 1- Fetch the models locally on host PC. <br>
-2- Build a Yocto BSP SDK for the dedicated i.MX platform. Refer to the [imx-manifest](https://github.com/nxp-imx/imx-manifest) to setup the correct building environment, SDK needs to be compiled with bitbake using `imx-image-multimedia` and `populate_sdk` command as followed :<br>
+2- Build a Yocto BSP SDK for the dedicated i.MX platform. Refer to the [imx-manifest](https://github.com/nxp-imx/imx-manifest) to setup the correct building environment, SDK needs to be compiled with bitbake using `imx-image-full` and `populate_sdk` command as followed :<br>
 ```bash
-# Build the image recipe imx-image-multimedia
-$ bitbake imx-image-multimedia -c populate_sdk
+# Build the image recipe imx-image-full
+$ bitbake imx-image-full -c populate_sdk
 ```
 3- The SDK environment setup script located in `/path/to/yocto/bld-xwayland/tmp/deploy/sdk/` must be executed before being able to source its environment. <br>
 4- Source the SDK environment and compile C++ examples with CMake, then push the required artifacts in its expected folder on the board (the scp command can be used for this purpose). <br>
@@ -27,7 +27,7 @@ Note: path to the folder containing the data can be changed in CMakeLists.txt fi
 Example :
 ```bash
 # Source the SDK (installed by default in /opt/fsl-imx-xwayland/<LF version>/)
-$ .  /path/to/sdk/environment-setup-armv8-poky-linux
+$ . /path/to/sdk/environment-setup-armv8-poky-linux
 # Cross-compile examples
 $ cd /path/to/nxp-nnstreamer-examples
 $ mkdir build && cd $_
@@ -36,6 +36,7 @@ $ make
 # Send classification example to target, replacing <target ip address> by relevant value
 $ scp ./classification/example_classification_mobilenet_v1_tflite root@<target ip address>
 ```
+C++ examples were developped using a custom C++ library. A description of how to use the library can be found [here](./common/cpp/README.md).
 ### Compile models on target
 Quantized TFLite models must be compiled with vela for i.MX 93 Ethos-U NPU.
 This can be done directly on the target :
@@ -57,5 +58,6 @@ Snapshot | Name | Platforms | Features
 [![image segmentation demo](./segmentation/segmentation_demo.webp)](./segmentation/) | [Image segmentation](./segmentation/) | i.MX 8M Plus <br> i.MX 93| DeepLab<br> TFLite<br> jpeg files slideshow<br> gst-launch
 [![pose detection demo](./pose/pose_demo.webp)](./pose/) | [Pose detection](./pose/) |i.MX 8M Plus <br> i.MX 93| MoveNet<br> TFLite <br> video file decoding (i.MX 8M Plus only)<br> v4l2 camera <br> gst-launch <br> python
 [![faces demo](./face/face_demo.webp)](./face/) | [Face](./face/) | i.MX 8M Plus <br> i.MX 93| UltraFace <br> FaceNet512 <br> Deepface-emotion <br> TFLite <br> v4l2 camera <br> python
+[![mixed demo](./mixed/mixed_demo.webp)](./mixed/) | [Mixed](./mixed/) | i.MX 8M Plus <br> i.MX 93| MobileNet SSD <br> MobileNet <br> Movenet <br> UltraFace <br> Deepface-emotion <br> TFLite <br> v4l2 camera <br> C++ <br> custom C++ decoding
 
 *Images and video used have been released under Creative Commons CC0 1.0 license or belong to Public Domain*
