@@ -1,11 +1,13 @@
 # Faces demos
 
 ## Overview
-Name | Platforms | Model                                | ML engine | Backend | Features
---- | --- |--------------------------------------| --- | --- | ---
-[example_face_detection_tflite.py](./example_face_detection_tflite.py) | i.MX 8M Plus <br> i.MX 93 | UltraFace                            | TFLite | NPU | camera<br>gst-launch<br>
-[example_face_recognition_tflite.py](./example_face_recognition_tflite.py) | i.MX 8M Plus <br> i.MX 93 | UltraFace <br> FaceNet512 <br>       | TFLite | NPU | camera<br>gst-launch<br>
-[example_emotion_detection_tflite.py](./example_emotion_detection_tflite.py) | i.MX 8M Plus <br> i.MX 93 | UltraFace <br> Deepface-emotion <br> | TFLite | NPU | camera<br>gst-launch<br>
+Name | Implementation | Platforms | Model | ML engine | Backend | Features
+--- | --- | --- | --- | --- | --- | ---
+[example_face_detection_tflite.py](./example_face_detection_tflite.py) | Python | i.MX 8M Plus <br> i.MX 93 | UltraFace | TFLite | NPU | camera<br>gst-launch<br>
+[example_face_detection_tflite.cpp](./cpp/example_face_detection_tflite.cpp) | C++ | i.MX 8M Plus <br> i.MX 93 | UltraFace | TFLite | NPU | camera<br>gst-launch<br>
+[example_face_recognition_tflite.py](./example_face_recognition_tflite.py) | Python | i.MX 8M Plus <br> i.MX 93 | UltraFace <br> FaceNet512 <br>       | TFLite | NPU | camera<br>gst-launch<br>
+[example_emotion_detection_tflite.py](./example_emotion_detection_tflite.py) | Python | i.MX 8M Plus <br> i.MX 93 | UltraFace <br> Deepface-emotion <br> | TFLite | NPU | camera<br>gst-launch<br>
+[example_emotion_detection_tflite.cpp](./cpp/example_emotion_detection_tflite.cpp) | C++ | i.MX 8M Plus <br> i.MX 93 | UltraFace <br> Deepface-emotion <br> | TFLite | NPU | camera<br>gst-launch<br>
 
 Those examples use 2 GStreamer pipelines that are running concurrently.<br>
 Press ```Esc or ctrl+C``` to stop the execution of all the pipelines.<br>
@@ -30,18 +32,63 @@ Note: for i.MX 93, issue with face demos on Linux release 6.1.22_2.0.0
 ![secondary](./secondary.svg)
 
 ## Face detection
+### Python
 Demo application is to be started from Linux. Camera device node may be configured via command line argument (default: `/dev/video3` on i.MX 8M Plus, `/dev/video0` on i.MX 93 ).
 It draws bounding boxes around the detected faces, and displays number of detections.
 ```
 # ./face/example_face_detection_tflite.py [--camera_device=</dev/videoN>]
 ```
+### C++
+C++ example script can be run after [cross compilation](../). To use NPU backend, use the following command :
+```bash
+$ ./build/face/example_face_detection_tflite -p /path/to/nxp-nnstreamer-examples/downloads/models/face/ultraface_slim_uint8_float32.tflite
+```
+NOTES:
+* For i.MX 93 use vela model.
+
+The following execution parameters are available (Run ``` ./example_face_detection_tflite -h``` to see option details):
+
+Option | Description
+--- | ---
+-b, --backend | Use the selected backend (CPU, GPU, NPU)<br> default: NPU
+-n, --normalization | Use the selected normalization (none, centered, reduced, centeredReduced, castInt32, castuInt8)<br> default: none
+-c, --camera_device | Use the selected camera device (/dev/video{number})<br>default: /dev/video0 for i.MX 93 and /dev/video3 for i.MX 8MP
+-p, --model_path | Use the selected model path
+-d, --display_perf |Display performances, can specify time or freq
+-t, --text_color | Color of performances displayed, can choose between red, green, blue, and black (white by default)
+
+Press ```Esc or ctrl+C``` to stop the execution of the pipeline.
+
 ## Emotion detection
+### Python
 Demo application is to be started from Linux. Camera device node may be configured via command line argument (default: `/dev/video3` on i.MX 8M Plus, `/dev/video0` on i.MX 93 ).
 It draws bounding boxes around the detected faces, and displays predicted emotion and confidence score on each face.
 ```
 # ./face/example_emotion_detection_tflite.py [--camera_device=</dev/videoN>]
 ```
 7 emotions can be recognised : angry, disgust, fear, happy, sad, surprise and neutral.
+
+### C++
+C++ example script can be run after [cross compilation](../). To use NPU backend, use the following command :
+```bash
+$ export MODEL_PATH="/path/to/nxp-nnstreamer-examples/downloads/models/face"
+$ ./build/face/example_emotion_detection_tflite -p ${MODEL_PATH}/ultraface_slim_uint8_float32.tflite,${MODEL_PATH}/emotion_uint8_float32.tflite
+```
+NOTES:
+* For i.MX 93 use vela model.
+
+The following execution parameters are available (Run ``` ./example_emotion_detection_tflite -h``` to see option details):
+
+Option | Description
+--- | ---
+-b, --backend | Use the selected backend (CPU, GPU, NPU)<br> default: NPU
+-n, --normalization | Use the selected normalization (none, centered, reduced, centeredReduced, castInt32, castuInt8)<br> default: none
+-c, --camera_device | Use the selected camera device (/dev/video{number})<br>default: /dev/video0 for i.MX 93 and /dev/video3 for i.MX 8MP
+-p, --model_path FACE_MODEL,EMOTION_MODEL | Use the selected model path
+-d, --display_perf |Display performances, can specify time or freq
+-t, --text_color | Color of performances displayed, can choose between red, green, blue, and black (white by default)
+
+Press ```Esc or ctrl+C``` to stop the execution of the pipeline.
 
 ## Face recognition
 Demo application is to be started from Linux. Camera device node may be configured via command line argument (default: `/dev/video3` on i.MX 8M Plus, `/dev/video0` on i.MX 93 ).
