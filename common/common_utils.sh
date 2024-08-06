@@ -119,7 +119,7 @@ function accelerated_video_scale_str {
 # Create pipeline segment for accelerated video scaling and conversion to RGB format
 # $1 video output width
 # $2 video output height
-function video_scale_rgb_str {
+function accelerated_video_scale_rgb_str {
   local VIDEO_SCALE_RGB
   local OUTPUT_WIDTH=$1
   local OUTPUT_HEIGHT=$2
@@ -152,7 +152,7 @@ function video_scale_rgb_str {
 # $3 alpha channel pad number
 # $4 alpha channel value
 # $5 max inputs latency in nanoseconds
-function video_mixer_str {
+function accelerated_video_mixer_str {
   local VIDEO_MIX
   local MIXER_NAME=$1
   local MIXER_ARGS=$2

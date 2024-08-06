@@ -5,7 +5,7 @@
 function gst_exec_classification {
 
   # accelerated video scaling before inferencing
-  local VIDEO_SCALE=$(video_scale_rgb_str ${MODEL_WIDTH} ${MODEL_HEIGHT})
+  local VIDEO_SCALE=$(accelerated_video_scale_rgb_str ${MODEL_WIDTH} ${MODEL_HEIGHT})
 
   gst-launch-1.0 \
     v4l2src name=cam_src device=${CAMERA_DEVICE} num-buffers=-1 ! \
