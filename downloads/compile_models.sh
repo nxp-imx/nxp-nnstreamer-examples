@@ -30,7 +30,7 @@ source "${BASEDIR}/common/common_utils.sh"
 setup_env
 
 # Compile all the models once
-TASKS=(classification detection segmentation pose face)
+TASKS=(classification detection segmentation pose face depth)
 for TASK in "${TASKS[@]}"
 do
   DEST_DIR="${MODELS_DIR}/${TASK}"

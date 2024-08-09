@@ -1,1 +1,5 @@
 jupyter
+gitpython
+gdown
+tflite2tensorflow
+tensorflow==2.8.0

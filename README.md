@@ -59,5 +59,6 @@ Snapshot | Name | Platforms | Features
 [![pose detection demo](./pose/pose_demo.webp)](./pose/) | [Pose detection](./pose/) |i.MX 8M Plus <br> i.MX 93| MoveNet<br> TFLite <br> video file decoding (i.MX 8M Plus only)<br> v4l2 camera <br> gst-launch <br> python
 [![faces demo](./face/face_demo.webp)](./face/) | [Face](./face/) | i.MX 8M Plus <br> i.MX 93| UltraFace <br> FaceNet512 <br> Deepface-emotion <br> TFLite <br> v4l2 camera <br> python
 [![mixed demo](./mixed/mixed_demo.webp)](./mixed/) | [Mixed](./mixed/) | i.MX 8M Plus <br> i.MX 93| MobileNet SSD <br> MobileNet <br> Movenet <br> UltraFace <br> Deepface-emotion <br> TFLite <br> v4l2 camera <br> C++ <br> custom C++ decoding
+[![depth demo](./depth/depth_demo.webp)](./depth/) | [Depth](./depth/) | i.MX 8M Plus <br> i.MX 93| Midas v2 <br> TFLite <br> v4l2 camera <br> C++ <br> custom C++ decoding
 
 *Images and video used have been released under Creative Commons CC0 1.0 license or belong to Public Domain*

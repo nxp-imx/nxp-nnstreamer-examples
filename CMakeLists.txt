@@ -82,3 +82,9 @@ add_executable(example_emotion_and_detection_tflite ${all_SRCS} mixed/cpp/exampl
 target_include_directories(example_emotion_and_detection_tflite PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/face/cpp/)
 target_link_libraries(example_emotion_and_detection_tflite ${GSTREAMER_LIBRARIES} ${CAIRO_LIBRARIES} tensorflowlite)
 set_target_properties(example_emotion_and_detection_tflite PROPERTIES RUNTIME_OUTPUT_DIRECTORY ./mixed)
+
+# Example of depth estimation (midas_v2)
+add_executable(example_depth_midas_v2_tflite ${all_SRCS} depth/cpp/example_depth_midas_v2_tflite.cpp depth/cpp/custom_depth_decoder.cpp)
+target_include_directories(example_depth_midas_v2_tflite PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/depth/cpp/)
+target_link_libraries(example_depth_midas_v2_tflite ${GSTREAMER_LIBRARIES} ${CAIRO_LIBRARIES} tensorflowlite)
+set_target_properties(example_depth_midas_v2_tflite PROPERTIES RUNTIME_OUTPUT_DIRECTORY ./depth)
