@@ -63,6 +63,15 @@ std::string TensorCustomGenerator::ethosNPU()
   return tensorData.tensorFilterCustom;
 }
 
+/**
+ * @brief Add tensor_filter option for Ethos-U NPU backend.
+ */
+std::string TensorCustomGenerator::neutronNPU()
+{
+  tensorData.tensorFilterCustom = "custom=Delegate:External,";
+  tensorData.tensorFilterCustom += "ExtDelegateLib:libneutron_delegate.so";
+  return tensorData.tensorFilterCustom;
+}
 
 /**
  * @brief Add element for normalization to pipeline.

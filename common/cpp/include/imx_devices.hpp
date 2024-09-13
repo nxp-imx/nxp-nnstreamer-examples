@@ -12,7 +12,7 @@
 
 #include "logging.hpp"
 
-#define NUMBER_OF_SOC       8
+#define NUMBER_OF_SOC       9
 #define NUMBER_OF_FEATURE   3
 #define SOC_ID_PATH         "/sys/devices/soc0/soc_id"
 
@@ -30,6 +30,7 @@ namespace imx {
     IMX8QM,
     IMX8QXP,
     IMX93,
+    IMX95,
     UNKNOWN,
   };
 
@@ -56,6 +57,7 @@ namespace imx {
     "i.MX8QM",
     "i.MX8QXP",
     "i.MX93",
+    "i.MX95",
   };
 
 
@@ -71,6 +73,7 @@ namespace imx {
     "i.MX 8QuadMax",
     "i.MX 8QuadXPlus",
     "i.MX 93",
+    "i.MX 95",
   };
 
 
@@ -86,6 +89,7 @@ namespace imx {
     [IMX8QM] = {{[GPU2D] = true, [GPU3D] = true, [NPU] = false}},
     [IMX8QXP] = {{[GPU2D] = true, [GPU3D] = true, [NPU] = false}},
     [IMX93] = {{[GPU2D] = true, [GPU3D] = false, [NPU] = true}},
+    [IMX95] = {{[GPU2D] = true, [GPU3D] = true, [NPU] = true}},
   }};
 
 
@@ -164,7 +168,9 @@ namespace imx {
 
       bool hasEthosNPU() { return soc == IMX93; }
 
-      bool hasG2d() { return isIMX8() && soc != IMX8MQ; }
+      bool hasNeutronNPU() { return soc == IMX95; }
+
+      bool hasG2d() { return isIMX8() && soc != IMX8MQ or soc == IMX95; }
 
       bool hasPxP() 
       {
@@ -202,6 +208,7 @@ namespace imx {
       {
         switch (soc) {
           case IMX93:
+          case IMX95:
             return true;
             break;
 

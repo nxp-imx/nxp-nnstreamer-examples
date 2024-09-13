@@ -97,6 +97,8 @@ class TensorCustomGenerator {
 
     std::string ethosNPU();
 
+    std::string neutronNPU();
+
     std::string setTensorTransformConfig();
 
     void setNorm(const std::string &normalization) { norm = normalization; }

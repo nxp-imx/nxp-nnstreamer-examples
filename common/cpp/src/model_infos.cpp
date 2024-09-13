@@ -99,16 +99,23 @@ void ModelInfos::setTensorFilterConfig(imx::Imx &imx)
       if (imx.isIMX8() && imx.hasNPU())
         tensorData.tensorFilterCustom = tensorCustomData.vsiNPU();
 
-      if(imx.isIMX9() && imx.hasNPU())
+      if(imx.isIMX9() && imx.hasEthosNPU())
         tensorData.tensorFilterCustom = tensorCustomData.ethosNPU();
+
+      if(imx.isIMX9() && imx.hasNeutronNPU())
+        tensorData.tensorFilterCustom = tensorCustomData.neutronNPU();
+
       break;
 
     default:
       if (imx.isIMX8() && imx.hasNPU())
         tensorData.tensorFilterCustom = tensorCustomData.vsiNPU();
 
-      if(imx.isIMX9() && imx.hasNPU())
+      if(imx.isIMX9() && imx.hasEthosNPU())
         tensorData.tensorFilterCustom = tensorCustomData.ethosNPU();
+
+      if(imx.isIMX9() && imx.hasNeutronNPU())
+        tensorData.tensorFilterCustom = tensorCustomData.neutronNPU();
 
       break;
   }
