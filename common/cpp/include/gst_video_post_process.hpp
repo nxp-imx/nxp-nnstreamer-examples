@@ -42,7 +42,7 @@ class GstVideoPostProcess {
     GstVideoPostProcess() = default;
 
     void display(GstPipelineImx &pipeline,
-                 const bool &sync=true);
+                 const bool &sync=false);
 
     void addTextOverlay(GstPipelineImx &pipeline, 
                         const TextOverlayOptions &options);
