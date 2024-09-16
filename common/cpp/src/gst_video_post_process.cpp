@@ -51,6 +51,7 @@ void GstVideoPostProcess::display(GstPipelineImx &pipeline,
 void GstVideoPostProcess::addTextOverlay(GstPipelineImx &pipeline, 
                                          const TextOverlayOptions &options)
 {
+  imx::Imx imx{};
   std::string colorOption;
   if (options.color.length() != 0)
     colorOption = (" color=" + std::to_string(DictionaryColorARGB[options.color]));
@@ -69,7 +70,12 @@ void GstVideoPostProcess::addTextOverlay(GstPipelineImx &pipeline,
 
   std::string cmd = "textoverlay name=" + options.name + " font-desc=\"" + options.fontName;                             
   cmd += ", " + std::to_string(options.fontSize) + "\"" + colorOption + textOption;
-  cmd += vAlignOption + hAlignOption + " ! videoconvert ! ";
+  if(imx.hasG2d())
+    cmd += vAlignOption + hAlignOption + " ! imxvideoconvert_g2d ! ";
+  else if(imx.hasPxP())
+    cmd += vAlignOption + hAlignOption + " ! imxvideoconvert_pxp ! ";
+  else
+    cmd += vAlignOption + hAlignOption + " ! videoconvert ! ";
 
   pipeline.addToPipeline(cmd);
 }
@@ -84,8 +90,20 @@ void GstVideoPostProcess::addTextOverlay(GstPipelineImx &pipeline,
 void GstVideoPostProcess::addCairoOverlay(GstPipelineImx &pipeline,
                                           const std::string &name)
 {
-  std::string cmd = "videoconvert ! cairooverlay name=" + name + " ! ";
-  pipeline.addToPipeline(cmd);
+  imx::Imx imx{};
+  if (imx.hasG2d()){
+    std::string cmd = "imxvideoconvert_g2d ! cairooverlay name=" + name + " ! ";
+    pipeline.addToPipeline(cmd);
+  }
+  else if (imx.hasPxP()){
+    std::string cmd = "imxvideoconvert_pxp ! cairooverlay name=" + name + " ! ";
+    pipeline.addToPipeline(cmd);
+  }
+  else{
+    std::string cmd = "videoconvert ! cairooverlay name=" + name + " ! ";
+    pipeline.addToPipeline(cmd);
+  }
+  
 }
 
 

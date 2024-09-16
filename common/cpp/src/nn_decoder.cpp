@@ -70,6 +70,7 @@ void NNDecoder::addImageLabeling(GstPipelineImx &pipeline,
 void NNDecoder::addBoundingBoxes(GstPipelineImx &pipeline,
                                  const BoundingBoxesOptions &options)
 {
+  imx::Imx imx{};
   std::string cmd;
   cmd = "tensor_decoder mode=bounding_boxes option1=";
   cmd += mapModeBoundingBoxes[options.modelName];
@@ -84,6 +85,11 @@ void NNDecoder::addBoundingBoxes(GstPipelineImx &pipeline,
   if (options.logResult == true)
     cmd += " option7=1";
 
-  cmd += " ! videoconvert ! ";
+  // PxP is not supported by tensordecoder caps
+  if(imx.hasG2d())
+    cmd += " ! imxvideoconvert_g2d ! ";
+  else
+    cmd += " ! videoconvert ! ";
+
   pipeline.addToPipeline(cmd);
 }
