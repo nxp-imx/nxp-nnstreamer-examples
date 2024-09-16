@@ -56,6 +56,7 @@ int cmdParser(int argc, char **argv, ParserOptions& options)
     {"help",          no_argument,       0, 'h'},
     {"backend",       required_argument, 0, 'b'},
     {"normalization", required_argument, 0, 'n'},
+    {"camera_device", required_argument, 0, 'c'},
     {"model_path",    required_argument, 0, 'p'},
     {"video_file",    required_argument, 0, 'f'},
     {"use_camera",    required_argument, 0, 'u'},
