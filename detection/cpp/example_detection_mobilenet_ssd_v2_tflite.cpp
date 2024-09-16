@@ -31,8 +31,9 @@ const int CAMERA_INPUT_WIDTH = 640;
 const int CAMERA_INPUT_HEIGHT = 480;
 const int MODEL_LATENCY_NS_CPU = 300000000;
 const int MODEL_LATENCY_NS_GPU_VSI = 500000000;
-const int MODEL_LATENCY_NS_NPU_VSI = 0;
-const int MODEL_LATENCY_NS_NPU_ETHOS = 100000000;
+const int MODEL_LATENCY_NS_NPU_VSI = 20000000;
+const int MODEL_LATENCY_NS_NPU_ETHOS = 15000000;
+const int MODEL_LATENCY_NS_NPU_NEUTRON = 20000000;
 
 
 typedef struct {
@@ -238,8 +239,10 @@ int main(int argc, char **argv)
   if (options.backend == "NPU") {
     if (imx.isIMX8())
       latency = MODEL_LATENCY_NS_NPU_VSI;
-    else
+    else if (imx.hasEthosNPU())
       latency = MODEL_LATENCY_NS_NPU_ETHOS;
+    else
+      latency = MODEL_LATENCY_NS_NPU_NEUTRON;
   } else if (imx.isIMX8() && (options.backend == "GPU")) {
     latency = MODEL_LATENCY_NS_GPU_VSI;
   } else {
