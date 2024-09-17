@@ -86,7 +86,7 @@ void NNDecoder::addBoundingBoxes(GstPipelineImx &pipeline,
     cmd += " option7=1";
 
   // PxP is not supported by tensordecoder caps
-  if(imx.hasG2d())
+  if(imx.hasGPU2d())
     cmd += " ! imxvideoconvert_g2d ! ";
   else
     cmd += " ! videoconvert ! ";

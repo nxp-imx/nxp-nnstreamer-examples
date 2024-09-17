@@ -70,7 +70,7 @@ void GstVideoPostProcess::addTextOverlay(GstPipelineImx &pipeline,
 
   std::string cmd = "textoverlay name=" + options.name + " font-desc=\"" + options.fontName;                             
   cmd += ", " + std::to_string(options.fontSize) + "\"" + colorOption + textOption;
-  if(imx.hasG2d())
+  if(imx.hasGPU2d())
     cmd += vAlignOption + hAlignOption + " ! imxvideoconvert_g2d ! ";
   else if(imx.hasPxP())
     cmd += vAlignOption + hAlignOption + " ! imxvideoconvert_pxp ! ";
@@ -91,7 +91,7 @@ void GstVideoPostProcess::addCairoOverlay(GstPipelineImx &pipeline,
                                           const std::string &name)
 {
   imx::Imx imx{};
-  if (imx.hasG2d()){
+  if (imx.hasGPU2d()){
     std::string cmd = "imxvideoconvert_g2d ! cairooverlay name=" + name + " ! ";
     pipeline.addToPipeline(cmd);
   }

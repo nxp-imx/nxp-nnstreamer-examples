@@ -88,7 +88,7 @@ namespace imx {
     [IMX8ULP] = {{[GPU2D] = true, [GPU3D] = true, [NPU] = false}},
     [IMX8QM] = {{[GPU2D] = true, [GPU3D] = true, [NPU] = false}},
     [IMX8QXP] = {{[GPU2D] = true, [GPU3D] = true, [NPU] = false}},
-    [IMX93] = {{[GPU2D] = true, [GPU3D] = false, [NPU] = true}},
+    [IMX93] = {{[GPU2D] = false, [GPU3D] = false, [NPU] = true}},
     [IMX95] = {{[GPU2D] = true, [GPU3D] = true, [NPU] = true}},
   }};
 
@@ -170,7 +170,7 @@ namespace imx {
 
       bool hasNeutronNPU() { return soc == IMX95; }
 
-      bool hasG2d() { return isIMX8() && soc != IMX8MQ or soc == IMX95; }
+      bool hasG2d() { return (isIMX8() && soc != IMX8MQ) || soc == IMX95; }
 
       bool hasPxP() 
       {

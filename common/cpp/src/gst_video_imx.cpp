@@ -59,7 +59,7 @@ void GstVideoImx::videoTransform(GstPipelineImx &pipeline,
     }
   }
 
-  if (this->imx.hasG2d()
+  if (this->imx.hasGPU2d()
       && (width > dimLimit || width == -1)
       && (height > dimLimit || height == -1)
       && (useCPU == false)
@@ -105,7 +105,7 @@ void GstVideoImx::videoscaleToRGB(GstPipelineImx &pipeline,
                                   const int &height)
 {
   std::string cmd;
-  if (this->imx.hasG2d()) {
+  if (this->imx.hasGPU2d()) {
     /**
      * imxvideoconvert_g2d does not support RGB sink
      * and use CPU to convert RGBA to RGB
@@ -185,7 +185,7 @@ void GstVideoImx::videoCompositor(GstPipelineImx &pipeline,
   std::string firstStream = "sink_0";
   std::string secondStream = "sink_1";
   
-  if(this->imx.hasG2d()) {
+  if(this->imx.hasGPU2d()) {
     cmd = "imxcompositor_g2d name=" + name + " ";
     cmd += firstStream + "::zorder=2 ";
     cmd += secondStream + "::zorder=1 ";
