@@ -88,7 +88,7 @@ class GstPipelineImx {
 
     static gboolean infPerfCallback(gpointer user_data);
 
-    void parse(int argc, char **argv);
+    void parse(int argc, char **argv, char *graphPath);
 
     void run();
 

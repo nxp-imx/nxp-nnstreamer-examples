@@ -38,6 +38,7 @@ Option | Description
 -l, --labels_path | Use the selected labels path
 -d, --display_perf |Display performances, can specify time or freq
 -t, --text_color | Color of performances displayed, can choose between red, green, blue, and black (white by default)
+-g, --graph_path | Path to store the result of the OpenVX graph compilation (only for i.MX8MPlus)
 
 Press ```Esc or ctrl+C``` to stop the execution of the pipeline.
 
@@ -62,5 +63,6 @@ Option | Description
 -l, --labels_path CAM1_LABELS,CAM2_LABELS | Use the selected labels path
 -d, --display_perf |Display performances, can specify time or freq
 -t, --text_color | Color of performances displayed, can choose between red, green, blue, and black (white by default)
+-g, --graph_path | Path to store the result of the OpenVX graph compilation (only for i.MX8MPlus)
 
 Press ```Esc or ctrl+C``` to stop the execution of the pipeline.

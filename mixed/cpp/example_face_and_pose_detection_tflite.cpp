@@ -48,6 +48,7 @@ typedef struct {
   bool time = false;
   bool freq = false;
   std::string textColor;
+  char* graphPath = getenv("HOME");
 } ParserOptions;
 
 
@@ -59,6 +60,7 @@ int cmdParser(int argc, char **argv, ParserOptions& options)
   std::string modelNorm;
   std::string modelPath;
   std::string perfDisplay;
+  imx::Imx imx{};
   static struct option longOptions[] = {
     {"help",          no_argument,       0, 'h'},
     {"backend",       required_argument, 0, 'b'},
@@ -67,12 +69,13 @@ int cmdParser(int argc, char **argv, ParserOptions& options)
     {"model_path",    required_argument, 0, 'p'},
     {"display_perf",  optional_argument, 0, 'd'},
     {"text_color",    required_argument, 0, 't'},
+    {"graph_path",    required_argument, 0, 'g'},
     {0,               0,                 0,   0}
   };
   
   while ((c = getopt_long(argc,
                           argv,
-                          "hb:n:c:p:d::t:",
+                          "hb:n:c:p:d::t:g:",
                           longOptions,
                           &optionIndex)) != -1) {
     switch (c)
@@ -109,7 +112,11 @@ int cmdParser(int argc, char **argv, ParserOptions& options)
                   << std::setw(25) << std::left << "  -t, --text_color"
                   << std::setw(25) << std::left
                   << "Color of performances displayed,"
-                  << " can choose between red, green, blue, and black (white by default)" << std::endl;
+                  << " can choose between red, green, blue, and black (white by default)" << std::endl
+                  
+                  << std::setw(25) << std::left << "  -g, --graph_path"
+                  << std::setw(25) << std::left
+                  << "Path to store the result of the OpenVX graph compilation (only for i.MX8MPlus)" << std::endl;
         return 1;
 
       case 'b':
@@ -150,6 +157,14 @@ int cmdParser(int argc, char **argv, ParserOptions& options)
 
       case 't':
         options.textColor.assign(optarg);
+        break;
+      
+      case 'g':
+        if (imx.socId() != imx::IMX8MP) {
+          log_error("OpenVX graph compilation only for i.MX8MPlus\n");
+          return 1;
+        }
+        options.graphPath = optarg;
         break;
 
       default:
@@ -250,7 +265,7 @@ int main(int argc, char **argv)
   postProcess.display(pipeline, false);
 
   // Parse pipeline to GStreamer pipeline
-  pipeline.parse(argc, argv);
+  pipeline.parse(argc, argv, options.graphPath);
 
   // Connect callback functions to tensor sink and cairo overlay elements,
   // to process inferences output

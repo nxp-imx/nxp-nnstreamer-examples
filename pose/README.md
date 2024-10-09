@@ -43,5 +43,6 @@ Option | Description
 -u, --use_camera | If we use camera or video input (true,false)<br> default: false (true for i.MX 93)
 -d, --display_perf |Display performances, can specify time or freq
 -t, --text_color | Color of performances displayed, can choose between red, green, blue, and black (white by default)
+-g, --graph_path | Path to store the result of the OpenVX graph compilation (only for i.MX8MPlus)
 
 Press ```Esc or ctrl+C``` to stop the execution of the pipeline.

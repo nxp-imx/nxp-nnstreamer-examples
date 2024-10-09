@@ -12,14 +12,13 @@
  *        the warmup time only once.
  * 
  * @param imx: i.MX used.
+ * @param graphPath: store .nb files in provided path.
  */
-void storeVxGraphCompilation(imx::Imx imx)
+void storeVxGraphCompilation(imx::Imx imx, char *graphPath)
 {
-  bool isVsiPlatform = imx.hasVsiNPU() || imx.hasVsiGPU();
-  if(isVsiPlatform) {
+  if(imx.socId() == imx::IMX8MP) {
     setenv("VIV_VX_ENABLE_CACHE_GRAPH_BINARY","1",1);
-    char *path = getenv("HOME");
-    setenv("VIV_VX_CACHE_BINARY_GRAPH_DIR",path,1);
+    setenv("VIV_VX_CACHE_BINARY_GRAPH_DIR",graphPath,1);
   }
 }
 
@@ -80,13 +79,14 @@ gboolean GstPipelineImx::pipePerfCallback(gpointer user_data)
 
 /**
  * @brief Parse gst pipeline, and add bus signal watcher.
+ * @param graphPath: store .nb files in provided path.
  */
-void GstPipelineImx::parse(int argc, char **argv)
+void GstPipelineImx::parse(int argc, char **argv, char *graphPath)
 {
   imx::Imx imx{};
   gst_init(&argc, &argv);
   log_info("Start app...\n");
-  storeVxGraphCompilation(imx);
+  storeVxGraphCompilation(imx, graphPath);
 
   pipeCount += 1;
 
