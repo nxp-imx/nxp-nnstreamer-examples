@@ -70,7 +70,7 @@ int cmdParser(int argc, char **argv, ParserOptions& options)
 
   while ((c = getopt_long(argc,
                           argv,
-                          "hb:n:p:f:u:d::t:g:",
+                          "hb:n:c:p:f:u:d::t:g:",
                           longOptions,
                           &optionIndex)) != -1) {
     switch (c)
@@ -194,6 +194,11 @@ int main(int argc, char **argv)
     return 0;
 
   imx::Imx imx{};
+  if ((imx.socId() == imx::IMX95) && (options.backend == "NPU")) {
+    log_error("Example can't run on NPU in i.MX95\n");
+    return 0;
+  }
+
   if ((options.useCamera == "1") || (imx.isIMX9())) {
     // Add camera to pipeline
     GstCameraImx camera(options.camDevice,

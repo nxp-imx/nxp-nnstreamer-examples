@@ -99,6 +99,8 @@ class TensorCustomGenerator {
 
     std::string neutronNPU();
 
+    std::string GPU();
+
     std::string setTensorTransformConfig();
 
     void setNorm(const std::string &normalization) { norm = normalization; }

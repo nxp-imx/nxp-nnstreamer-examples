@@ -162,7 +162,13 @@ int main(int argc, char **argv)
   options.backend = "NPU";
   options.norm = "none";
   if (cmdParser(argc, argv, options))
-  return 0;
+    return 0;
+
+  imx::Imx imx{};
+  if ((imx.socId() == imx::IMX95) && (options.backend == "NPU")) {
+    log_error("Example can't run on NPU in i.MX95\n");
+    return 0;
+  }
 
   // Add slideshow to pipeline
   GstSlideshowImx slideshow(options.slideshowPath);

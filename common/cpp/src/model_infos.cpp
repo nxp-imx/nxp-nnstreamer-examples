@@ -87,8 +87,10 @@ void ModelInfos::setTensorFilterConfig(imx::Imx &imx)
       break;
 
     case imx::Backend::GPU:
-      if(imx.isIMX8()) {
+      if (imx.hasVsiGPU()) {
         tensorData.tensorFilterCustom = tensorCustomData.vsiGPU();
+      } else if (imx.socId() == imx::IMX95) {
+        tensorData.tensorFilterCustom = tensorCustomData.GPU();
       } else {
         log_error("can't used this backend with %s\n", imx.socName().c_str());
         exit(-1);
@@ -99,10 +101,10 @@ void ModelInfos::setTensorFilterConfig(imx::Imx &imx)
       if (imx.isIMX8() && imx.hasNPU())
         tensorData.tensorFilterCustom = tensorCustomData.vsiNPU();
 
-      if(imx.isIMX9() && imx.hasEthosNPU())
+      if (imx.isIMX9() && imx.hasEthosNPU())
         tensorData.tensorFilterCustom = tensorCustomData.ethosNPU();
 
-      if(imx.isIMX9() && imx.hasNeutronNPU())
+      if (imx.isIMX9() && imx.hasNeutronNPU())
         tensorData.tensorFilterCustom = tensorCustomData.neutronNPU();
 
       break;
@@ -111,10 +113,10 @@ void ModelInfos::setTensorFilterConfig(imx::Imx &imx)
       if (imx.isIMX8() && imx.hasNPU())
         tensorData.tensorFilterCustom = tensorCustomData.vsiNPU();
 
-      if(imx.isIMX9() && imx.hasEthosNPU())
+      if (imx.isIMX9() && imx.hasEthosNPU())
         tensorData.tensorFilterCustom = tensorCustomData.ethosNPU();
 
-      if(imx.isIMX9() && imx.hasNeutronNPU())
+      if (imx.isIMX9() && imx.hasNeutronNPU())
         tensorData.tensorFilterCustom = tensorCustomData.neutronNPU();
 
       break;

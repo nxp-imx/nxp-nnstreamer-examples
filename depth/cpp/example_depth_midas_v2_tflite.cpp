@@ -169,6 +169,12 @@ int main(int argc, char **argv)
   options.norm = "reduced";
   if (cmdParser(argc, argv, options))
     return 0;
+  
+  imx::Imx imx{};
+  if ((imx.socId() == imx::IMX95) && (options.backend == "NPU")) {
+    log_error("Example can't run on NPU in i.MX95\n");
+    return 0;
+  }
 
   // Add slideshow to pipeline
   GstCameraImx camera(options.camDevice,

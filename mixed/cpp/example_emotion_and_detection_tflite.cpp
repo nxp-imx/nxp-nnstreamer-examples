@@ -242,6 +242,12 @@ int main(int argc, char **argv)
   if (cmdParser(argc, argv, options))
     return 0;
 
+  imx::Imx imx{};
+  if ((imx.socId() == imx::IMX95) && (options.fBackend == "NPU")) {
+    log_error("Example can't run on NPU in i.MX95\n");
+    return 0;
+  }
+
   // Create a pipeline object for emotion detection inference
   GstPipelineImx emotionPipeline;
 

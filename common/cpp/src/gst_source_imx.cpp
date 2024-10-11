@@ -77,7 +77,7 @@ GstVideoFileImx::GstVideoFileImx(const std::filesystem::path &path,
                                  const int &height)
     : GstSourceImx(width, height, "")
 {
-  if (imx.isIMX9()) {
+  if ((imx.socId() == imx::IMX93) || (imx.socId() == imx::IMX95)) {
     log_error("video file can't be decoded with %s\n", imx.socName().c_str());
     exit(-1);
   } else {
