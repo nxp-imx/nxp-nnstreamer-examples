@@ -1,7 +1,7 @@
 -------------------------------------------------------------------------------
 NXP Software Content Register
 
-Package:                    NXP NNStreamer examples
+Package:                    nxp-nnstreamer-examples
 Version:                    1.4
 
 Release Location:           https://github.com/nxp-imx/nxp-nnstreamer-examples
@@ -10,5 +10,8 @@ Outgoing License:           BSD-3-Clause
 License file:               LICENSE
 Description and comments:   NNStreamer examples for i.MX platforms
 Origin:                     NXP (BSD-3-Clause)
+Dependencies during runtime:
+                            GStreamer (LGPL-2.1-only) - https://github.com/GStreamer/gstreamer
+                            NNStreamer (LGPL-2.1-only) - https://github.com/nnstreamer/nnstreamer
 
 -------------------------------------------------------------------------------
