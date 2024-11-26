@@ -99,7 +99,9 @@ std::string TensorCustomGenerator::setTensorTransformConfig()
 
     case Normalization::centered:
       tensorTransformCustom = "tensor_transform mode=arithmetic ";
-      tensorTransformCustom += "option=typecast:int8,add:-128 ! ";
+      tensorTransformCustom += "option=typecast:int16,add:-128 ! ";
+      tensorTransformCustom += "tensor_transform mode=typecast ";
+      tensorTransformCustom += "option=int8 ! ";
       break;
 
     case Normalization::reduced:
