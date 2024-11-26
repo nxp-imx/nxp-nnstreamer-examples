@@ -23,21 +23,31 @@ Option | Description
 --mirror | Flips the camera stream when using a front camera
 
 ## C++
-C++ example script can be run after [cross compilation](../). To use CPU backend, use the following command, otherwise, look at the notes :
+C++ example script needs to be generated with [cross compilation](../). [setup_environment.sh](../tools/setup_environment.sh) script needs to be executed in [nxp-nnstreamer-examples](../) folder to define data paths:
 ```bash
-$ export MODEL_PATH="/path/to/nxp-nnstreamer-examples/downloads/models/pose"
-$ export MODEL_MEDIA="/path/to/nxp-nnstreamer-examples/downloads/media/movies"
-$ ./build/pose/example_pose_movenet_tflite -p ${MODEL_PATH}/movenet_single_pose_lightning.tflite -f ${MODEL_MEDIA}/Conditioning_Drill_1-_Power_Jump.webm.480p.vp9.webm
+$ . ./tools/setup_environment.sh
 ```
-NOTES:
-* For NPU backend, use movenet_quant.tflite model or vela model for i.MX 93, and add : -b NPU -n none.
+It is possible to run the pose detection demo inference on two different hardwares:<br>
+Inference on NPU with the following script:
+```bash
+$ ./build/pose/example_pose_movenet_tflite -p ${MOVENET_QUANT} -f ${POWER_JUMP_VIDEO}
+```
+For i.MX 93 use vela converted model:
+```bash
+$ ./build/pose/example_pose_movenet_tflite -p ${MOVENET_QUANT_VELA} -f ${POWER_JUMP_VIDEO}
+```
+NOTE: For i.MX 95 use neutron converted model, a warmup time is expected.
 
+Inference on CPU with the following script:
+```bash
+$ ./build/pose/example_pose_movenet_tflite -p ${MOVENET_QUANT} -f ${POWER_JUMP_VIDEO} -b CPU
+```
 The following execution parameters are available (Run ``` ./example_pose_movenet_tflite -h``` to see option details):
 
 Option | Description
 --- | ---
--b, --backend | Use the selected backend (CPU, GPU, NPU)<br> default: NPU
--n, --normalization | Use the selected normalization (none, centered, reduced, centeredReduced, castInt32, castuInt8)<br> default: castInt32
+-b, --backend | Use the selected backend (CPU, GPU, NPU)<br> default: CPU
+-n, --normalization | Use the selected normalization (none, centered, reduced, centeredReduced, castInt32, castuInt8)<br> default: castuInt8
 -p, --model_path | Use the selected model path
 -f, --video_file | Use the selected video file
 -u, --use_camera | If we use camera or video input (true,false)<br> default: false (true for i.MX 93)

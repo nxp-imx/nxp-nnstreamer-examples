@@ -122,7 +122,7 @@ int cmdParser(int argc, char **argv, ParserOptions& options)
 
                   << std::setw(25) << std::left << "  -f, --video_file"
                   << std::setw(25) << std::left
-                  << "Use the selected path for generated video" << std::endl
+                  << "Use the selected path to generate a video (optional)" << std::endl
                   
                   << std::setw(25) << std::left << "  -d, --display_perf"
                   << std::setw(25) << std::left

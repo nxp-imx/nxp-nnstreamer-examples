@@ -19,7 +19,7 @@ declare -A MODEL_BACKEND_NPU
 MODEL_BACKEND_NPU[IMX8MP]="${MODELS_DIR}/ssdlite_mobilenet_v2_coco_quant_uint8_float32_no_postprocess.tflite"
 MODEL_BACKEND_NPU[IMX93]="${MODELS_DIR}/ssdlite_mobilenet_v2_coco_quant_uint8_float32_no_postprocess_vela.tflite"
 
-MODEL_BACKEND[CPU]="${MODELS_DIR}/ssdlite_mobilenet_v2_coco_no_postprocess.tflite"
+MODEL_BACKEND[CPU]="${MODELS_DIR}/ssdlite_mobilenet_v2_coco_quant_uint8_float32_no_postprocess.tflite"
 MODEL_BACKEND[GPU]="${MODELS_DIR}/ssdlite_mobilenet_v2_coco_no_postprocess.tflite"
 MODEL_BACKEND[NPU]=${MODEL_BACKEND_NPU[${IMX}]}
 MODEL=${MODEL_BACKEND[${BACKEND}]}
@@ -60,7 +60,7 @@ TENSOR_FILTER=${FILTER_BACKEND[${BACKEND}]}
 
 # tensor preprocessing configuration: normalize video for float input models
 declare -A PREPROCESS_BACKEND
-PREPROCESS_BACKEND[CPU]="tensor_transform mode=arithmetic option=typecast:float32,add:-127.5,div:127.5 ! "
+PREPROCESS_BACKEND[CPU]=""
 PREPROCESS_BACKEND[GPU]="tensor_transform mode=arithmetic option=typecast:float32,add:-127.5,div:127.5 ! "
 PREPROCESS_BACKEND[NPU]=""
 TENSOR_PREPROCESS=${PREPROCESS_BACKEND[${BACKEND}]}

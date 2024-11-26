@@ -6,22 +6,35 @@ Name | Implementation | Platforms | Model | ML engine | Backend | Features
 [example_depth_midas_v2_tflite.cpp](./cpp/example_depth_midas_v2_tflite.cpp) | C++ | i.MX 8M Plus <br> i.MX 93 | Midas v2 | TFLite | NPU (default)<br>GPU<br>CPU<br> | camera<br>gst-launch<br>custom C++ decoding
 
 NOTES:
-* No GPU support on i.MX 93.
-* Distances shown on screen are relative and not absolute from the camera.
-* The whitest, the closest.
+* No GPU support on i.MX 93
+* Distances shown on screen are relative and not absolute from the camera
+* The whitest, the closest
 
 ## Execution
-Example script can be called from target console with no further restriction. For examples that support multiple backend, default value can be overriden by explicitly defining BACKEND variable, for instance:
 ### C++
-C++ example script can be run after [cross compilation](../). To use NPU backend, use the following command, otherwise, look at the notes :
+C++ example script needs to be generated with [cross compilation](../). [setup_environment.sh](../tools/setup_environment.sh) script needs to be executed in [nxp-nnstreamer-examples](../) folder to define data paths:
 ```bash
-$ ./build/depth/example_depth_midas_v2_tflite -p /path/to/nxp-nnstreamer-examples/downloads/models/depth/midas_2_1_small_int8_quant.tflite
+$ . ./tools/setup_environment.sh
 ```
-NOTES:
-* For i.MX 93 use vela model.
-* For CPU backend, add : -b CPU.
-* For GPU backend, add : -b GPU.
+It is possible to run the depth demo inference on three different hardwares:<br>
+Inference on NPU with the following script:
+```bash
+$ ./build/depth/example_depth_midas_v2_tflite -p ${MIDASV2}
+```
+For i.MX 93 use vela converted model:
+```bash
+$ ./build/depth/example_depth_midas_v2_tflite -p ${MIDASV2_VELA}
+```
+NOTE: For i.MX 95 use neutron converted model, a warmup time is expected.
 
+Inference on CPU with the following script:
+```bash
+$ ./build/depth/example_depth_midas_v2_tflite -p ${MIDASV2} -b CPU
+```
+NOTE: Inference on i.MX8MPlus GPU is possible but not recommended because of low performances:
+```bash
+$ ./build/depth/example_depth_midas_v2_tflite -p ${MIDASV2} -b GPU
+```
 The following execution parameters are available (Run ``` ./example_depth_midas_v2_tflite -h``` to see option details):
 
 Option | Description

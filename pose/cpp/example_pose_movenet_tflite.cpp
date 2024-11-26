@@ -187,8 +187,8 @@ int main(int argc, char **argv)
 
   // Set command line parser with default values
   ParserOptions options;
-  options.backend = "CPU";
-  options.norm = "castInt32";
+  options.backend = "NPU";
+  options.norm = "castuInt8";
   options.useCamera = "0";
   if (cmdParser(argc, argv, options))
     return 0;
@@ -256,7 +256,7 @@ int main(int argc, char **argv)
   GstVideoPostProcess postProcess;
   postProcess.addCairoOverlay(pipeline, overlayName);
   pipeline.enablePerfDisplay(options.freq, options.time, 15, options.textColor);
-  postProcess.display(pipeline);
+  postProcess.display(pipeline, true);
 
   // Parse pipeline to GStreamer pipeline
   pipeline.parse(argc, argv, options.graphPath);

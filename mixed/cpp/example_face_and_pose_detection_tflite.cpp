@@ -183,9 +183,9 @@ int main(int argc, char **argv)
   // Set command line parser with default values
   ParserOptions options;
   options.fBackend = "NPU";
-  options.pBackend = "CPU";
+  options.pBackend = "NPU";
   options.fNorm = "none";
-  options.pNorm = "castInt32";
+  options.pNorm = "castuInt8";
   if (cmdParser(argc, argv, options))
     return 0;
 

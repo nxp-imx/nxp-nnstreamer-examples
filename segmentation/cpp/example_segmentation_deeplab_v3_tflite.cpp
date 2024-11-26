@@ -229,7 +229,7 @@ int main(int argc, char **argv)
   // Display processed video
   GstVideoPostProcess postProcess;
   pipeline.enablePerfDisplay(options.freq, options.time, 15, options.textColor);
-  postProcess.display(pipeline, false);
+  postProcess.display(pipeline, true);
 
   // Parse pipeline to GStreamer pipeline
   pipeline.parse(argc, argv, options.graphPath);

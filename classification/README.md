@@ -3,12 +3,12 @@
 ## Overview
 Name | Implementation | Platforms | Model | ML engine | Backend | Features
 --- | --- | --- | --- | --- | --- | ---
-[example_classification_mobilenet_v1_tflite.cpp](./cpp/example_classification_mobilenet_v1_tflite.cpp) | C++ | i.MX 8M Plus <br> i.MX 93 | mobilenet_v1 | TFLite | NPU (default)<br>GPU<br>CPU<br> | camera<br>gst-launch<br>
-[example_classification_two_cameras_tflite.cpp](./cpp/example_classification_two_cameras_tflite.cpp) | C++ | i.MX 8M Plus <br> i.MX 93 | mobilenet_v1 | TFLite | NPU (default)<br>GPU<br>CPU<br> | camera<br>gst-launch<br>
+[example_classification_mobilenet_v1_tflite.cpp](./cpp/example_classification_mobilenet_v1_tflite.cpp) | C++ | i.MX 8M Plus <br> i.MX 93 <br> i.MX 95 | mobilenet_v1 | TFLite | NPU (default)<br>GPU<br>CPU<br> | camera<br>gst-launch<br>
+[example_classification_two_cameras_tflite.cpp](./cpp/example_classification_two_cameras_tflite.cpp) | C++ | i.MX 8M Plus <br> i.MX 93 <br> i.MX 95 | mobilenet_v1 | TFLite | NPU (default)<br>GPU<br>CPU<br> | camera<br>gst-launch<br>
 [example_classification_mobilenet_v1_tflite.sh](./example_classification_mobilenet_v1_tflite.sh) | Bash | i.MX 8M Plus <br> i.MX 93 | mobilenet_v1 | TFLite | NPU (default)<br>GPU<br>CPU<br> | camera<br>gst-launch<br>
 
 NOTES:
-* No GPU support on i.MX 93.
+* No GPU support on i.MX 93
 
 ## Execution
 Example script can be called from target console with no further restriction. For examples that support multiple backend, default value can be overriden by explicitly defining BACKEND variable, for instance:
@@ -17,15 +17,31 @@ Example script can be called from target console with no further restriction. Fo
 $ BACKEND=CPU ./classification/example_classification_mobilenet_v1_tflite.sh
 ```
 ### C++
-C++ example script can be run after [cross compilation](../). To use NPU backend, use the following command, otherwise, look at the notes :
+C++ example script needs to be generated with [cross compilation](../). [setup_environment.sh](../tools/setup_environment.sh) script needs to be executed in [nxp-nnstreamer-examples](../) folder to define data paths:
 ```bash
-$ export MODEL_PATH="/path/to/nxp-nnstreamer-examples/downloads/models/classification"
-$ ./build/classification/example_classification_mobilenet_v1_tflite -p ${MODEL_PATH}/mobilenet_v1_1.0_224_quant_uint8_float32.tflite -l ${MODEL_PATH}/labels_mobilenet_quant_v1_224.txt
+$ . ./tools/setup_environment.sh
 ```
-NOTES:
-* For i.MX 93 use vela model.
-* For CPU backend, use mobilenet_v1_1.0_224.tflite model and add : -b CPU -n centeredReduced.
-* For GPU backend, use mobilenet_v1_1.0_224.tflite model and add : -b GPU -n centeredReduced.
+It is possible to run the classification demo inference on three different hardwares:<br>
+Inference on NPU with the following script:
+```bash
+$ ./build/classification/example_classification_mobilenet_v1_tflite -p ${MOBILENETV1_QUANT} -l ${MOBILENETV1_LABELS}
+```
+For i.MX 93 use vela converted model:
+```bash
+$ ./build/classification/example_classification_mobilenet_v1_tflite -p ${MOBILENETV1_QUANT_VELA} -l ${MOBILENETV1_LABELS}
+```
+NOTE: For i.MX 95 use neutron converted model, a warmup time is expected.
+
+Inference on CPU with the following script:
+```bash
+$ ./build/classification/example_classification_mobilenet_v1_tflite -p ${MOBILENETV1_QUANT} -l ${MOBILENETV1_LABELS} -b CPU
+```
+Quantized model is used for better inference performances on CPU.<br>
+NOTE: inferences on i.MX8MPlus GPU have low performances, but are possible with the following script:
+```bash
+$ ./build/classification/example_classification_mobilenet_v1_tflite -p ${MOBILENETV1} -l ${MOBILENETV1_LABELS} -b GPU -n centeredReduced
+```
+Input normalization needs to be specified, here input data needs to be centered and reduced to fit MobileNetv1 input specifications.
 
 The following execution parameters are available (Run ``` ./example_classification_mobilenet_v1_tflite -h``` to see option details):
 
@@ -42,16 +58,18 @@ Option | Description
 
 Press ```Esc or ctrl+C``` to stop the execution of the pipeline.
 
-An example using two cameras is available. To use CPU backend on first camera, and NPU backend on second camera, use the following command, otherwise, look at the notes :
-```bash
-$ export MODEL_PATH="/path/to/nxp-nnstreamer-examples/downloads/models/classification"
-$ ./build/classification/example_classification_two_cameras_tflite -p ${MODEL_PATH}/mobilenet_v1_1.0_224.tflite,${MODEL_PATH}/mobilenet_v1_1.0_224_quant_uint8_float32.tflite -l ${MODEL_PATH}/labels_mobilenet_quant_v1_224.txt -c /dev/video3,/dev/video5 -b CPU,NPU -n centeredReduced,none
-```
+An example using two cameras is available. To NPU backend on on both camera inference, use the following command:<br>
 NOTES:
-* For i.MX 93 use vela model.
-* For CPU backend, use mobilenet_v1_1.0_224.tflite model and add : -b CPU -n centeredReduced.
-* For GPU backend, use mobilenet_v1_1.0_224.tflite model and add : -b GPU -n centeredReduced.
-
+- it is not recommanded to use CPU or GPU bachend because of low performances.
+- performances may depend on the USB cameras used, especially on i.MX 93.
+```bash
+$ ./build/classification/example_classification_two_cameras_tflite -p ${MOBILENETV1_QUANT},${MOBILENETV1_QUANT} -l ${MOBILENETV1_LABELS} -c ${CAM1_PATH},${CAM2_PATH}
+```
+For i.MX 93 use vela converted model:
+```bash
+$ ./build/classification/example_classification_two_cameras_tflite -p ${MOBILENETV1_QUANT_VELA},${MOBILENETV1_QUANT_VELA} -l ${MOBILENETV1_LABELS} -c ${CAM1_PATH},${CAM2_PATH}
+```
+NOTE: For i.MX 95 use neutron converted model, a warmup time is expected.<br><br>
 The following execution parameters are available (Run ``` ./example_classification_two_cameras_tflite -h``` to see option details):
 
 Option | Description

@@ -39,12 +39,19 @@ It draws bounding boxes around the detected faces, and displays number of detect
 # ./face/example_face_detection_tflite.py [--camera_device=</dev/videoN>]
 ```
 ### C++
-C++ example script can be run after [cross compilation](../). To use NPU backend, use the following command :
+C++ example script needs to be generated with [cross compilation](../). [setup_environment.sh](../tools/setup_environment.sh) script needs to be executed in [nxp-nnstreamer-examples](../) folder to define data paths:
 ```bash
-$ ./build/face/example_face_detection_tflite -p /path/to/nxp-nnstreamer-examples/downloads/models/face/ultraface_slim_uint8_float32.tflite
+$ . ./tools/setup_environment.sh
 ```
-NOTES:
-* For i.MX 93 use vela model.
+ It is possible to run the face detection demo inference on NPU with the following script:
+```bash
+$ ./build/face/example_face_detection_tflite -p ${ULTRAFACE_QUANT}
+```
+For i.MX 93 use vela converted model:
+```bash
+$ ./build/face/example_face_detection_tflite -p ${ULTRAFACE_QUANT_VELA}
+```
+NOTE: For i.MX 95 use neutron converted model, a warmup time is expected.
 
 The following execution parameters are available (Run ``` ./example_face_detection_tflite -h``` to see option details):
 
@@ -67,16 +74,22 @@ It draws bounding boxes around the detected faces, and displays predicted emotio
 ```
 # ./face/example_emotion_detection_tflite.py [--camera_device=</dev/videoN>]
 ```
-7 emotions can be recognised : angry, disgust, fear, happy, sad, surprise and neutral.
+7 emotions can be recognised: angry, disgust, fear, happy, sad, surprise and neutral.
 
 ### C++
-C++ example script can be run after [cross compilation](../). To use NPU backend, use the following command :
+C++ example script needs to be generated with [cross compilation](../). [setup_environment.sh](../tools/setup_environment.sh) script needs to be executed in [nxp-nnstreamer-examples](../) folder to define data paths:
 ```bash
-$ export MODEL_PATH="/path/to/nxp-nnstreamer-examples/downloads/models/face"
-$ ./build/face/example_emotion_detection_tflite -p ${MODEL_PATH}/ultraface_slim_uint8_float32.tflite,${MODEL_PATH}/emotion_uint8_float32.tflite
+$ . ./tools/setup_environment.sh
 ```
-NOTES:
-* For i.MX 93 use vela model.
+ It is possible to run the emotion detection demo inference on NPU with the following script:
+```bash
+$ ./build/face/example_emotion_detection_tflite -p ${ULTRAFACE_QUANT},${EMOTION_QUANT}
+```
+For i.MX 93 use vela converted model:
+```bash
+$ ./build/face/example_emotion_detection_tflite -p ${ULTRAFACE_QUANT_VELA},${EMOTION_QUANT_VELA}
+```
+NOTE: For i.MX 95 use neutron converted model, a warmup time is expected.
 
 The following execution parameters are available (Run ``` ./example_emotion_detection_tflite -h``` to see option details):
 

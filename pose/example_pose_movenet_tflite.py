@@ -129,7 +129,7 @@ class PoseExample:
 
         try:
             transform = {
-                'CPU': ' tensor_transform mode=typecast option=int32 ! ',
+                'CPU': ' tensor_transform mode=typecast option=uint8 ! ',
                 'NPU': ' tensor_transform mode=typecast option=uint8 ! ',
             }
             self.tensor_transform = transform[self.backend]
@@ -139,7 +139,7 @@ class PoseExample:
             else:
                 quantized_model = 'movenet_quant.tflite'
             model = {
-                'CPU': 'movenet_single_pose_lightning.tflite',
+                'CPU': quantized_model,
                 'NPU': quantized_model,
             }
             tflite_model = model[self.backend]
