@@ -1,6 +1,7 @@
 #!/bin/bash
+
 # SPDX-License-Identifier: BSD-3-Clause
-# Copyright 2022-2023 NXP
+# Copyright 2022-2024 NXP
 
 set -x
 
