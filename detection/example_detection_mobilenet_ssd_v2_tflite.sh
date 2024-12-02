@@ -18,6 +18,7 @@ declare -A MODEL_BACKEND
 declare -A MODEL_BACKEND_NPU
 MODEL_BACKEND_NPU[IMX8MP]="${MODELS_DIR}/ssdlite_mobilenet_v2_coco_quant_uint8_float32_no_postprocess.tflite"
 MODEL_BACKEND_NPU[IMX93]="${MODELS_DIR}/ssdlite_mobilenet_v2_coco_quant_uint8_float32_no_postprocess_vela.tflite"
+MODEL_BACKEND_NPU[IMX95]="${MODELS_DIR}/ssdlite_mobilenet_v2_coco_quant_uint8_float32_no_postprocess.tflite"
 
 MODEL_BACKEND[CPU]="${MODELS_DIR}/ssdlite_mobilenet_v2_coco_quant_uint8_float32_no_postprocess.tflite"
 MODEL_BACKEND[GPU]="${MODELS_DIR}/ssdlite_mobilenet_v2_coco_no_postprocess.tflite"
@@ -27,6 +28,7 @@ MODEL=${MODEL_BACKEND[${BACKEND}]}
 declare -A MODEL_LATENCY_CPU_NS
 MODEL_LATENCY_CPU_NS[IMX8MP]="60000000"
 MODEL_LATENCY_CPU_NS[IMX93]="75000000"
+MODEL_LATENCY_CPU_NS[IMX95]="40000000"
 
 declare -A MODEL_LATENCY_GPU_NS
 MODEL_LATENCY_GPU_NS[IMX8MP]="500000000"
@@ -34,6 +36,7 @@ MODEL_LATENCY_GPU_NS[IMX8MP]="500000000"
 declare -A MODEL_LATENCY_NPU_NS
 MODEL_LATENCY_NPU_NS[IMX8MP]="40000000"
 MODEL_LATENCY_NPU_NS[IMX93]="10000000"
+MODEL_LATENCY_CPU_NS[IMX95]="40000000"
 
 declare -A MODEL_LATENCY_NS
 MODEL_LATENCY_NS[CPU]=${MODEL_LATENCY_CPU_NS[${IMX}]}
@@ -54,6 +57,7 @@ FILTER_COMMON="tensor_filter framework=${FRAMEWORK} model=${MODEL}"
 declare -A FILTER_BACKEND_NPU
 FILTER_BACKEND_NPU[IMX8MP]=" custom=Delegate:External,ExtDelegateLib:libvx_delegate.so ! "
 FILTER_BACKEND_NPU[IMX93]=" custom=Delegate:External,ExtDelegateLib:libethosu_delegate.so ! "
+FILTER_BACKEND_NPU[IMX95]=" custom=Delegate:External,ExtDelegateLib:libneutron_delegate.so ! "
 
 declare -A FILTER_BACKEND
 FILTER_BACKEND[CPU]="${FILTER_COMMON} custom=Delegate:XNNPACK,NumThreads:$(nproc --all) !"
