@@ -110,7 +110,7 @@ function accelerated_video_scale_str {
     VIDEO_SCALE="videoscale ! videoconvert ! "
     ;;
   esac
-  VIDEO_SCALE+="video/x-raw,width=${OUTPUT_WIDTH},height=${OUTPUT_HEIGHT}${FORMAT} !"
+  VIDEO_SCALE+="video/x-raw,width=${OUTPUT_WIDTH},height=${OUTPUT_HEIGHT}${FORMAT} ! "
 
   echo "${VIDEO_SCALE}"
 }
