@@ -24,6 +24,9 @@ function setup_env {
   if [[ "${UNAME}" =~ "imx93" ]]; then
     IMX="IMX93"
   fi
+  if [[ "${UNAME}" =~ "imx95" ]]; then
+    IMX="IMX95"
+  fi
   if [ -z ${IMX} ]; then
     error "platform not supported"
   fi
@@ -37,6 +40,7 @@ function setup_env {
     declare -A CAMERA_DEVICE_DEFAULT
     CAMERA_DEVICE_DEFAULT[IMX8MP]="/dev/video3"
     CAMERA_DEVICE_DEFAULT[IMX93]="/dev/video0"
+    CAMERA_DEVICE_DEFAULT[IMX95]="/dev/video13"
     local CAMERA_DEVICE_DEFAULT_IMX=${CAMERA_DEVICE_DEFAULT[${IMX}]}
 
     CAMERA_DEVICE="${CAMERA_DEVICE:-${CAMERA_DEVICE_DEFAULT_IMX}}"
@@ -65,6 +69,8 @@ function setup_env {
   # GPU2D API
   case "${IMX}" in
   IMX8MP)
+    GPU2D_API="G2D" ;;
+  IMX95)
     GPU2D_API="G2D" ;;
   IMX93)
     GPU2D_API="PXP" ;;
