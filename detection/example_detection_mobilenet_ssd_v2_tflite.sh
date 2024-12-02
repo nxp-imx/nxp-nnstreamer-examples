@@ -1,6 +1,6 @@
 #!/bin/bash
 # SPDX-License-Identifier: BSD-3-Clause
-# Copyright 2022-2023 NXP
+# Copyright 2022-2024 NXP
 
 set -x
 
@@ -24,14 +24,20 @@ MODEL_BACKEND[GPU]="${MODELS_DIR}/ssdlite_mobilenet_v2_coco_no_postprocess.tflit
 MODEL_BACKEND[NPU]=${MODEL_BACKEND_NPU[${IMX}]}
 MODEL=${MODEL_BACKEND[${BACKEND}]}
 
-# XXX: remove this latency for i.MX93 NPU
+declare -A MODEL_LATENCY_CPU_NS
+MODEL_LATENCY_CPU_NS[IMX8MP]="60000000"
+MODEL_LATENCY_CPU_NS[IMX93]="75000000"
+
+declare -A MODEL_LATENCY_GPU_NS
+MODEL_LATENCY_GPU_NS[IMX8MP]="500000000"
+
 declare -A MODEL_LATENCY_NPU_NS
-MODEL_LATENCY_NPU_NS[IMX8MP]="0"
-MODEL_LATENCY_NPU_NS[IMX93]="100000000"
+MODEL_LATENCY_NPU_NS[IMX8MP]="40000000"
+MODEL_LATENCY_NPU_NS[IMX93]="10000000"
 
 declare -A MODEL_LATENCY_NS
-MODEL_LATENCY_NS[CPU]="300000000"
-MODEL_LATENCY_NS[GPU]="500000000"
+MODEL_LATENCY_NS[CPU]=${MODEL_LATENCY_CPU_NS[${IMX}]}
+MODEL_LATENCY_NS[GPU]=${MODEL_LATENCY_GPU_NS[${IMX}]}
 MODEL_LATENCY_NS[NPU]=${MODEL_LATENCY_NPU_NS[${IMX}]}
 MODEL_LATENCY=${MODEL_LATENCY_NS[${BACKEND}]}
 
@@ -50,12 +56,9 @@ FILTER_BACKEND_NPU[IMX8MP]=" custom=Delegate:External,ExtDelegateLib:libvx_deleg
 FILTER_BACKEND_NPU[IMX93]=" custom=Delegate:External,ExtDelegateLib:libethosu_delegate.so ! "
 
 declare -A FILTER_BACKEND
-FILTER_BACKEND[CPU]="${FILTER_COMMON}"
-FILTER_BACKEND[CPU]+=" custom=Delegate:XNNPACK,NumThreads:$(nproc --all) !"
-FILTER_BACKEND[GPU]="${FILTER_COMMON}"
-FILTER_BACKEND[GPU]+=" custom=Delegate:External,ExtDelegateLib:libvx_delegate.so ! "
-FILTER_BACKEND[NPU]="${FILTER_COMMON}"
-FILTER_BACKEND[NPU]+=${FILTER_BACKEND_NPU[${IMX}]}
+FILTER_BACKEND[CPU]="${FILTER_COMMON} custom=Delegate:XNNPACK,NumThreads:$(nproc --all) !"
+FILTER_BACKEND[GPU]="${FILTER_COMMON} custom=Delegate:External,ExtDelegateLib:libvx_delegate.so ! "
+FILTER_BACKEND[NPU]="${FILTER_COMMON} ${FILTER_BACKEND_NPU[${IMX}]}"
 TENSOR_FILTER=${FILTER_BACKEND[${BACKEND}]}
 
 # tensor preprocessing configuration: normalize video for float input models

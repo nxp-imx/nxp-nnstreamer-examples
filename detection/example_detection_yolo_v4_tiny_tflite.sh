@@ -1,5 +1,4 @@
 #!/bin/bash
-
 # SPDX-License-Identifier: BSD-3-Clause
 # Copyright 2023-2024 NXP
 
@@ -20,16 +19,20 @@ declare -A MODEL_BACKEND_NPU
 MODEL_BACKEND_NPU[IMX8MP]="${MODELS_DIR}/yolov4-tiny_416_quant.tflite"
 MODEL_BACKEND_NPU[IMX93]="${MODELS_DIR}/yolov4-tiny_416_quant_vela.tflite"
 
-MODEL_BACKEND[CPU]="${MODELS_DIR}/yolov4-tiny_416.tflite"
+MODEL_BACKEND[CPU]="${MODELS_DIR}/yolov4-tiny_416_quant.tflite"
 MODEL_BACKEND[NPU]=${MODEL_BACKEND_NPU[${IMX}]}
 MODEL=${MODEL_BACKEND[${BACKEND}]}
 
+declare -A MODEL_LATENCY_CPU_NS
+MODEL_LATENCY_CPU_NS[IMX8MP]="175000000"
+MODEL_LATENCY_CPU_NS[IMX93]="200000000"
+
 declare -A MODEL_LATENCY_NPU_NS
-MODEL_LATENCY_NPU_NS[IMX8MP]="50000000"
-MODEL_LATENCY_NPU_NS[IMX93]="100000000"
+MODEL_LATENCY_NPU_NS[IMX8MP]="60000000"
+MODEL_LATENCY_NPU_NS[IMX93]="60000000"
 
 declare -A MODEL_LATENCY_NS
-MODEL_LATENCY_NS[CPU]="300000000"
+MODEL_LATENCY_NS[CPU]=${MODEL_LATENCY_CPU_NS[${IMX}]}
 MODEL_LATENCY_NS[NPU]=${MODEL_LATENCY_NPU_NS[${IMX}]}
 MODEL_LATENCY=${MODEL_LATENCY_NS[${BACKEND}]}
 
@@ -48,10 +51,9 @@ FILTER_BACKEND_NPU[IMX8MP]=" custom=Delegate:External,ExtDelegateLib:libvx_deleg
 FILTER_BACKEND_NPU[IMX93]=" custom=Delegate:External,ExtDelegateLib:libethosu_delegate.so ! "
 
 declare -A FILTER_BACKEND
-FILTER_BACKEND[CPU]="${FILTER_COMMON}"
-FILTER_BACKEND[CPU]+=" custom=Delegate:XNNPACK,NumThreads:$(nproc --all) !"
-FILTER_BACKEND[NPU]="${FILTER_COMMON}"
-FILTER_BACKEND[NPU]+=${FILTER_BACKEND_NPU[${IMX}]}
+declare -A FILTER_BACKEND
+FILTER_BACKEND[CPU]="${FILTER_COMMON} custom=Delegate:XNNPACK,NumThreads:$(nproc --all) !"
+FILTER_BACKEND[NPU]="${FILTER_COMMON} ${FILTER_BACKEND_NPU[${IMX}]}"
 TENSOR_FILTER=${FILTER_BACKEND[${BACKEND}]}
 
 # python filter configuration
@@ -68,8 +70,8 @@ fi
 
 # tensor preprocessing configuration: normalize video for float input models
 declare -A PREPROCESS_BACKEND
-PREPROCESS_BACKEND[CPU]="tensor_transform mode=arithmetic option=typecast:float32,div:255 !"
-PREPROCESS_BACKEND[NPU]="tensor_transform mode=arithmetic option=typecast:int8,add:-128 ! "
+PREPROCESS_BACKEND[CPU]="tensor_transform mode=arithmetic option=typecast:int16,add:-128 ! tensor_transform mode=typecast option=int8 !"
+PREPROCESS_BACKEND[NPU]="tensor_transform mode=arithmetic option=typecast:int16,add:-128 ! tensor_transform mode=typecast option=int8 !"
 TENSOR_PREPROCESS=${PREPROCESS_BACKEND[${BACKEND}]}
 
 
