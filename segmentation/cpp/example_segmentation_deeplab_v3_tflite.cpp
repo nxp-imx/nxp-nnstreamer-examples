@@ -224,7 +224,8 @@ int main(int argc, char **argv)
   pipeline.addToPipeline("videomixer name="
                          + compositorName
                          + " sink_1::alpha=0.4 " 
-                         + "sink_0::alpha=1.0 background=3 ! ");
+                         + "sink_0::alpha=1.0 background=3 ! "
+                         + "videoconvert ! ");
 
   // Display processed video
   GstVideoPostProcess postProcess;
