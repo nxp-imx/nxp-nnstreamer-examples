@@ -13,5 +13,5 @@ Threshold parameter is optional, and should be defined between 0 and 1 (default 
 If this threshold is close to 1, fewer objects may be detected but predictions will be more reliable.
 At the opposite with a threshold close to 0, the model should detect more objects but less reliably.
 
-tensor_decoder threshold value is hard-coded at 0.25 in [tensordec-boundingbox.c](https://github.com/nnstreamer/nnstreamer/blob/2e6a6989a5befeff289e4a7825dc9ff03aa5467b/ext/nnstreamer/tensor_decoder/tensordec-boundingbox.c#L131) in the NNStreamer repository.
+tensor_decoder threshold value is hard-coded at 0.25 in [tensordec-boundingbox.c](https://github.com/nnstreamer/nnstreamer/blob/lts/2.4.0.b/ext/nnstreamer/tensor_decoder/tensordec-boundingbox.c#L139) in the NNStreamer repository.
 To set the threshold value under 0.25, hard-coded value in tensordec-boundingbox.c must also be reduced.
