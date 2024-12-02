@@ -7,7 +7,7 @@ Name | Implementation | Platforms | Model | ML engine | Backend | Features
 [example_face_detection_tflite.cpp](./cpp/example_face_detection_tflite.cpp) | C++ | i.MX 8M Plus <br> i.MX 93 | UltraFace | TFLite | NPU | camera<br>gst-launch<br>
 [example_face_recognition_tflite.py](./example_face_recognition_tflite.py) | Python | i.MX 8M Plus <br> i.MX 93 | UltraFace <br> FaceNet512 <br>       | TFLite | NPU | camera<br>gst-launch<br>
 [example_emotion_detection_tflite.py](./example_emotion_detection_tflite.py) | Python | i.MX 8M Plus <br> i.MX 93 | UltraFace <br> Deepface-emotion <br> | TFLite | NPU | camera<br>gst-launch<br>
-[example_emotion_detection_tflite.cpp](./cpp/example_emotion_detection_tflite.cpp) | C++ | i.MX 8M Plus <br> i.MX 93 | UltraFace <br> Deepface-emotion <br> | TFLite | NPU | camera<br>gst-launch<br>
+[example_emotion_detection_tflite.cpp](./cpp/example_emotion_detection_tflite.cpp) | C++ | i.MX 93 | UltraFace <br> Deepface-emotion <br> | TFLite | NPU | camera<br>gst-launch<br>
 
 Those examples use 2 GStreamer pipelines that are running concurrently.<br>
 Press ```Esc or ctrl+C``` to stop the execution of all the pipelines.<br>
@@ -43,7 +43,7 @@ C++ example script needs to be generated with [cross compilation](../). [setup_e
 ```bash
 $ . ./tools/setup_environment.sh
 ```
- It is possible to run the face detection demo inference on NPU with the following script:
+It is possible to run the face detection demo inference on NPU with the following script:
 ```bash
 $ ./build/face/example_face_detection_tflite -p ${ULTRAFACE_QUANT}
 ```
@@ -51,8 +51,6 @@ For i.MX 93 use vela converted model:
 ```bash
 $ ./build/face/example_face_detection_tflite -p ${ULTRAFACE_QUANT_VELA}
 ```
-NOTE: For i.MX 95 use neutron converted model, a warmup time is expected.
-
 The following execution parameters are available (Run ``` ./example_face_detection_tflite -h``` to see option details):
 
 Option | Description
@@ -81,7 +79,7 @@ C++ example script needs to be generated with [cross compilation](../). [setup_e
 ```bash
 $ . ./tools/setup_environment.sh
 ```
- It is possible to run the emotion detection demo inference on NPU with the following script:
+ It is possible to run the emotion detection demo inference on NPU with the following script:<br>
 ```bash
 $ ./build/face/example_emotion_detection_tflite -p ${ULTRAFACE_QUANT},${EMOTION_QUANT}
 ```
@@ -89,7 +87,6 @@ For i.MX 93 use vela converted model:
 ```bash
 $ ./build/face/example_emotion_detection_tflite -p ${ULTRAFACE_QUANT_VELA},${EMOTION_QUANT_VELA}
 ```
-NOTE: For i.MX 95 use neutron converted model, a warmup time is expected.
 
 The following execution parameters are available (Run ``` ./example_emotion_detection_tflite -h``` to see option details):
 

@@ -25,8 +25,6 @@ For i.MX 93 use vela converted model:
 ```bash
 $ ./build/depth/example_depth_midas_v2_tflite -p ${MIDASV2_VELA}
 ```
-NOTE: For i.MX 95 use neutron converted model, a warmup time is expected.
-
 Inference on CPU with the following script:
 ```bash
 $ ./build/depth/example_depth_midas_v2_tflite -p ${MIDASV2} -b CPU

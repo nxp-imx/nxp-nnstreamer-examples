@@ -36,8 +36,6 @@ For i.MX 93 use vela converted model:
 ```bash
 $ ./build/pose/example_pose_movenet_tflite -p ${MOVENET_QUANT_VELA} -f ${POWER_JUMP_VIDEO}
 ```
-NOTE: For i.MX 95 use neutron converted model, a warmup time is expected.
-
 Inference on CPU with the following script:
 ```bash
 $ ./build/pose/example_pose_movenet_tflite -p ${MOVENET_QUANT} -f ${POWER_JUMP_VIDEO} -b CPU

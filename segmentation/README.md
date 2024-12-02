@@ -29,8 +29,6 @@ For i.MX 93 use vela converted model:
 ```bash
 $ ./build/segmentation/example_segmentation_deeplab_v3_tflite -p ${DEEPLABV3_QUANT_VELA} -f ${PASCAL_IMAGES}
 ```
-NOTE: For i.MX 95 use neutron converted model, a warmup time is expected.
-
 Inference on CPU with the following script:
 ```bash
 $ ./build/segmentation/example_segmentation_deeplab_v3_tflite -p ${DEEPLABV3_QUANT} -f ${PASCAL_IMAGES} -b CPU

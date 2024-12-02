@@ -24,8 +24,6 @@ For i.MX 93 use vela converted model:
  ```bash
 $ ./build/mixed/example_classification_and_detection_tflite -p ${MOBILENETV1_QUANT_VELA},${MOBILENETV2_QUANT_VELA} -l ${MOBILENETV1_LABELS},${COCO_LABELS} -x ${MOBILENETV2_BOXES} -f ${SAVE_VIDEO_PATH}
 ```
-NOTE: For i.MX 95 use neutron converted model, a warmup time is expected.
-
 To use other backends, refers to classification and object detection README for further details.<br>
 The output can't be saved on i.MX 93.<br>
 The following execution parameters are available (Run ``` ./example_classification_and_detection_tflite -h``` to see option details):
@@ -54,8 +52,6 @@ For i.MX 93 use vela converted model:
 ```bash
 $ ./build/mixed/example_face_and_pose_detection_tflite -p ${ULTRAFACE_QUANT_VELA},${MOVENET_QUANT_VELA}
 ```
-NOTE: For i.MX 95 use neutron converted model, a warmup time is expected.
-
 To use other backends, refers to pose detection and face detection README for further details.<br>
 The following execution parameters are available (Run ``` ./example_face_and_pose_detection_tflite -h``` to see option details):
 
@@ -80,8 +76,6 @@ For i.MX 93 use vela converted model:
 ```bash
 $ ./build/mixed/example_emotion_and_detection_tflite -p ${ULTRAFACE_QUANT_VELA},${EMOTION_QUANT_VELA},${MOBILENETV2_QUANT_VELA} -f ${POWER_JUMP_VIDEO} -l ${COCO_LABELS} -x ${MOBILENETV2_BOXES}
 ```
-NOTE: For i.MX 95 use neutron converted model, a warmup time is expected.
-
 To use other backends, refers to pose detection and face detection README for further details.<br>
 The following execution parameters are available (Run ``` ./example_emotion_and_detection_tflite -h``` to see option details):
 
