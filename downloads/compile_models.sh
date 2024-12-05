@@ -8,6 +8,7 @@ set -x
 REALPATH="$(readlink -e "$0")"
 BASEDIR="$(dirname "${REALPATH}")/.."
 MODELS_DIR="${BASEDIR}/downloads/models"
+REQUIRED_CAMERA=0
 
 function compile_models(){
 # Compile a model if required by NPU
