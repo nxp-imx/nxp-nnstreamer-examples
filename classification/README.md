@@ -59,8 +59,8 @@ Press ```Esc or ctrl+C``` to stop the execution of the pipeline.
 
 An example using two cameras is available. To NPU backend on on both camera inference, use the following command:<br>
 NOTES:
-- it is not recommanded to use CPU or GPU bachend because of low performances.
-- performances may depend on the USB cameras used, especially on i.MX 93.
+- it is not recommanded to use CPU or GPU bachend because of low performances
+- performances may depend on the USB cameras used, especially on i.MX 93
 ```bash
 $ ./build/classification/example_classification_two_cameras_tflite -p ${MOBILENETV1_QUANT},${MOBILENETV1_QUANT} -l ${MOBILENETV1_LABELS} -c ${CAM1_PATH},${CAM2_PATH}
 ```
@@ -68,7 +68,6 @@ For i.MX 93 use vela converted model:
 ```bash
 $ ./build/classification/example_classification_two_cameras_tflite -p ${MOBILENETV1_QUANT_VELA},${MOBILENETV1_QUANT_VELA} -l ${MOBILENETV1_LABELS} -c ${CAM1_PATH},${CAM2_PATH}
 ```
-NOTE: For i.MX 95 use neutron converted model, a warmup time is expected.<br><br>
 The following execution parameters are available (Run ``` ./example_classification_two_cameras_tflite -h``` to see option details):
 
 Option | Description
