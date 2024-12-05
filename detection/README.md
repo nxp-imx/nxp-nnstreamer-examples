@@ -8,6 +8,7 @@ Name | Implementation | Platforms | Model | ML engine | Backend | Features
 [example_detection_yolo_v4_tiny_tflite.sh](./example_detection_yolo_v4_tiny_tflite.sh) | Bash | i.MX 8M Plus <br> i.MX 93 | yolov4_tiny | TFLite | NPU (default)<br>CPU<br> | camera<br>gst-launch<br>[custom python tensor_filter](./postprocess_yolov4_tiny.py)
 
 NOTES:
+* Warmup time for NPU inference on i.MX 95 can take up to 1 minute
 * No GPU support on i.MX 93
 * Yolov4-tiny output does not directly work with the Yolov5 mode of tensor_decoder element, so a python filter is used to post-process and reshape this output as required
  
@@ -31,7 +32,6 @@ For i.MX 93 use vela converted model:
 ```bash
 $ ./build/detection/example_detection_mobilenet_ssd_v2_tflite -p  ${MOBILENETV2_QUANT_VELA} -l ${COCO_LABELS} -x ${MOBILENETV2_BOXES}
 ```
-NOTE: For i.MX 95 use neutron converted model, a warmup time is expected.
 
 Inference on CPU with the following script:
 ```bash

@@ -8,6 +8,7 @@ Name | Implementation | Platforms | Model | ML engine | Backend | Features
 [example_classification_mobilenet_v1_tflite.sh](./example_classification_mobilenet_v1_tflite.sh) | Bash | i.MX 8M Plus <br> i.MX 93 <br> i.MX 95 | mobilenet_v1 | TFLite | NPU (default)<br>GPU<br>CPU<br> | camera<br>gst-launch<br>
 
 NOTES:
+* Warmup time for NPU inference on i.MX 95 can take up to 1 minute
 * No GPU support on i.MX 93
 
 ## Execution
@@ -30,8 +31,6 @@ For i.MX 93 use vela converted model:
 ```bash
 $ ./build/classification/example_classification_mobilenet_v1_tflite -p ${MOBILENETV1_QUANT_VELA} -l ${MOBILENETV1_LABELS}
 ```
-NOTE: For i.MX 95 use neutron converted model, a warmup time is expected.
-
 Inference on CPU with the following script:
 ```bash
 $ ./build/classification/example_classification_mobilenet_v1_tflite -p ${MOBILENETV1_QUANT} -l ${MOBILENETV1_LABELS} -b CPU
