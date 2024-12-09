@@ -139,7 +139,7 @@ class PoseExample:
             else:
                 quantized_model = 'movenet_quant.tflite'
             model = {
-                'CPU': quantized_model,
+                'CPU': 'movenet_quant.tflite',
                 'NPU': quantized_model,
             }
             tflite_model = model[self.backend]
