@@ -4,10 +4,13 @@
 Name | Implementation | Platforms | Model | ML engine | Backend | Features
 --- | --- | --- | --- | --- | --- | ---
 [example_face_detection_tflite.py](./example_face_detection_tflite.py) | Python | i.MX 8M Plus <br> i.MX 93 | UltraFace | TFLite | NPU | camera<br>gst-launch<br>
-[example_face_detection_tflite.cpp](./cpp/example_face_detection_tflite.cpp) | C++ | i.MX 8M Plus <br> i.MX 93 | UltraFace | TFLite | NPU | camera<br>gst-launch<br>
+[example_face_detection_tflite.cpp](./cpp/example_face_detection_tflite.cpp) | C++ | i.MX 8M Plus <br> i.MX 93 <br> i.MX 95 | UltraFace | TFLite | NPU (defaut)<br>GPU<br>CPU<br> | camera<br>gst-launch<br>
 [example_face_recognition_tflite.py](./example_face_recognition_tflite.py) | Python | i.MX 8M Plus <br> i.MX 93 | UltraFace <br> FaceNet512 <br>       | TFLite | NPU | camera<br>gst-launch<br>
 [example_emotion_detection_tflite.py](./example_emotion_detection_tflite.py) | Python | i.MX 8M Plus <br> i.MX 93 | UltraFace <br> Deepface-emotion <br> | TFLite | NPU | camera<br>gst-launch<br>
-[example_emotion_detection_tflite.cpp](./cpp/example_emotion_detection_tflite.cpp) | C++ | i.MX 93 | UltraFace <br> Deepface-emotion <br> | TFLite | NPU | camera<br>gst-launch<br>
+[example_emotion_detection_tflite.cpp](./cpp/example_emotion_detection_tflite.cpp) | C++ | i.MX 8M Plus <br> i.MX 93 <br> i.MX 95 | UltraFace <br> Deepface-emotion <br> | TFLite | NPU (defaut)<br>GPU<br>CPU<br> | camera<br>gst-launch<br>
+NOTES:
+* No GPU support on i.MX 93
+* No NPU support on i.MX 95
 
 Those examples use 2 GStreamer pipelines that are running concurrently.<br>
 Press ```Esc or ctrl+C``` to stop the execution of all the pipelines.<br>
@@ -33,23 +36,23 @@ Note: for i.MX 93, issue with face demos on Linux release 6.1.22_2.0.0
 
 ## Face detection
 ### Python
-Demo application is to be started from Linux. Camera device node may be configured via command line argument (default: `/dev/video3` on i.MX 8M Plus, `/dev/video0` on i.MX 93 ).
+Demo application is to be started from Linux. Camera device node may be configured via command line argument (default: `/dev/video3` on i.MX 8M Plus and `/dev/video0` on i.MX 93).
 It draws bounding boxes around the detected faces, and displays number of detections.
 ```
-# ./face/example_face_detection_tflite.py [--camera_device=</dev/videoN>]
+./face/example_face_detection_tflite.py [--camera_device=</dev/videoN>]
 ```
 ### C++
 C++ example script needs to be generated with [cross compilation](../). [setup_environment.sh](../tools/setup_environment.sh) script needs to be executed in [nxp-nnstreamer-examples](../) folder to define data paths:
 ```bash
-$ . ./tools/setup_environment.sh
+. ./tools/setup_environment.sh
 ```
 It is possible to run the face detection demo inference on NPU with the following script:
 ```bash
-$ ./build/face/example_face_detection_tflite -p ${ULTRAFACE_QUANT}
+./build/face/example_face_detection_tflite -p ${ULTRAFACE_QUANT}
 ```
 For i.MX 93 use vela converted model:
 ```bash
-$ ./build/face/example_face_detection_tflite -p ${ULTRAFACE_QUANT_VELA}
+./build/face/example_face_detection_tflite -p ${ULTRAFACE_QUANT_VELA}
 ```
 The following execution parameters are available (Run ``` ./example_face_detection_tflite -h``` to see option details):
 
@@ -60,8 +63,8 @@ Option | Description
 -c, --camera_device | Use the selected camera device (/dev/video{number})<br>default: /dev/video0 for i.MX 93 and /dev/video3 for i.MX 8MP
 -p, --model_path | Use the selected model path
 -d, --display_perf |Display performances, can specify time or freq
--t, --text_color | Color of performances displayed, can choose between red, green, blue, and black (white by default)
--g, --graph_path | Path to store the result of the OpenVX graph compilation (only for i.MX8MPlus)
+-t, --text_color | Color of performances displayed, can choose between red, green, blue, and black<br> default: white
+-g, --graph_path | Path to store the result of the OpenVX graph compilation (only for i.MX8MPlus)<br> default: home directory
 
 Press ```Esc or ctrl+C``` to stop the execution of the pipeline.
 
@@ -70,22 +73,22 @@ Press ```Esc or ctrl+C``` to stop the execution of the pipeline.
 Demo application is to be started from Linux. Camera device node may be configured via command line argument (default: `/dev/video3` on i.MX 8M Plus, `/dev/video0` on i.MX 93 ).
 It draws bounding boxes around the detected faces, and displays predicted emotion and confidence score on each face.
 ```
-# ./face/example_emotion_detection_tflite.py [--camera_device=</dev/videoN>]
+./face/example_emotion_detection_tflite.py [--camera_device=</dev/videoN>]
 ```
 7 emotions can be recognised: angry, disgust, fear, happy, sad, surprise and neutral.
 
 ### C++
 C++ example script needs to be generated with [cross compilation](../). [setup_environment.sh](../tools/setup_environment.sh) script needs to be executed in [nxp-nnstreamer-examples](../) folder to define data paths:
 ```bash
-$ . ./tools/setup_environment.sh
+. ./tools/setup_environment.sh
 ```
  It is possible to run the emotion detection demo inference on NPU with the following script:<br>
 ```bash
-$ ./build/face/example_emotion_detection_tflite -p ${ULTRAFACE_QUANT},${EMOTION_QUANT}
+./build/face/example_emotion_detection_tflite -p ${ULTRAFACE_QUANT},${EMOTION_QUANT}
 ```
 For i.MX 93 use vela converted model:
 ```bash
-$ ./build/face/example_emotion_detection_tflite -p ${ULTRAFACE_QUANT_VELA},${EMOTION_QUANT_VELA}
+./build/face/example_emotion_detection_tflite -p ${ULTRAFACE_QUANT_VELA},${EMOTION_QUANT_VELA}
 ```
 
 The following execution parameters are available (Run ``` ./example_emotion_detection_tflite -h``` to see option details):
@@ -97,8 +100,8 @@ Option | Description
 -c, --camera_device | Use the selected camera device (/dev/video{number})<br>default: /dev/video0 for i.MX 93 and /dev/video3 for i.MX 8MP
 -p, --model_path FACE_MODEL,EMOTION_MODEL | Use the selected model path
 -d, --display_perf |Display performances, can specify time or freq
--t, --text_color | Color of performances displayed, can choose between red, green, blue, and black (white by default)
--g, --graph_path | Path to store the result of the OpenVX graph compilation (only for i.MX8MPlus)
+-t, --text_color | Color of performances displayed, can choose between red, green, blue, and black<br> default: white
+-g, --graph_path | Path to store the result of the OpenVX graph compilation (only for i.MX8MPlus)<br> default: home directory
 
 Press ```Esc or ctrl+C``` to stop the execution of the pipeline.
 
@@ -106,7 +109,7 @@ Press ```Esc or ctrl+C``` to stop the execution of the pipeline.
 Demo application is to be started from Linux. Camera device node may be configured via command line argument (default: `/dev/video3` on i.MX 8M Plus, `/dev/video0` on i.MX 93 ).
 It draws bounding boxes around the detected faces, and displays associated name and confidence score if face matches an embedding from the database. 
 ```
-# ./face/example_face_recognition_tflite.py [--camera_device=</dev/videoN>]
+./face/example_face_recognition_tflite.py [--camera_device=</dev/videoN>]
 ```
 Database of recognizable face signatures (embeddings) is located in [face/facenet_db](./facenet_db) directory. An entry in there simply associates the \<name\> from file `<name>.npy`, with its embedding for the face, saved as a numpy binary array.
 ```
