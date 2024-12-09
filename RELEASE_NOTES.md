@@ -1,6 +1,6 @@
 # Release Notes
 
-## [Release v1.4](https://github.com/nxp-imx/nxp-nnstreamer-examples/tree/v1.4)
+## [Release v1.4.1](https://github.com/nxp-imx/nxp-nnstreamer-examples/tree/v1.4.1)
 
 ### New Features
 
