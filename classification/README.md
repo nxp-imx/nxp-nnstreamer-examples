@@ -15,32 +15,32 @@ NOTES:
 Example script can be called from target console with no further restriction. For examples that support multiple backend, default value can be overriden by explicitly defining BACKEND variable, for instance:
 ### Bash
 ```bash
-$ BACKEND=CPU ./classification/example_classification_mobilenet_v1_tflite.sh
+BACKEND=CPU ./classification/example_classification_mobilenet_v1_tflite.sh
 ```
 ### C++
 C++ example script needs to be generated with [cross compilation](../). [setup_environment.sh](../tools/setup_environment.sh) script needs to be executed in [nxp-nnstreamer-examples](../) folder to define data paths:
 ```bash
-$ . ./tools/setup_environment.sh
+. ./tools/setup_environment.sh
 ```
 It is possible to run the classification demo inference on three different hardwares:<br>
 Inference on NPU with the following script:
 ```bash
-$ ./build/classification/example_classification_mobilenet_v1_tflite -p ${MOBILENETV1_QUANT} -l ${MOBILENETV1_LABELS}
+./build/classification/example_classification_mobilenet_v1_tflite -p ${MOBILENETV1_QUANT} -l ${MOBILENETV1_LABELS}
 ```
 For i.MX 93 use vela converted model:
 ```bash
-$ ./build/classification/example_classification_mobilenet_v1_tflite -p ${MOBILENETV1_QUANT_VELA} -l ${MOBILENETV1_LABELS}
+./build/classification/example_classification_mobilenet_v1_tflite -p ${MOBILENETV1_QUANT_VELA} -l ${MOBILENETV1_LABELS}
 ```
 Inference on CPU with the following script:
 ```bash
-$ ./build/classification/example_classification_mobilenet_v1_tflite -p ${MOBILENETV1_QUANT} -l ${MOBILENETV1_LABELS} -b CPU
+./build/classification/example_classification_mobilenet_v1_tflite -p ${MOBILENETV1_QUANT} -l ${MOBILENETV1_LABELS} -b CPU
 ```
 Quantized model is used for better inference performances on CPU.<br>
 NOTE: inferences on i.MX8MPlus GPU have low performances, but are possible with the following script:
 ```bash
-$ ./build/classification/example_classification_mobilenet_v1_tflite -p ${MOBILENETV1} -l ${MOBILENETV1_LABELS} -b GPU -n centeredReduced
+./build/classification/example_classification_mobilenet_v1_tflite -p ${MOBILENETV1} -l ${MOBILENETV1_LABELS} -b GPU -n centeredReduced
 ```
-Input normalization needs to be specified, here input data needs to be centered and reduced to fit MobileNetv1 input specifications.
+Input normalization needs to be specified, here input data needs to be centered and reduced to fit MobileNetV1 input specifications.
 
 The following execution parameters are available (Run ``` ./example_classification_mobilenet_v1_tflite -h``` to see option details):
 
@@ -52,21 +52,21 @@ Option | Description
 -p, --model_path | Use the selected model path
 -l, --labels_path | Use the selected labels path
 -d, --display_perf |Display performances, can specify time or freq
--t, --text_color | Color of performances displayed, can choose between red, green, blue, and black (white by default)
--g, --graph_path | Path to store the result of the OpenVX graph compilation (only for i.MX8MPlus)
+-t, --text_color | Color of performances displayed, can choose between red, green, blue, and black<br> default: white
+-g, --graph_path | Path to store the result of the OpenVX graph compilation (only for i.MX8MPlus)<br> default: home directory
 
 Press ```Esc or ctrl+C``` to stop the execution of the pipeline.
 
-An example using two cameras is available. To NPU backend on on both camera inference, use the following command:<br>
+An example running two image classification inferences in parallel, with each inference using a different input camera data, is available. This example can be run with both models on NPU, using the following command:<br>
 NOTES:
-- it is not recommanded to use CPU or GPU bachend because of low performances
+- it is not recommanded to use CPU or GPU backend because of low performances
 - performances may depend on the USB cameras used, especially on i.MX 93
 ```bash
-$ ./build/classification/example_classification_two_cameras_tflite -p ${MOBILENETV1_QUANT},${MOBILENETV1_QUANT} -l ${MOBILENETV1_LABELS} -c ${CAM1_PATH},${CAM2_PATH}
+./build/classification/example_classification_two_cameras_tflite -p ${MOBILENETV1_QUANT},${MOBILENETV1_QUANT} -l ${MOBILENETV1_LABELS} -c ${CAM1_PATH},${CAM2_PATH}
 ```
 For i.MX 93 use vela converted model:
 ```bash
-$ ./build/classification/example_classification_two_cameras_tflite -p ${MOBILENETV1_QUANT_VELA},${MOBILENETV1_QUANT_VELA} -l ${MOBILENETV1_LABELS} -c ${CAM1_PATH},${CAM2_PATH}
+./build/classification/example_classification_two_cameras_tflite -p ${MOBILENETV1_QUANT_VELA},${MOBILENETV1_QUANT_VELA} -l ${MOBILENETV1_LABELS} -c ${CAM1_PATH},${CAM2_PATH}
 ```
 The following execution parameters are available (Run ``` ./example_classification_two_cameras_tflite -h``` to see option details):
 
@@ -78,7 +78,7 @@ Option | Description
 -p, --model_path CAM1_MODEL,CAM2_MODEL | Use the selected model path
 -l, --labels_path CAM1_LABELS,CAM2_LABELS | Use the selected labels path
 -d, --display_perf |Display performances, can specify time or freq
--t, --text_color | Color of performances displayed, can choose between red, green, blue, and black (white by default)
--g, --graph_path | Path to store the result of the OpenVX graph compilation (only for i.MX8MPlus)
+-t, --text_color | Color of performances displayed, can choose between red, green, blue, and black<br> default: white
+-g, --graph_path | Path to store the result of the OpenVX graph compilation (only for i.MX8MPlus)<br> default: home directory
 
 Press ```Esc or ctrl+C``` to stop the execution of the pipeline.
