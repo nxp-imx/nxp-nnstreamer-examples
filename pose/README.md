@@ -3,15 +3,17 @@
 ## Overview
 Name | Implementation | Platforms | Model | ML engine | Backend | Features
 --- | --- | --- | --- | --- | --- | ---
-[example_pose_movenet_tflite.py](./example_pose_movenet_tflite.py) | Python | i.MX 8M Plus <br> i.MX 93| PoseNet Lightning | TFLite | CPU<br>NPU | video file decoding (i.MX 8M Plus only)<br>camera<br>gst-launch<br>
-[example_pose_movenet_tflite.cpp](./cpp/example_pose_movenet_tflite.cpp) | C++ | i.MX 8M Plus <br> i.MX 93| PoseNet Lightning | TFLite | CPU<br>NPU | video file decoding (i.MX 8M Plus only)<br>camera<br>gst-launch<br>
-
+[example_pose_movenet_tflite.py](./example_pose_movenet_tflite.py) | Python | i.MX 8M Plus <br> i.MX 93 <br> i.MX 95| PoseNet Lightning | TFLite | CPU<br>NPU | video file decoding (i.MX 8M Plus only)<br>camera<br>gst-launch<br>
+[example_pose_movenet_tflite.cpp](./cpp/example_pose_movenet_tflite.cpp) | C++ | i.MX 8M Plus <br> i.MX 93 <br> i.MX 95| PoseNet Lightning | TFLite | NPU (defaut)<br>GPU<br>CPU<br> | video file decoding (i.MX 8M Plus only)<br>camera<br>gst-launch<br>
+NOTES:
+* No GPU support on i.MX 93
+* No NPU support on i.MX 95
 ## Execution
 Example script can be called from target console with no further restriction.
 Default backend can be overriden by explicitly defining BACKEND variable, and source can be selected as VIDEO or CAMERA, for instance:
 ### Python
 ```bash
-$ BACKEND=NPU SOURCE=CAMERA ./pose/example_pose_movenet_tflite.py
+BACKEND=NPU SOURCE=CAMERA ./pose/example_pose_movenet_tflite.py
 ```
 
 The following execution parameters are available (Run ``` ./example_pose_movenet_tflite.py -h``` to see option details):
@@ -25,20 +27,24 @@ Option | Description
 ## C++
 C++ example script needs to be generated with [cross compilation](../). [setup_environment.sh](../tools/setup_environment.sh) script needs to be executed in [nxp-nnstreamer-examples](../) folder to define data paths:
 ```bash
-$ . ./tools/setup_environment.sh
+. ./tools/setup_environment.sh
 ```
-It is possible to run the pose detection demo inference on two different hardwares:<br>
+It is possible to run the pose detection demo inference on three different hardwares:<br>
 Inference on NPU with the following script:
 ```bash
-$ ./build/pose/example_pose_movenet_tflite -p ${MOVENET_QUANT} -f ${POWER_JUMP_VIDEO}
+./build/pose/example_pose_movenet_tflite -p ${MOVENET_QUANT} -f ${POWER_JUMP_VIDEO}
 ```
 For i.MX 93 use vela converted model:
 ```bash
-$ ./build/pose/example_pose_movenet_tflite -p ${MOVENET_QUANT_VELA} -f ${POWER_JUMP_VIDEO}
+./build/pose/example_pose_movenet_tflite -p ${MOVENET_QUANT_VELA} -f ${POWER_JUMP_VIDEO}
 ```
 Inference on CPU with the following script:
 ```bash
-$ ./build/pose/example_pose_movenet_tflite -p ${MOVENET_QUANT} -f ${POWER_JUMP_VIDEO} -b CPU
+./build/pose/example_pose_movenet_tflite -p ${MOVENET_QUANT} -f ${POWER_JUMP_VIDEO} -b CPU
+```
+NOTE: inferences on i.MX8MPlus GPU have low performances, but are possible with the following script:
+```bash
+./build/pose/example_pose_movenet_tflite -p ${MOVENET} -f ${POWER_JUMP_VIDEO} -b GPU -n castInt32
 ```
 The following execution parameters are available (Run ``` ./example_pose_movenet_tflite -h``` to see option details):
 
@@ -50,7 +56,7 @@ Option | Description
 -f, --video_file | Use the selected video file
 -u, --use_camera | If we use camera or video input (true,false)<br> default: false (true for i.MX 93)
 -d, --display_perf |Display performances, can specify time or freq
--t, --text_color | Color of performances displayed, can choose between red, green, blue, and black (white by default)
--g, --graph_path | Path to store the result of the OpenVX graph compilation (only for i.MX8MPlus)
+-t, --text_color | Color of performances displayed, can choose between red, green, blue, and black<br> default: white
+-g, --graph_path | Path to store the result of the OpenVX graph compilation (only for i.MX8MPlus)<br> default: home directory
 
 Press ```Esc or ctrl+C``` to stop the execution of the pipeline.
