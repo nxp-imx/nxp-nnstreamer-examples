@@ -25,5 +25,5 @@ function gst_exec_detection {
     t. ! queue name=thread-img max-size-buffers=2 leaky=2 ! \
       videoconvert ! \
       ${VIDEO_MIXER} \
-      autovideosink
+      waylandsink
 }

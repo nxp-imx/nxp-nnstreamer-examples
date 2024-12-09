@@ -236,7 +236,7 @@ class PoseExample:
         cmdline += ' tensor_sink name=tensor_sink'
         cmdline += ' t. ! queue name=thread-img max-size-buffers=2 !'
         cmdline += ' videoconvert ! cairooverlay name=cairooverlay !'
-        cmdline += ' autovideosink'
+        cmdline += ' waylandsink'
 
         print(cmdline)
 

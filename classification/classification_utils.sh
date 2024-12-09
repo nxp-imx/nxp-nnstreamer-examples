@@ -21,5 +21,5 @@ function gst_exec_classification {
       overlay.text_sink \
     t. ! queue name=thread-img max-size-buffers=2 leaky=2 ! \
       textoverlay name=overlay font-desc=\"Sans, 24\" ! \
-      autovideosink sync=false
+      waylandsink sync=false
 }

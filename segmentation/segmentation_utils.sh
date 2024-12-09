@@ -26,5 +26,5 @@ function gst_exec_segmentation {
       videoconvert ! mix. \
     t. ! queue name=thread-img max-size-buffers=2 ! \
       videomixer name=mix sink_1::alpha=0.4 sink_0::alpha=1.0 background=3 ! \
-      autovideosink
+      waylandsink
 }

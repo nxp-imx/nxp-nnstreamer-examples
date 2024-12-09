@@ -361,7 +361,7 @@ class FaceDetectPipe(Pipe):
         cmdline += gstvideoimx.accelerated_videoscale(format='RGB16')
 
         cmdline += '  cairooverlay name=cairooverlay ! '
-        cmdline += '  autovideosink sync=false '.format(vw, vh)
+        cmdline += '  waylandsink sync=false '.format(vw, vh)
         cmdline += 'tvideo. ! queue max-size-buffers=1 leaky=2 ! '
         cmdline += ('  appsink '
                     'name=appsink_video sync=false max-buffers=1 drop=true '

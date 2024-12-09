@@ -35,7 +35,7 @@ void GstVideoPostProcess::display(GstPipelineImx &pipeline,
     }
     cmd += "fpsdisplaysink name=img_tensor text-overlay=false video-sink=waylandsink " + cmdSync;
   } else {
-    cmd = "autovideosink " + cmdSync;
+    cmd = "waylandsink " + cmdSync;
   }
 
   pipeline.addToPipeline(cmd);
