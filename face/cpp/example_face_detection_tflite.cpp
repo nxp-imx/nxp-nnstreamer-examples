@@ -179,7 +179,8 @@ int main(int argc, char **argv)
                       CAMERA_INPUT_WIDTH,
                       CAMERA_INPUT_HEIGHT,
                       false,
-                      "YUY2");
+                      "",
+                      30);
   camera.addCameraToPipeline(pipeline);
 
   // Add a tee element for parallelization of tasks

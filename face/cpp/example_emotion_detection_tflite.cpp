@@ -206,7 +206,7 @@ int main(int argc, char **argv)
                       3,
                       640,
                       480,
-                      "YUY2"); 
+                      "YUY2");
   appsrc.addAppSrcToPipeline(emotionPipeline);
 
   // The video stream is cropped to get a face
@@ -230,7 +230,7 @@ int main(int argc, char **argv)
                       CAMERA_INPUT_WIDTH,
                       CAMERA_INPUT_HEIGHT,
                       false,
-                      "",
+                      "YUY2",
                       30);
   camera.addCameraToPipeline(pipeline);
 
