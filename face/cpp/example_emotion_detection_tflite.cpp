@@ -8,15 +8,16 @@
  * The model used is emotion_uint8_float32.tflite for emotion detection, and ultraface_slim_uint8_float32.tflite for face detection,
  * which can be retrieved from https://github.com/nxp-imx/nxp-nnstreamer-examples/blob/main/downloads/download.ipynb
  * Pipeline:
- * v4l2src -- tee -- imxvideoconvert -----------------------------------------------------------------
- *             |                                                                                     |
- *             |                                                                                    cairooverlay -- autovideosink
- *             |                                                                                     |       |
- *             --- imxvideoconvert -- tensor_converter -- tensor_transform -- tensor_filter -- tensor_sink   |
- *             |                                                                                             |
- *             --- appsink                                                                                   |
- *                    |                                                                                      |
- *                  appsrc -- videocrop -- tensor_converter -- tensor_transform -- tensor_filter -- tensor_sink
+ * pipeline 1: v4l2src -- tee -- imxvideoconvert --------------------------------------------------------
+ *                |                                                                                     |
+ *                |                                                                                    cairooverlay -- waylandsink
+ *                |                                                                                     |       |
+ *                --- imxvideoconvert -- tensor_converter -- tensor_transform -- tensor_filter -- tensor_sink   |
+ *                |                                                                                             |
+ *                 --- appsink                                                                                  |
+ *                                                                                                   ------------
+ *                                                                                                   |
+ * pipeline 2: appsrc -- videocrop -- tensor_converter -- tensor_transform -- tensor_filter -- tensor_sink
  */
 
 #include "common.hpp"

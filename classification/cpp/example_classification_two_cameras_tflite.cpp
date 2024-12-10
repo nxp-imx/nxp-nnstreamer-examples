@@ -16,7 +16,7 @@
  *                                                                                                                    |
  * v4l2src -- tee -----------------------------------------------------------------------------------                 |
  *             |                                                                                     |                |
- *             |                                                                                textoverlay -- video_compositor -- autovideosink
+ *             |                                                                                textoverlay -- video_compositor -- waylandsink
  *             |                                                                                     |
  *             --- imxvideoconvert -- tensor_converter -- tensor_transform -- tensor_filter -- tensor_decoder
  * 

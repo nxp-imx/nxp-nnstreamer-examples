@@ -10,8 +10,8 @@
  * Pipeline:
  * filesrc -- videocrop -- tee -----------------------------------------------------------------------------------
  *                          |                                                                                     |
- *                          |                                                                               cairooverlay -- autovideosink
- *                          |                                                                                     |                                                                                   |
+ *                          |                                                                               cairooverlay -- waylandsink
+ *                          |                                                                                     |
  *                           --- imxvideoconvert -- tensor_converter -- tensor_transform -- tensor_filter -- tensor_sink
  */
 

@@ -10,7 +10,7 @@
  * Pipeline:
  * v4l2src -- tee -----------------------------------------------------------------------------------
  *             |                                                                                     |
- *             |                                                                              video_compositor -- autovideosink
+ *             |                                                                              video_compositor -- waylandsink
  *             |                                                                                     |
  *             --- imxvideoconvert -- tensor_converter -- tensor_transform -- tensor_filter -- tensor_decoder
  */

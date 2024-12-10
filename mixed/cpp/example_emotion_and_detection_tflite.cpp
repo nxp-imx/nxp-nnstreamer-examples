@@ -9,21 +9,21 @@
  * and ssdlite_mobilenet_v2_coco_no_postprocess.tflite for object detection,
  * which can be retrieved from https://github.com/nxp-imx/nxp-nnstreamer-examples/blob/main/downloads/download.ipynb 
  * Pipeline:
- * v4l2src -- tee -- imxvideoconvert -----------------------------------------------------------------
- *             |                                                                                     |
- *             |                                                                                    cairooverlay ---
- *             |                                                                                     |       |      |
- *             --- imxvideoconvert -- tensor_converter -- tensor_transform -- tensor_filter -- tensor_sink   |      |
- *             |                                                                                             |      |
- *             --- appsink                                                                                   |      |
- *                    |                                                                                      |      |
- *                  appsrc -- videocrop -- tensor_converter -- tensor_transform -- tensor_filter -- tensor_sink     |
- *                                                                                                                  |
- * filesrc -- tee -----------------------------------------------------------------------------------               |
- *             |                                                                                     |              |
- *             |                                                                              video_compositor -- video_compositor -- autovideosink
- *             |                                                                                     |
- *             --- imxvideoconvert -- tensor_converter -- tensor_transform -- tensor_filter -- tensor_decoder
+ * pipeline 1: v4l2src -- tee -- imxvideoconvert -----------------------------------------------------------------
+ *                |                                                                                     |
+ *                |                                                                                    cairooverlay ---
+ *                |                                                                                     |       |      |
+ *                --- imxvideoconvert -- tensor_converter -- tensor_transform -- tensor_filter -- tensor_sink   |      |
+ *                |                                                                                             |      |
+ *                --- appsink                                                                        ------------      |
+ *                                                                                                   |                 |
+ * pipeline 2: appsrc -- videocrop -- tensor_converter -- tensor_transform -- tensor_filter -- tensor_sink             |
+ *                                                                                                                     |
+ *             filesrc -- tee ---------------------------------------------------------------------------              |
+ *                |                                                                                     |              |
+ *                |                                                                              video_compositor -- video_compositor -- waylandsink
+ *                |                                                                                     |
+ *                --- imxvideoconvert -- tensor_converter -- tensor_transform -- tensor_filter -- tensor_decoder
  */
 
 #include "common.hpp"

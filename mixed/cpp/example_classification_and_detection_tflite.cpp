@@ -11,7 +11,7 @@
  * Pipeline:           
  * v4l2src -- tee -----------------------------------------------------------------------------------
  *             |                                                                                     |
- *             |                                                                              video_compositor -- textoverlay -- tee -- autovideosink
+ *             |                                                                              video_compositor -- textoverlay -- tee -- waylandsink
  *             |                                                                                     |                 |          |
  *             --- imxvideoconvert -- tensor_converter -- tensor_transform -- tensor_filter -- tensor_decoder          |          --- vpuenc_h264 -- h264parse -- qtmux / matroskamux -- filesink
  *             |                                                                                                       |

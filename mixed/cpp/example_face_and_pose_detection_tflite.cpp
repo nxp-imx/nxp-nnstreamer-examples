@@ -11,7 +11,7 @@
  * Pipeline:
  * v4l2src -- videocrop -- tee -----------------------------------------------------------------------------------
  *                          |                                                                                     |
- *                          |                                                                               cairooverlay -- cairooverlay -- autovideosink
+ *                          |                                                                               cairooverlay -- cairooverlay -- waylandsink
  *                          |                                                                                     |               |
  *                          --- imxvideoconvert -- tensor_converter -- tensor_transform -- tensor_filter -- tensor_sink           |
  *                          |                                                                                                     |

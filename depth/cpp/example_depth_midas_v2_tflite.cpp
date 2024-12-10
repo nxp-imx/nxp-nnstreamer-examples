@@ -10,7 +10,7 @@
  * Pipeline:
  * multifilesrc -- jpegdec -- imxvideoconvert -- tee -----------------------------------------------------------------
  *                                                |                                                                  |
- *                                                |                                                             videomixer -- autovideosink
+ *                                                |                                                             videomixer -- waylandsink
  *                                                |                                                                  |
  *                                                --- tensor_converter -- tensor_transform -- tensor_filter -- tensor_decoder
  */
