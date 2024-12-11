@@ -50,69 +50,45 @@ void newDataFaceCallback(GstElement* element,
   BufferInfo bufferInfo;
   checkNumTensor(buffer, 1);
   bufferInfo = getTensorInfo(buffer, 0);
+  assert(boxesData->bufferSize == bufferInfo.size);
 
-  int row = 0;
-  int col = 0;
-  int countFaces = 0;
-  bool selected[MODEL_UFACE_NUMBER_NMS_BOXES] = { false };
-  boxesData->selectedBoxes.clear();
-
-  // Get normalized boxes coordinates (x1,y1,x2,y2), and which boxes we keep
-  for (int i = 0; (i < bufferInfo.size) 
-                  && (countFaces <= MODEL_UFACE_NUMBER_MAX) ; i++) {
-    if (col == 1) {
-      if (bufferInfo.bufferFP32[i] > MODEL_UFACE_CLASSIFICATION_THRESHOLD) {
-        countFaces += 1;
-        selected[row] = true;
-      }
-    }
-
-    // Get only boxes to display, and
-    // rescale boxes per actual input video resolution
-    if (selected[row] == true) {
-      if ((col == 2) || (col == 4)) {
-        boxesData->selectedBoxes.push_back(
-            static_cast<int>(
-                bufferInfo.bufferFP32[i] * INPUT_WIDTH
-            )
+  std::vector<int> boxes;
+  int faceCount = 0;
+  for (int i = 0; ((i < MODEL_UFACE_NUMBER_BOXES)
+                   && (faceCount < MODEL_UFACE_NUMBER_MAX)); i+= NUM_BOX_DATA) {
+    // Keep only boxes with a score above the threshold
+    if (bufferInfo.bufferFP32[i+1] > MODEL_UFACE_CLASSIFICATION_THRESHOLD) {
+      faceCount += 1;
+      // Store x1
+      boxes.push_back(
+            static_cast<int>(bufferInfo.bufferFP32[i+2] * INPUT_WIDTH)
         );
-      }
-      if ((col == 3) || (col == 5)) {
-        boxesData->selectedBoxes.push_back(
-            static_cast<int>(
-                bufferInfo.bufferFP32[i] * INPUT_HEIGHT
-            )
+      // Store y1
+      boxes.push_back(
+            static_cast<int>(bufferInfo.bufferFP32[i+3] * INPUT_HEIGHT)
         );
-      }
+      // Store x2
+      boxes.push_back(
+            static_cast<int>(bufferInfo.bufferFP32[i+4] * INPUT_WIDTH)
+        );
+      // Store y2
+      boxes.push_back(
+            static_cast<int>(bufferInfo.bufferFP32[i+5] * INPUT_HEIGHT)
+        );
     }
-
-    col += 1;
-    if (col == NUMBER_OF_INFOS)
-      row += 1;
-    col %= NUMBER_OF_INFOS;
   }
 
-  countFaces %= MODEL_UFACE_NUMBER_MAX;
-  // clip to 16x16 min (imxvideoconvert constraint)
-  for (int faceIndex = 0; faceIndex < 4 * countFaces; faceIndex += 4) {
-  // Transform rectangular to square box using greater length
-    int w, h, cx, cy, d2;
-    float k = 0.8; // scaling factor
-    float d;
-    float minwh = 16;
-    w = boxesData->selectedBoxes.at(2 + faceIndex)
-        - boxesData->selectedBoxes.at(0 + faceIndex) + 1;
-    h = boxesData->selectedBoxes.at(3 + faceIndex)
-        - boxesData->selectedBoxes.at(1 + faceIndex) + 1;
-    cx = static_cast<int>(
-        (boxesData->selectedBoxes.at(0 + faceIndex)
-        + boxesData->selectedBoxes.at(2 + faceIndex))/2
-    );
-    cy = static_cast<int>(
-      (boxesData->selectedBoxes.at(1 + faceIndex)
-      + boxesData->selectedBoxes.at(3 + faceIndex))/2
-    );
-    
+  // Transform rectangular to square box
+  int w, h, cx, cy, d2;
+  float k = 0.8; // scaling factor
+  float minwh = 16; // minimum (imxvideoconvert constraint)
+  float d;
+  for (int faceIndex = 0; faceIndex < 4 * faceCount; faceIndex += 4) {
+    w = boxes.at(2 + faceIndex) - boxes.at(0 + faceIndex) + 1;
+    h = boxes.at(3 + faceIndex) - boxes.at(1 + faceIndex) + 1;
+    cx = static_cast<int>((boxes.at(0 + faceIndex) + boxes.at(2 + faceIndex))/2);
+    cy = static_cast<int>((boxes.at(1 + faceIndex) + boxes.at(3 + faceIndex))/2);
+
     d = std::max(w, h) * k;
     d = std::min(d, static_cast<float>(
         std::min(INPUT_WIDTH, INPUT_HEIGHT)
@@ -128,12 +104,14 @@ void newDataFaceCallback(GstElement* element,
       cy = INPUT_HEIGHT - d2 - 1;
     if ((cy - d2) < 0)
       cy = d2;
-
-    boxesData->selectedBoxes.at(0 + faceIndex) = cx - d2;
-    boxesData->selectedBoxes.at(1 + faceIndex) = cy - d2;
-    boxesData->selectedBoxes.at(2 + faceIndex) = cx + d2;
-    boxesData->selectedBoxes.at(3 + faceIndex) = cy + d2;
+    boxes.at(0 + faceIndex) = cx - d2;
+    boxes.at(1 + faceIndex) = cy - d2;
+    boxes.at(2 + faceIndex) = cx + d2;
+    boxes.at(3 + faceIndex) = cy + d2;
   }
+
+  boxesData->faceCount = faceCount;
+  boxesData->selectedBoxes = boxes;
 }
 
 
@@ -143,17 +121,18 @@ void drawFaceCallback(GstElement* overlay,
                       guint64 duration,
                       gpointer user_data)
 {
-  FaceData* boxesDataBuffer = (FaceData *) user_data;
-  FaceData boxesData = *boxesDataBuffer;
+  FaceData* boxesData = (FaceData *) user_data;
 
-  int numFaces = boxesData.selectedBoxes.size()/4;
+  int numFaces = boxesData->faceCount;
+  std::vector<int> boxes = boxesData->selectedBoxes;
+
   cairo_set_source_rgb(cr, 0.85, 0, 1);
-  cairo_move_to(cr, 14, 14);
+  cairo_move_to(cr, 480, 18);
   cairo_select_font_face(cr,
                          "Arial",
                          CAIRO_FONT_SLANT_NORMAL,
                          CAIRO_FONT_WEIGHT_NORMAL);
-  cairo_set_font_size(cr, 11.0);
+  cairo_set_font_size(cr, 15);
   cairo_show_text(cr, ("Faces detected: " + std::to_string(numFaces)).c_str());
 
   cairo_set_source_rgb(cr, 1, 0, 0);
@@ -161,17 +140,10 @@ void drawFaceCallback(GstElement* overlay,
 
   int w, h;
   for (int faceIndex = 0; faceIndex < 4 * numFaces; faceIndex += 4) {
-    w = boxesData.selectedBoxes.at(2 + faceIndex)
-        - boxesData.selectedBoxes.at(0 + faceIndex);
-    h = boxesData.selectedBoxes.at(3 + faceIndex)
-        - boxesData.selectedBoxes.at(1 + faceIndex);
-    cairo_rectangle(cr,
-                    boxesData.selectedBoxes.at(0 + faceIndex),
-                    boxesData.selectedBoxes.at(1 + faceIndex),
-                    w,
-                    h);
+    w = boxes.at(2 + faceIndex) - boxes.at(0 + faceIndex);
+    h = boxes.at(3 + faceIndex) - boxes.at(1 + faceIndex);
+    cairo_rectangle(cr, boxes.at(0 + faceIndex), boxes.at(1 + faceIndex), w, h);
   }
-
   cairo_stroke(cr);
 }
 

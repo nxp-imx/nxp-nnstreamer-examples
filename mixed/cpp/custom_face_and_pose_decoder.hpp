@@ -16,8 +16,8 @@
 #include "logging.hpp"
 
 /* Face detection constants */
-const int MODEL_UFACE_NUMBER_NMS_BOXES            = 100;
-const int NUMBER_OF_INFOS                         = 6;
+const int MODEL_UFACE_NUMBER_BOXES                = 100;
+const int NUM_BOX_DATA                            = 6;
 const int NUMBER_OF_COORDINATES                   = 4;
 const float MODEL_UFACE_CLASSIFICATION_THRESHOLD  = 0.7f;
 const int MODEL_UFACE_NUMBER_MAX                  = 15;
@@ -35,6 +35,8 @@ const float SCORE_THRESHOLD                       = 0.4f;
 
 typedef struct {
   std::vector<int> selectedBoxes;
+  int bufferSize = NUM_BOX_DATA * MODEL_UFACE_NUMBER_BOXES;
+  int faceCount = 0;
 } FaceData;
 
 
