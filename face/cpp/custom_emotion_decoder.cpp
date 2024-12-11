@@ -51,69 +51,45 @@ void newDataCallback(GstElement *element,
   BufferInfo bufferInfo;
   checkNumTensor(buffer, 1);
   bufferInfo = getTensorInfo(buffer, 0);
+  assert(boxesData->bufferSize == bufferInfo.size);
 
-  int row = 0;
-  int col = 0;
-  int countFaces = 0;
-  bool selected[MODEL_UFACE_NUMBER_NMS_BOXES] = { false };
-  boxesData->faceBoxes.clear();
-
-  // Get normalized boxes coordinates (x1,y1,x2,y2), and which boxes we keep
-  for (int i = 0; (i < bufferInfo.size) 
-                  && (countFaces <= MODEL_UFACE_NUMBER_MAX) ; i++) {
-    if (col == 1) {
-      if (bufferInfo.bufferFP32[i] > MODEL_UFACE_CLASSIFICATION_THRESHOLD) {
-        countFaces += 1;
-        selected[row] = true;
-      }
-    }
-
-    // Get only boxes to display, and
-    // rescale boxes per actual input video resolution
-    if (selected[row] == true) {
-      if ((col == 2) || (col == 4)) {
-        boxesData->faceBoxes.push_back(
-            static_cast<int>(
-                bufferInfo.bufferFP32[i] * CAMERA_INPUT_WIDTH
-            )
+  std::vector<int> boxes;
+  int faceCount = 0;
+  for (int i = 0; ((i < MODEL_UFACE_NUMBER_BOXES)
+                   && (faceCount < MODEL_UFACE_NUMBER_MAX)); i+= NUM_BOX_DATA) {
+    // Keep only boxes with a score above the threshold
+    if (bufferInfo.bufferFP32[i+1] > MODEL_UFACE_CLASSIFICATION_THRESHOLD) {
+      faceCount += 1;
+      // Store x1
+      boxes.push_back(
+            static_cast<int>(bufferInfo.bufferFP32[i+2] * CAMERA_INPUT_WIDTH)
         );
-      }
-      if ((col == 3) || (col == 5)) {
-        boxesData->faceBoxes.push_back(
-            static_cast<int>(
-                bufferInfo.bufferFP32[i] * CAMERA_INPUT_HEIGHT
-            )
+      // Store y1
+      boxes.push_back(
+            static_cast<int>(bufferInfo.bufferFP32[i+3] * CAMERA_INPUT_HEIGHT)
         );
-      }
+      // Store x2
+      boxes.push_back(
+            static_cast<int>(bufferInfo.bufferFP32[i+4] * CAMERA_INPUT_WIDTH)
+        );
+      // Store y2
+      boxes.push_back(
+            static_cast<int>(bufferInfo.bufferFP32[i+5] * CAMERA_INPUT_HEIGHT)
+        );
     }
-
-    col += 1;
-    if (col == NUMBER_OF_INFOS)
-      row += 1;
-    col %= NUMBER_OF_INFOS;
   }
 
-  countFaces %= MODEL_UFACE_NUMBER_MAX;
-  // clip to 16x16 min (imxvideoconvert constraint)
-  for (int faceIndex = 0; faceIndex < 4 * countFaces; faceIndex += 4) {
-  // Transform rectangular to square box using greater length
-    int w, h, cx, cy, d2;
-    float k = 0.8; // scaling factor
-    float d;
-    float minwh = 16;
-    w = boxesData->faceBoxes.at(2 + faceIndex)
-        - boxesData->faceBoxes.at(0 + faceIndex) + 1;
-    h = boxesData->faceBoxes.at(3 + faceIndex)
-        - boxesData->faceBoxes.at(1 + faceIndex) + 1;
-    cx = static_cast<int>(
-        (boxesData->faceBoxes.at(0 + faceIndex)
-        + boxesData->faceBoxes.at(2 + faceIndex))/2
-    );
-    cy = static_cast<int>(
-      (boxesData->faceBoxes.at(1 + faceIndex)
-      + boxesData->faceBoxes.at(3 + faceIndex))/2
-    );
-    
+  // Transform rectangular to square boxe
+  int w, h, cx, cy, d2;
+  float k = 0.8; // scaling factor
+  float minwh = 16; // minimum (imxvideoconvert constraint)
+  float d;
+  for (int faceIndex = 0; faceIndex < 4 * faceCount; faceIndex += 4) {
+    w = boxes.at(2 + faceIndex) - boxes.at(0 + faceIndex) + 1;
+    h = boxes.at(3 + faceIndex) - boxes.at(1 + faceIndex) + 1;
+    cx = static_cast<int>((boxes.at(0 + faceIndex) + boxes.at(2 + faceIndex))/2);
+    cy = static_cast<int>((boxes.at(1 + faceIndex) + boxes.at(3 + faceIndex))/2);
+
     d = std::max(w, h) * k;
     d = std::min(d, static_cast<float>(
         std::min(CAMERA_INPUT_WIDTH, CAMERA_INPUT_HEIGHT)
@@ -129,12 +105,13 @@ void newDataCallback(GstElement *element,
       cy = CAMERA_INPUT_HEIGHT - d2 - 1;
     if ((cy - d2) < 0)
       cy = d2;
-
-    boxesData->faceBoxes.at(0 + faceIndex) = cx - d2;
-    boxesData->faceBoxes.at(1 + faceIndex) = cy - d2;
-    boxesData->faceBoxes.at(2 + faceIndex) = cx + d2;
-    boxesData->faceBoxes.at(3 + faceIndex) = cy + d2;
+    boxes.at(0 + faceIndex) = cx - d2;
+    boxes.at(1 + faceIndex) = cy - d2;
+    boxes.at(2 + faceIndex) = cx + d2;
+    boxes.at(3 + faceIndex) = cy + d2;
   }
+
+  boxesData->faceBoxes = boxes;
 }
 
 
@@ -163,10 +140,10 @@ void pushBuffer(GstBuffer *buffer,
 }
 
 
-void getEmotionResult(GstBuffer* buffer,
+void getEmotionResult(GstBuffer *buffer,
                       std::vector<int> boxes,
                       int index,
-                      DecoderData* boxesData)
+                      DecoderData *boxesData)
 {
   if (boxes.empty() || (buffer == nullptr)) {
     boxesData->result.emotions.clear();
@@ -181,10 +158,11 @@ void getEmotionResult(GstBuffer* buffer,
 
   float value = 0.0f;
   std::string emotion;
+  // Get emotion and its associated probability for a detected face
   for (int i = 0; i < bufferInfo.size; i++) {
     if (value < bufferInfo.bufferFP32[i]) {
       value = bufferInfo.bufferFP32[i];
-      emotion = boxesData->modelDeepfaceClasses[i];
+      emotion = boxesData->emotionsList[i];
     }
   }
 
@@ -209,18 +187,14 @@ void secondaryNewDataCallback(GstElement* element,
                               gpointer user_data)
 {
   DecoderData* boxesData = (DecoderData *) user_data;
-  
-  int count = boxesData->SubFaceCount;
-  getEmotionResult(buffer, boxesData->emotionBoxes, count, boxesData);
-  count += 1;
-  int total = boxesData->emotionBoxes.size()/4;
 
-  if (count < total) {
-    GstBuffer *input = boxesData->imagesBuffer;
-    boxesData->SubFaceCount = count;
-    pushBuffer(input, boxesData->emotionBoxes, count, boxesData);
+  getEmotionResult(buffer, boxesData->emotionBoxes, boxesData->SubFaceCount, boxesData);
+  boxesData->SubFaceCount += 1;
+  int total = boxesData->emotionBoxes.size()/4;
+  if (boxesData->SubFaceCount < total) {
+    pushBuffer(boxesData->imagesBuffer, boxesData->emotionBoxes, boxesData->SubFaceCount, boxesData);
   } else {
-    boxesData->imagesBuffer = nullptr;
+    gst_buffer_unref(boxesData->imagesBuffer);
     boxesData->emotionBoxes.clear();
     boxesData->SubFaceCount = 0;
     boxesData->subActive = false;
@@ -256,7 +230,7 @@ GstFlowReturn sinkCallback(GstAppSink* appsink, gpointer user_data)
 
   boxesData->subActive = true;
   boxesData->SubFaceCount = 0;
-  boxesData->imagesBuffer = buffer;
+  boxesData->imagesBuffer = gst_buffer_copy_deep(buffer);
   pushBuffer(buffer, boxesData->emotionBoxes, 0, boxesData);
 
   gst_sample_unref(sample);
@@ -272,26 +246,30 @@ void drawCallback(GstElement* overlay,
                   gpointer user_data)
 {
   DecoderData *boxesData = (DecoderData *) user_data;
-  std::vector<int> box = boxesData->result.boxes;
+  std::vector<int> boxes = boxesData->result.boxes;
   std::vector<std::string> emotion = boxesData->result.emotions;
   std::vector<float> value = boxesData->result.values;
 
-  int numFaces = box.size()/4;
+  int numFaces = boxes.size()/4;
   if (numFaces == 0)
     return;
 
   cairo_set_line_width(cr, 1.0);
+  cairo_set_source_rgb(cr, 1, 1, 0);
 
   int w, h;
   for (int faceIndex = 0; faceIndex < 4 * numFaces; faceIndex += 4) {
-    if (faceIndex == 0)
-      cairo_set_source_rgb(cr, 1, 0, 0);
-    cairo_rectangle(cr, box.at(0 + faceIndex), box.at(1 + faceIndex), box.at(2 + faceIndex) - box.at(0 + faceIndex), box.at(3 + faceIndex) - box.at(1 + faceIndex));
-    cairo_move_to(cr, box.at(0 + faceIndex), box.at(3 + faceIndex) + 20);
+    w = boxes.at(2 + faceIndex) - boxes.at(0 + faceIndex);
+    h = boxes.at(3 + faceIndex) - boxes.at(1 + faceIndex);
+    cairo_rectangle(cr, boxes.at(0 + faceIndex), boxes.at(1 + faceIndex), w, h);
+    cairo_move_to(cr, boxes.at(0 + faceIndex) + 5, boxes.at(1 + faceIndex) + 10);
     if ((emotion.size() == 0) || (value.size() == 0))
       return;
-    cairo_show_text(cr, (emotion.at(faceIndex/4) + "(" +
-                        std::to_string(value.at(faceIndex/4)) + ")").c_str());
+    std::string text = emotion.at(faceIndex/4)
+                       + "("
+                       + std::to_string(value.at(faceIndex/4)).substr(0,4)
+                       + ")";
+    cairo_show_text(cr, text.c_str());
   }
   cairo_stroke(cr);
  }
