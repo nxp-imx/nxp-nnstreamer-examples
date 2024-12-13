@@ -1,16 +1,13 @@
 # Faces demos
 
 ## Overview
-Name | Implementation | Platforms | Model | ML engine | Backend | Features
---- | --- | --- | --- | --- | --- | ---
-[example_face_detection_tflite.py](./example_face_detection_tflite.py) | Python | i.MX 8M Plus <br> i.MX 93 | UltraFace | TFLite | NPU | camera<br>gst-launch<br>
-[example_face_detection_tflite.cpp](./cpp/example_face_detection_tflite.cpp) | C++ | i.MX 8M Plus <br> i.MX 93 <br> i.MX 95 | UltraFace | TFLite | NPU (defaut)<br>GPU<br>CPU<br> | camera<br>gst-launch<br>
-[example_face_recognition_tflite.py](./example_face_recognition_tflite.py) | Python | i.MX 8M Plus <br> i.MX 93 | UltraFace <br> FaceNet512 <br>       | TFLite | NPU | camera<br>gst-launch<br>
-[example_emotion_detection_tflite.py](./example_emotion_detection_tflite.py) | Python | i.MX 8M Plus <br> i.MX 93 | UltraFace <br> Deepface-emotion <br> | TFLite | NPU | camera<br>gst-launch<br>
-[example_emotion_detection_tflite.cpp](./cpp/example_emotion_detection_tflite.cpp) | C++ | i.MX 8M Plus <br> i.MX 93 <br> i.MX 95 | UltraFace <br> Deepface-emotion <br> | TFLite | NPU (defaut)<br>GPU<br>CPU<br> | camera<br>gst-launch<br>
-NOTES:
-* No GPU support on i.MX 93
-* No NPU support on i.MX 95
+Name | Implementation | Model | ML engine | Features
+--- | --- | --- | --- | ---
+[example_face_detection_tflite.py](./example_face_detection_tflite.py) | Python | UltraFace | TFLite | camera<br>gst-launch<br>
+[example_face_detection_tflite.cpp](./cpp/example_face_detection_tflite.cpp) | C++ | UltraFace | TFLite | camera<br>gst-launch<br>
+[example_face_recognition_tflite.py](./example_face_recognition_tflite.py) | Python | UltraFace <br> FaceNet512 <br> | TFLite | camera<br>gst-launch<br>
+[example_emotion_detection_tflite.py](./example_emotion_detection_tflite.py) | Python | UltraFace <br> Deepface-emotion <br> | TFLite | camera<br>gst-launch<br>
+[example_emotion_detection_tflite.cpp](./cpp/example_emotion_detection_tflite.cpp) | C++ | UltraFace <br> Deepface-emotion <br> | TFLite | camera<br>gst-launch<br>
 
 Those examples use 2 GStreamer pipelines that are running concurrently.<br>
 Press ```Esc or ctrl+C``` to stop the execution of all the pipelines.<br>
@@ -36,12 +33,24 @@ Note: for i.MX 93, issue with face demos on Linux release 6.1.22_2.0.0
 
 ## Face detection
 ### Python
+|   Platforms  | NPU | CPU | GPU |
+| ------------ | --- | --- | --- |
+| i.MX 8M Plus | :white_check_mark: | :x: | :x: |
+|   i.MX 93    | :white_check_mark: | :x: | :x: |
+|   i.MX 95    | :x: | :x: | :x: |
+
 Demo application is to be started from Linux. Camera device node may be configured via command line argument (default: `/dev/video3` on i.MX 8M Plus and `/dev/video0` on i.MX 93).
 It draws bounding boxes around the detected faces, and displays number of detections.
 ```
 ./face/example_face_detection_tflite.py [--camera_device=</dev/videoN>]
 ```
 ### C++
+|   Platforms  | NPU | CPU | GPU |
+| ------------ | --- | --- | --- |
+| i.MX 8M Plus | :white_check_mark: | :white_check_mark: | :white_check_mark: |
+|   i.MX 93    | :white_check_mark: | :white_check_mark: | :x: |
+|   i.MX 95    | :x: | :white_check_mark: | :white_check_mark: |
+
 C++ example script needs to be generated with [cross compilation](../). [setup_environment.sh](../tools/setup_environment.sh) script needs to be executed in [nxp-nnstreamer-examples](../) folder to define data paths:
 ```bash
 . ./tools/setup_environment.sh
@@ -70,6 +79,12 @@ Press ```Esc or ctrl+C``` to stop the execution of the pipeline.
 
 ## Emotion detection
 ### Python
+|   Platforms  | NPU | CPU | GPU |
+| ------------ | --- | --- | --- |
+| i.MX 8M Plus | :white_check_mark: | :x: | :x: |
+|   i.MX 93    | :white_check_mark: | :x: | :x: |
+|   i.MX 95    | :x: | :x: | :x: |
+
 Demo application is to be started from Linux. Camera device node may be configured via command line argument (default: `/dev/video3` on i.MX 8M Plus, `/dev/video0` on i.MX 93 ).
 It draws bounding boxes around the detected faces, and displays predicted emotion and confidence score on each face.
 ```
@@ -78,6 +93,12 @@ It draws bounding boxes around the detected faces, and displays predicted emotio
 7 emotions can be recognised: angry, disgust, fear, happy, sad, surprise and neutral.
 
 ### C++
+|   Platforms  | NPU | CPU | GPU |
+| ------------ | --- | --- | --- |
+| i.MX 8M Plus | :white_check_mark: | :white_check_mark: | :white_check_mark: |
+|   i.MX 93    | :white_check_mark: | :white_check_mark: | :x: |
+|   i.MX 95    | :x: | :white_check_mark: | :white_check_mark: |
+
 C++ example script needs to be generated with [cross compilation](../). [setup_environment.sh](../tools/setup_environment.sh) script needs to be executed in [nxp-nnstreamer-examples](../) folder to define data paths:
 ```bash
 . ./tools/setup_environment.sh
@@ -106,6 +127,12 @@ Option | Description
 Press ```Esc or ctrl+C``` to stop the execution of the pipeline.
 
 ## Face recognition
+|   Platforms  | NPU | CPU | GPU |
+| ------------ | --- | --- | --- |
+| i.MX 8M Plus | :white_check_mark: | :x: | :x: |
+|   i.MX 93    | :white_check_mark: | :x: | :x: |
+|   i.MX 95    | :x: | :x: | :x: |
+
 Demo application is to be started from Linux. Camera device node may be configured via command line argument (default: `/dev/video3` on i.MX 8M Plus, `/dev/video0` on i.MX 93 ).
 It draws bounding boxes around the detected faces, and displays associated name and confidence score if face matches an embedding from the database. 
 ```

@@ -1,22 +1,29 @@
 # Mixed examples
 
 ## Overview
-Name | Implementation | Platforms | Model | ML engine | Backend | Features
---- | --- | --- | --- | --- | --- | ---
-[example_classification_and_detection_tflite.cpp](./cpp/example_classification_and_detection_tflite.cpp) | C++ | i.MX 8M Plus <br> i.MX 93 <br> i.MX 95 | mobilenet_v1	<br> mobilenet_ssd_v2 | TFLite | NPU (default)<br>GPU<br>CPU<br> | camera<br>gst-launch<br>
-[example_face_and_pose_detection_tflite.cpp](./cpp/example_face_and_pose_detection_tflite.cpp) | C++ | i.MX 8M Plus <br> i.MX 93 <br> i.MX 95 | UltraFace <br> PoseNet Lightning	 | TFLite | NPU (default)<br>GPU<br>CPU<br> | camera<br>gst-launch<br>
-[example_emotion_and_detection_tflite.cpp](./cpp/example_emotion_and_detection_tflite.cpp) | C++ | i.MX 8M Plus <br> i.MX 95 | UltraFace <br> Deepface-emotion <br> mobilenet_ssd_v2 | TFLite | NPU (default)<br>GPU<br>CPU<br> | camera<br>gst-launch<br>
+Name | Implementation | Model | ML engine | Features
+--- | --- | --- | --- | ---
+[example_classification_and_detection_tflite.cpp](./cpp/example_classification_and_detection_tflite.cpp) | C++ | MobileNetV1	<br> SSD MobileNetV2 | TFLite | camera<br>gst-launch<br>
+[example_face_and_pose_detection_tflite.cpp](./cpp/example_face_and_pose_detection_tflite.cpp) | C++ | UltraFace <br> MoveNet Lightning	 | TFLite | camera<br>gst-launch<br>
+[example_emotion_and_detection_tflite.cpp](./cpp/example_emotion_and_detection_tflite.cpp) | C++ | UltraFace <br> Deepface-emotion <br> SSD MobileNetV2 | TFLite | camera<br>video file decoding<br>gst-launch<br>
 
-NOTE:
-- No GPU support on i.MX 93
-- NPU is only available on i.MX 95 for image classification and object detection example
-## Execution
 Mixed examples goal is to demonstrate the possibility to make applications which use multiple models running in parallel, while keeping good performances. Three examples are available:
-### Image classification and object detection (C++)
+
+## Image classification and object detection (MobileNetV1/SSD MobileNetV2)
+### C++
+|   Platforms  | NPU | CPU | GPU |
+| ------------ | --- | --- | --- |
+| i.MX 8M Plus | :white_check_mark: | :white_check_mark: | :white_check_mark: |
+|   i.MX 93    | :white_check_mark: | :white_check_mark: | :x: |
+|   i.MX 95    | :white_check_mark: | :white_check_mark: | :white_check_mark: |
+
+*NOTE: A warmup time for NPU inference on i.MX 95 can take up to 1 minute.*
+
 C++ example script needs to be generated with [cross compilation](../). [setup_environment.sh](../tools/setup_environment.sh) script needs to be executed in [nxp-nnstreamer-examples](../) folder to define data paths:
 ```bash
 . ./tools/setup_environment.sh
 ```
+
 An example running image classification and object detection inferences in parallel is provided, which use the video saving feature. This example can be run with both models on NPU, using the following command:
  ```bash
 ./build/mixed/example_classification_and_detection_tflite -p ${MOBILENETV1_QUANT},${MOBILENETV2_QUANT} -l ${MOBILENETV1_LABELS},${COCO_LABELS} -x ${MOBILENETV2_BOXES} -f ${SAVE_VIDEO_PATH}
@@ -45,7 +52,19 @@ Option | Description
 
 Press ```Esc or ctrl+C``` to stop the execution of the pipeline.
 
-### Pose detection and face detection (C++)
+## Pose detection and face detection (MoveNet/UltraFace)
+### C++
+|   Platforms  | NPU | CPU | GPU |
+| ------------ | --- | --- | --- |
+| i.MX 8M Plus | :white_check_mark: | :white_check_mark: | :white_check_mark: |
+|   i.MX 93    | :white_check_mark: | :white_check_mark: | :x: |
+|   i.MX 95    | :x: | :white_check_mark: | :white_check_mark: |
+
+C++ example script needs to be generated with [cross compilation](../). [setup_environment.sh](../tools/setup_environment.sh) script needs to be executed in [nxp-nnstreamer-examples](../) folder to define data paths:
+```bash
+. ./tools/setup_environment.sh
+```
+
 An example running face detection and pose detection inferences in parallel is available. This example can be run with both models on NPU, using the following command:
 ```bash
 ./build/mixed/example_face_and_pose_detection_tflite -p ${ULTRAFACE_QUANT},${MOVENET_QUANT}
@@ -70,7 +89,19 @@ Option | Description
 
 Press ```Esc or ctrl+C``` to stop the execution of the pipeline.
 
-### Emotion detection and object detection (C++)
+## Emotion detection and object detection (UltraFace/Deepface-emotion/SSD MobileNetV2)
+### C++
+|   Platforms  | NPU | CPU | GPU |
+| ------------ | --- | --- | --- |
+| i.MX 8M Plus | :white_check_mark: | :white_check_mark: | :white_check_mark: |
+|   i.MX 93    | :x: | :x: | :x: |
+|   i.MX 95    | :x: | :white_check_mark: | :white_check_mark: |
+
+C++ example script needs to be generated with [cross compilation](../). [setup_environment.sh](../tools/setup_environment.sh) script needs to be executed in [nxp-nnstreamer-examples](../) folder to define data paths:
+```bash
+. ./tools/setup_environment.sh
+```
+
 An example running emotion detection and object detection inferences in parallel is available. This example can be run with both models on NPU, using the following command:
 ```bash
 ./build/mixed/example_emotion_and_detection_tflite -p ${ULTRAFACE_QUANT},${EMOTION_QUANT},${MOBILENETV2_QUANT} -f ${POWER_JUMP_VIDEO} -l ${COCO_LABELS} -x ${MOBILENETV2_BOXES}

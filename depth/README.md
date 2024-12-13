@@ -1,22 +1,27 @@
 # Depth estimation
 
 ## Overview
-Name | Implementation | Platforms | Model | ML engine | Backend | Features
---- | --- | --- | --- | --- | --- | ---
-[example_depth_midas_v2_tflite.cpp](./cpp/example_depth_midas_v2_tflite.cpp) | C++ | i.MX 8M Plus <br> i.MX 93 <br> i.MX 95 | Midas v2 | TFLite | NPU (default)<br>GPU<br>CPU<br> | camera<br>gst-launch<br>custom C++ decoding
+Name |Platforms | Model | ML engine | Features
+--- | --- | --- | --- | ---
+[example_depth_midas_v2_tflite.cpp](./cpp/example_depth_midas_v2_tflite.cpp) | C++ | MiDaS v2 | TFLite | camera<br>gst-launch<br>custom C++ decoding
 
-NOTES:
-* No GPU support on i.MX 93
-* No NPU support on i.MX 95
-* Distances shown on screen are relative and not absolute from the camera
-* The whitest, the closest
-
-## Execution
+## MiDaS v2 depth estimation
 ### C++
+|   Platforms  | NPU | CPU | GPU |
+| ------------ | --- | --- | --- |
+| i.MX 8M Plus | :white_check_mark: | :white_check_mark: | :white_check_mark: |
+|   i.MX 93    | :white_check_mark: | :white_check_mark: | :x: |
+|   i.MX 95    | :x: | :white_check_mark: | :white_check_mark: |
+
+*NOTES:*
+* *Distances shown on screen are relative and not absolute from the camera*
+* *The whitest, the closest*
+
 C++ example script needs to be generated with [cross compilation](../). [setup_environment.sh](../tools/setup_environment.sh) script needs to be executed in [nxp-nnstreamer-examples](../) folder to define data paths:
 ```bash
 . ./tools/setup_environment.sh
 ```
+
 It is possible to run the depth estimation demo inference on three different hardwares:<br>
 Inference on NPU with the following script:
 ```bash

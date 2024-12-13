@@ -1,17 +1,21 @@
 # Pose detection
 
 ## Overview
-Name | Implementation | Platforms | Model | ML engine | Backend | Features
---- | --- | --- | --- | --- | --- | ---
-[example_pose_movenet_tflite.py](./example_pose_movenet_tflite.py) | Python | i.MX 8M Plus <br> i.MX 93 <br> i.MX 95| PoseNet Lightning | TFLite | CPU<br>NPU | video file decoding (i.MX 8M Plus only)<br>camera<br>gst-launch<br>
-[example_pose_movenet_tflite.cpp](./cpp/example_pose_movenet_tflite.cpp) | C++ | i.MX 8M Plus <br> i.MX 93 <br> i.MX 95| PoseNet Lightning | TFLite | NPU (defaut)<br>GPU<br>CPU<br> | video file decoding (i.MX 8M Plus only)<br>camera<br>gst-launch<br>
-NOTES:
-* No GPU support on i.MX 93
-* No NPU support on i.MX 95
-## Execution
-Example script can be called from target console with no further restriction.
-Default backend can be overriden by explicitly defining BACKEND variable, and source can be selected as VIDEO or CAMERA, for instance:
+Name | Implementation | Model | ML engine |Features
+--- | --- | --- | --- | ---
+[example_pose_movenet_tflite.py](./example_pose_movenet_tflite.py) | Python | MoveNet Lightning | TFLite | video file decoding (i.MX 8M Plus only)<br>camera<br>gst-launch<br>
+[example_pose_movenet_tflite.cpp](./cpp/example_pose_movenet_tflite.cpp) | C++ | MoveNet Lightning | TFLite | video file decoding (i.MX 8M Plus only)<br>camera<br>gst-launch<br>
+
+## MoveNet Lightning pose detection
 ### Python
+|   Platforms  | NPU | CPU | GPU |
+| ------------ | --- | --- | --- |
+| i.MX 8M Plus | :white_check_mark: | :white_check_mark: | :x: |
+|   i.MX 93    | :white_check_mark: | :white_check_mark: | :x: |
+|   i.MX 95    | :x: | :white_check_mark: | :x: |
+
+Default backend can be overriden by explicitly defining BACKEND variable, and source can be selected as VIDEO or CAMERA, for instance:
+
 ```bash
 BACKEND=NPU SOURCE=CAMERA ./pose/example_pose_movenet_tflite.py
 ```
@@ -24,11 +28,18 @@ Option | Description
 --video_dims WIDTH HEIGHT | Provides the video source resolution
 --mirror | Flips the camera stream when using a front camera
 
-## C++
+### C++
+|   Platforms  | NPU | CPU | GPU |
+| ------------ | --- | --- | --- |
+| i.MX 8M Plus | :white_check_mark: | :white_check_mark: | :white_check_mark: |
+|   i.MX 93    | :white_check_mark: | :white_check_mark: | :x: |
+|   i.MX 95    | :x: | :white_check_mark: | :white_check_mark: |
+
 C++ example script needs to be generated with [cross compilation](../). [setup_environment.sh](../tools/setup_environment.sh) script needs to be executed in [nxp-nnstreamer-examples](../) folder to define data paths:
 ```bash
 . ./tools/setup_environment.sh
 ```
+
 It is possible to run the pose detection demo inference on three different hardwares:<br>
 Inference on NPU with the following script:
 ```bash

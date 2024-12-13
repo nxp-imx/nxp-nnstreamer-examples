@@ -59,12 +59,12 @@ Note that examples may not run on all platforms - check table below for platform
 
 Snapshot | Name | Platforms | Features
 --- | --- | --- | ---
-[![object detection demo](./detection/detection_demo.webp)](./detection/) | [Object detection](./detection/) | i.MX 8M Plus <br> i.MX 93 <br> i.MX 95| MobileNet SSD <br> Yolov4-tiny <br> TFLite <br> v4l2 camera <br> gst-launch <br> [custom python tensor_filter](./detection/postprocess_yolov4_tiny.py)
+[![object detection demo](./detection/detection_demo.webp)](./detection/) | [Object detection](./detection/) | i.MX 8M Plus <br> i.MX 93 <br> i.MX 95| MobileNet SSD <br> YOLOv4 Tiny <br> TFLite <br> v4l2 camera <br> gst-launch <br> [custom python tensor_filter](./detection/postprocess_yolov4_tiny.py)
 [![image classification demo](./classification/classification_demo.webp)](./classification/) | [Image classification](./classification/) | i.MX 8M Plus <br> i.MX 93 <br> i.MX 95| MobileNet <br> TFLite <br> v4l2 camera <br> gst-launch
-[![image segmentation demo](./segmentation/segmentation_demo.webp)](./segmentation/) | [Image segmentation](./segmentation/) | i.MX 8M Plus <br> i.MX 93<br> i.MX 95| DeepLab<br> TFLite<br> jpeg files slideshow<br> gst-launch
+[![image segmentation demo](./segmentation/segmentation_demo.webp)](./segmentation/) | [Image segmentation](./segmentation/) | i.MX 8M Plus <br> i.MX 93 <br> i.MX 95| DeepLabV3<br> TFLite<br> jpeg files slideshow<br> gst-launch
 [![pose detection demo](./pose/pose_demo.webp)](./pose/) | [Pose detection](./pose/) |i.MX 8M Plus <br> i.MX 93<br> i.MX 95| MoveNet<br> TFLite <br> video file decoding (i.MX 8M Plus only)<br> v4l2 camera <br> gst-launch <br> python
 [![faces demo](./face/face_demo.webp)](./face/) | [Face](./face/) | i.MX 8M Plus <br> i.MX 93<br> i.MX 95| UltraFace <br> FaceNet512 <br> Deepface-emotion <br> TFLite <br> v4l2 camera <br> python
-[![mixed demo](./mixed/mixed_demo.webp)](./mixed/) | [Mixed](./mixed/) | i.MX 8M Plus <br> i.MX 93<br> i.MX 95| MobileNet SSD <br> MobileNet <br> Movenet <br> UltraFace <br> Deepface-emotion <br> TFLite <br> v4l2 camera <br> C++ <br> custom C++ decoding
-[![depth demo](./depth/depth_demo.webp)](./depth/) | [Depth](./depth/) | i.MX 8M Plus <br> i.MX 93<br> i.MX 95| Midas v2 <br> TFLite <br> v4l2 camera <br> C++ <br> custom C++ decoding
+[![mixed demo](./mixed/mixed_demo.webp)](./mixed/) | [Mixed](./mixed/) | i.MX 8M Plus <br> i.MX 93<br> i.MX 95| MobileNet SSD <br> MobileNet <br> MoveNet <br> UltraFace <br> Deepface-emotion <br> TFLite <br> v4l2 camera <br> C++ <br> custom C++ decoding
+[![depth demo](./depth/depth_demo.webp)](./depth/) | [Depth](./depth/) | i.MX 8M Plus <br> i.MX 93<br> i.MX 95| MiDaS v2 <br> TFLite <br> v4l2 camera <br> C++ <br> custom C++ decoding
 
 *Images and video used have been released under Creative Commons CC0 1.0 license or belong to Public Domain*
