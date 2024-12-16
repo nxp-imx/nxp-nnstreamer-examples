@@ -123,19 +123,23 @@ void GstVideoPostProcess::saveToVideo(GstPipelineImx &pipeline,
    */
   pipeline.setSave(true);
   imx::Imx imx{};
-  if (imx.isIMX9()) {
+  if (imx.socId() == imx::IMX93) {
     log_error("video file can't be encoded with %s\n", imx.socName().c_str());
     exit(-1);
   } else {
     std::string cmd;
+    if (imx.socId() == imx::IMX95)
+      cmd = "v4l2h265enc ! h265parse ! ";
+    else
+      cmd = "vpuenc_h264 ! h264parse ! ";
     if (format == "mkv") {
-      cmd = "vpuenc_h264 ! h264parse ! matroskamux ! filesink location=";
+      cmd += "matroskamux ! filesink location=";
       cmd += path.string() + " ";
       pipeline.addToPipeline(cmd);
     }
 
     if (format == "mp4") {
-      cmd = "vpuenc_h264 ! h264parse ! qtmux ! filesink location=";
+      cmd = "qtmux ! filesink location=";
       cmd += path.string() + " ";
       pipeline.addToPipeline(cmd);
     }

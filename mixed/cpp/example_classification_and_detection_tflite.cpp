@@ -335,7 +335,7 @@ int main(int argc, char **argv)
   postProcess.addTextOverlay(pipeline, overlayOptions);
 
   imx::Imx imx{};
-  if (!imx.isIMX9()) {
+  if (imx.socId() != imx::IMX93) {
     // Add another tee element
     std::string ppTeeName = "save";
     pipeline.doInParallel(ppTeeName);
