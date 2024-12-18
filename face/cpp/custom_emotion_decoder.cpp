@@ -224,6 +224,9 @@ GstFlowReturn sinkCallback(GstAppSink* appsink, gpointer user_data)
 
   boxesData->emotionBoxes = boxesData->faceBoxes;
   if (boxesData->emotionBoxes.size() == 0) {
+    boxesData->result.emotions.clear();
+    boxesData->result.values.clear();
+    boxesData->result.boxes.clear();
     gst_sample_unref(sample);
     return GST_FLOW_OK;
   }
@@ -246,13 +249,14 @@ void drawCallback(GstElement* overlay,
                   gpointer user_data)
 {
   DecoderData *boxesData = (DecoderData *) user_data;
+
+  int numFaces = boxesData->result.boxes.size()/4;
+  if (numFaces == 0)
+    return;
+
   std::vector<int> boxes = boxesData->result.boxes;
   std::vector<std::string> emotion = boxesData->result.emotions;
   std::vector<float> value = boxesData->result.values;
-
-  int numFaces = boxes.size()/4;
-  if (numFaces == 0)
-    return;
 
   cairo_set_line_width(cr, 1.0);
   cairo_set_source_rgb(cr, 1, 1, 0);
@@ -263,8 +267,6 @@ void drawCallback(GstElement* overlay,
     h = boxes.at(3 + faceIndex) - boxes.at(1 + faceIndex);
     cairo_rectangle(cr, boxes.at(0 + faceIndex), boxes.at(1 + faceIndex), w, h);
     cairo_move_to(cr, boxes.at(0 + faceIndex) + 5, boxes.at(1 + faceIndex) + 10);
-    if ((emotion.size() == 0) || (value.size() == 0))
-      return;
     std::string text = emotion.at(faceIndex/4)
                        + "("
                        + std::to_string(value.at(faceIndex/4)).substr(0,4)
