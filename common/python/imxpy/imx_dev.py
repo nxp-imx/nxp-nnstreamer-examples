@@ -22,6 +22,7 @@ class SocId(IntEnum):
     IMX8QM = auto()
     IMX8QXP = auto()
     IMX93 = auto()
+    IMX95 = auto()
     UNKNOWN = auto()
 
 
@@ -43,7 +44,8 @@ mach_regex_to_soc = [('imx8mq', SocId.IMX8MQ),
                      ('imx8ulp', SocId.IMX8ULP),
                      ('imx8qm', SocId.IMX8QM),
                      ('imx8qxp', SocId.IMX8QXP),
-                     ('imx93', SocId.IMX93)]
+                     ('imx93', SocId.IMX93),
+                     ('imx95', SocId.IMX95),]
 
 # dictionary of SoC name
 soc_to_name = {SocId.IMX8MQ: "i.MX 8M Quad",
@@ -53,6 +55,7 @@ soc_to_name = {SocId.IMX8MQ: "i.MX 8M Quad",
                SocId.IMX8ULP: "i.MX 8ULP",
                SocId.IMX8QM: "i.MX 8QuadMax",
                SocId.IMX8QXP: "i.MX 8QuadXPlus",
+               SocId.IMX95: "i.MX 95",
                SocId.IMX93: "i.MX 93", }
 
 # dictionary of SoC features
@@ -71,6 +74,8 @@ soc_has_feature = {
         {Feature.GPU2D: True, Feature.GPU3D: True, Feature.NPU: False, },
     SocId.IMX8QXP:
         {Feature.GPU2D: True, Feature.GPU3D: True, Feature.NPU: False, },
+    SocId.IMX95:
+        {Feature.GPU2D: True, Feature.GPU3D: True, Feature.NPU: True, },
     SocId.IMX93:
         {Feature.GPU2D: True, Feature.GPU3D: False, Feature.NPU: True, }, }
 
@@ -97,7 +102,7 @@ class Imx():
             if m is not None:
                 self.soc = tuple[1]
 
-        if not (self.is_imx8() or self.is_imx9()):
+        if not (self.is_imx8() or self.is_imx93() or self.is_imx95()):
             raise ValueError(f"unknown imx family [{self.soc}]")
 
         if self.soc == SocId.UNKNOWN:
@@ -136,8 +141,11 @@ class Imx():
     def has_npu_ethos(self):
         return self.soc == SocId.IMX93
 
+    def has_npu_neutron(self):
+        return self.soc == SocId.IMX95
+
     def has_g2d(self):
-        return self.is_imx8() and self.soc != SocId.IMX8MQ
+        return self.is_imx8() and self.soc != SocId.IMX8MQ or self.is_imx95()
 
     def has_pxp(self):
         return self.soc == SocId.IMX93
@@ -147,9 +155,13 @@ class Imx():
                 SocId.IMX8QM, SocId.IMX8QXP, SocId.IMX8ULP]
         return self.soc in imx8
 
-    def is_imx9(self):
-        imx9 = [SocId.IMX93]
-        return self.soc in imx9
+    def is_imx93(self):
+        imx93 = [SocId.IMX93]
+        return self.soc in imx93
+
+    def is_imx95(self):
+        imx95 = [SocId.IMX95]
+        return self.soc in imx95
 
 
 if __name__ == '__main__':
@@ -158,7 +170,8 @@ if __name__ == '__main__':
     logging.info(f"id() {imx.id()}")
     logging.info(f"name() {imx.name()}")
     logging.info(f"is_imx8() {imx.is_imx8()}")
-    logging.info(f"is_imx9() {imx.is_imx9()}")
+    logging.info(f"is_imx93() {imx.is_imx93()}")
+    logging.info(f"is_imx95() {imx.is_imx95()}")
     logging.info(f"has_gpu2d() {imx.has_gpu2d()}")
     logging.info(f"has_gpu3d() {imx.has_gpu3d()}")
     logging.info(f"has_gpuml() {imx.has_gpuml()}")

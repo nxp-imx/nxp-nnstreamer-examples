@@ -131,6 +131,8 @@ class Pipe:
         elif self.imx.has_npu_ethos():
             opts = ('custom=Delegate:External,'
                     'ExtDelegateLib:libethosu_delegate.so')
+        elif self.imx.has_npu_neutron(): #use CPU backend for i.MX95
+            opts = ('custom=Delegate:XNNPACK,NumThreads:3')
         else:
             opts = ''
         return opts

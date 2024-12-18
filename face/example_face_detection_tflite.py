@@ -21,6 +21,8 @@ if __name__ == '__main__':
 
     if soc == SocId.IMX8MP:
         default_camera = '/dev/video3'
+    elif soc == SocId.IMX95:
+        default_camera = '/dev/video13'
     elif soc == SocId.IMX93:
         default_camera = '/dev/video0'
     else:

@@ -193,8 +193,8 @@ class PoseExample:
         self.source = os.getenv('SOURCE', 'VIDEO')
         gstvideoimx = GstVideoImx(self.imx)
 
-        # i.MX93 does not support video file decoding
-        if self.imx.id() == SocId.IMX93:
+        # i.MX93 and  i.MX95 does not support video file decoding
+        if self.imx.id() == SocId.IMX93  or self.imx.id() == SocId.IMX95:
             print('video file cannot be decoded, use camera source instead')
             self.source = 'CAMERA'
 
@@ -216,6 +216,8 @@ class PoseExample:
         elif self.source == 'CAMERA':
             if self.imx.id() == SocId.IMX8MP:
                 default_camera = '/dev/video3'
+            elif self.imx.id() == SocId.IMX95:
+                default_camera = '/dev/video13'
             else:
                 default_camera = '/dev/video0'
             cmdline = 'v4l2src name=cam_src device={:s} num-buffers=-1 ! '.format(default_camera)
