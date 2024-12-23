@@ -280,13 +280,13 @@ pipeline.linkToTextOverlay(overlayName);
 // Add text overlay
 GstVideoPostProcess postProcess;
 TextOverlayOptions overlayOptions = {
-  .name       = overlayName,  // Text overlay element name
-  .fontName   = "Sans",       // Font name
-  .fontSize   = 24,           // Font size
-  .color      = "red",        // Text color
-  .vAlignment = "left",       // Horizontal alignment of the text
-  .hAlignment = "bottom",     // Vertical alignment of the text
-  .text       = "",           // Text to display, set only if linkToTextOverlay is not used
+  .gstName    = overlayName,    // Text overlay element name
+  .fontName   = "Sans",         // Font name
+  .fontSize   = 24,             // Font size
+  .color      = "red",          // Text color
+  .vAlignment = "left",         // Horizontal alignment of the text
+  .hAlignment = "bottom",       // Vertical alignment of the text
+  .text       = "",             // Text to display, set only if linkToTextOverlay is not used
 };
 postProcess.addTextOverlay(pipeline, overlayOptions);
 ```

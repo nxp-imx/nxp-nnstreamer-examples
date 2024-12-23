@@ -17,12 +17,12 @@
 
 #include "logging.hpp"
 
-const float MODEL_THRESHOLD = 1e-6;
-const int MODEL_DIM         = 65536;
+#define MODEL_THRESHOLD 1e-6
+#define MODEL_DIM       65536
 
 
 typedef struct {
-  guchar output[65536];
+  guchar output[MODEL_DIM];
   int size = 0;
   GstElement *appSrc;
 } DecoderData;

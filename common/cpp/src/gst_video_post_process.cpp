@@ -68,7 +68,7 @@ void GstVideoPostProcess::addTextOverlay(GstPipelineImx &pipeline,
   if (options.hAlignment.length() != 0)
     hAlignOption = (" halignment=" + options.hAlignment);
 
-  std::string cmd = "textoverlay name=" + options.name + " font-desc=\"" + options.fontName;                             
+  std::string cmd = "textoverlay name=" + options.gstName + " font-desc=\"" + options.fontName;
   cmd += ", " + std::to_string(options.fontSize) + "\"" + colorOption + textOption;
   if(imx.hasGPU2d())
     cmd += vAlignOption + hAlignOption + " ! imxvideoconvert_g2d ! ";
@@ -85,22 +85,22 @@ void GstVideoPostProcess::addTextOverlay(GstPipelineImx &pipeline,
  * @brief Add to pipeline cairooverlay for custom drawing.
  * 
  * @param pipeline: GstPipelineImx pipeline.
- * @param name: name for GStreamer textoverlay element.
+ * @param gstName: name for GStreamer textoverlay element.
  */ 
 void GstVideoPostProcess::addCairoOverlay(GstPipelineImx &pipeline,
-                                          const std::string &name)
+                                          const std::string &gstName)
 {
   imx::Imx imx{};
   if (imx.hasGPU2d()){
-    std::string cmd = "imxvideoconvert_g2d ! cairooverlay name=" + name + " ! ";
+    std::string cmd = "imxvideoconvert_g2d ! cairooverlay name=" + gstName + " ! ";
     pipeline.addToPipeline(cmd);
   }
   else if (imx.hasPxP()){
-    std::string cmd = "imxvideoconvert_pxp ! cairooverlay name=" + name + " ! ";
+    std::string cmd = "imxvideoconvert_pxp ! cairooverlay name=" + gstName + " ! ";
     pipeline.addToPipeline(cmd);
   }
   else{
-    std::string cmd = "videoconvert ! cairooverlay name=" + name + " ! ";
+    std::string cmd = "videoconvert ! cairooverlay name=" + gstName + " ! ";
     pipeline.addToPipeline(cmd);
   }
   
@@ -160,8 +160,8 @@ void GstVideoPostProcess::addAppSink(GstPipelineImx &pipeline,
   std::string cmd;
   cmd = "appsink";
 
-  if (options.name.size() != 0)
-    cmd += " name=" + options.name;
+  if (options.gstName.size() != 0)
+    cmd += " name=" + options.gstName;
   if (options.sync == false)
      cmd += " sync=false";
   cmd += " max-buffers=" + std::to_string(options.maxBuffers);

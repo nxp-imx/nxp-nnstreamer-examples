@@ -16,6 +16,7 @@
 #define NUMBER_OF_FEATURE   3
 #define SOC_ID_PATH         "/sys/devices/soc0/soc_id"
 
+
 namespace imx {
 
   /** 
@@ -204,18 +205,14 @@ namespace imx {
         }
       }
 
-      bool isIMX9() 
+      bool isIMX93() 
       {
-        switch (soc) {
-          case IMX93:
-          case IMX95:
-            return true;
-            break;
+        return (soc == IMX93);
+      }
 
-          default:
-            return false;
-            break;
-        }
+      bool isIMX95() 
+      {
+        return (soc == IMX95);
       }
   };
 }

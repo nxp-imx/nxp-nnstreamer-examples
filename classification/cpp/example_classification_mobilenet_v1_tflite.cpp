@@ -20,15 +20,12 @@
 #include <iostream>
 #include <getopt.h>
 
-// Check if command parser has an optional argument
 #define OPTIONAL_ARGUMENT_IS_PRESENT \
     ((optarg == NULL && optind < argc && argv[optind][0] != '-') \
      ? (bool) (optarg = argv[optind++]) \
      : (optarg != NULL))
-
-
-const int CAMERA_INPUT_WIDTH = 640;
-const int CAMERA_INPUT_HEIGHT = 480;
+#define CAMERA_INPUT_WIDTH  640
+#define CAMERA_INPUT_HEIGHT 480
 
 
 typedef struct {
@@ -37,10 +34,10 @@ typedef struct {
   std::string backend;
   std::string norm;
   DataDir dataDir;
-  bool time = false;
-  bool freq = false;
+  bool time;
+  bool freq;
   std::string textColor;
-  char* graphPath = getenv("HOME");
+  char* graphPath;
 } ParserOptions;
 
 
@@ -169,15 +166,18 @@ int cmdParser(int argc, char **argv, ParserOptions& options)
 
 int main(int argc, char **argv)
 {
-  // Create pipeline object
-  GstPipelineImx pipeline;
-
-  // Set command line parser with default values
+  // Initialize command line parser with default values
   ParserOptions options;
   options.backend = "NPU";
   options.norm = "none";
+  options.time = false;
+  options.freq = false;
+  options.graphPath = getenv("HOME");
   if (cmdParser(argc, argv, options))
     return 0;
+
+  // Initialize pipeline object
+  GstPipelineImx pipeline;
  
   // Add camera to pipeline
   GstCameraImx camera(options.camDevice,
@@ -222,13 +222,13 @@ int main(int argc, char **argv)
   // Add text overlay and display it
   GstVideoPostProcess postProcess;
   TextOverlayOptions overlayOptions = {
-    .name       = overlayName,  // Text overlay element name
-    .fontName   = "Sans",       // Font name
-    .fontSize   = 24,           // Font size
-    .color      = "",           // Text color (white)
-    .vAlignment = "baseline",   // Horizontal alignment of the text
-    .hAlignment = "center",     // Vertical alignment of the text
-    .text       = "",           // Text to display, set only if linkToTextOverlay is not used
+    .gstName    = overlayName,
+    .fontName   = "Sans",
+    .fontSize   = 24,
+    .color      = "",
+    .vAlignment = "baseline",
+    .hAlignment = "center",
+    .text       = "", // set only if linkToTextOverlay is not used
   };
   postProcess.addTextOverlay(pipeline, overlayOptions);
   pipeline.enablePerfDisplay(options.freq, options.time, 15, options.textColor);

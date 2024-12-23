@@ -26,7 +26,7 @@ GstCameraImx::GstCameraImx(const std::filesystem::path &cameraDevice,
     : GstSourceImx(width, height, format),
       device(cameraDevice),
       flip(flip),
-      name(name),
+      gstName(name),
       framerate(framerate)
 {
   if (cameraDevice.string().length() != 0) {
@@ -54,7 +54,7 @@ GstCameraImx::GstCameraImx(const std::filesystem::path &cameraDevice,
 void GstCameraImx::addCameraToPipeline(GstPipelineImx &pipeline)
 {
   std::string cmd;
-  cmd += "v4l2src name=" + name + " device=" + device.string();
+  cmd += "v4l2src name=" + gstName + " device=" + device.string();
   cmd += " num-buffers=-1 ! video/x-raw,width=";
   cmd += std::to_string(width) + ",height=" + std::to_string(height);
   cmd += ",framerate=" + std::to_string(framerate) + "/1 ! ";
@@ -150,7 +150,7 @@ void GstSlideshowImx::addSlideshowToPipeline(GstPipelineImx &pipeline)
 /**
  * @brief Parameterized constructor.
  * 
- * @param name: name for GStreamer appsrc element.
+ * @param gstName: name for GStreamer appsrc element.
  * @param isLive: whether to act as a live source.
  * @param emitSignal: emit need-data, enough-data and seek-data signals.
  * @param maxBuffers: the maximum number of buffers to queue internally.
@@ -161,7 +161,7 @@ void GstSlideshowImx::addSlideshowToPipeline(GstPipelineImx &pipeline)
  * @param format: GStreamer video format.
  * @param framerate: appsrc framerate.
  */
-GstAppSrcImx::GstAppSrcImx(const std::string &name,
+GstAppSrcImx::GstAppSrcImx(const std::string &gstName,
                            const bool &isLive,
                            const bool &emitSignal,
                            const int &maxBuffers,
@@ -172,7 +172,7 @@ GstAppSrcImx::GstAppSrcImx(const std::string &name,
                            const std::string &format,
                            const int &framerate)
     : GstSourceImx(width, height, format),
-      name(name),
+      gstName(gstName),
       isLive(isLive),
       emitSignal(emitSignal),
       maxBuffers(maxBuffers),
@@ -194,8 +194,8 @@ void GstAppSrcImx::addAppSrcToPipeline(GstPipelineImx &pipeline)
   std::string caps;
   cmd = "appsrc";
 
-  if (name.size() != 0)
-    cmd += " name=" + name;
+  if (gstName.size() != 0)
+    cmd += " name=" + gstName;
   if (isLive == true)
      cmd += " is-live=true";
 

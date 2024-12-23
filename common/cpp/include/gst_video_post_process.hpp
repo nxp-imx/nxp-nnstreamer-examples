@@ -12,8 +12,9 @@
 
 #include "gst_pipeline_imx.hpp"
 
+
 typedef struct {
-  std::string name;
+  std::string gstName;
   std::string fontName;
   int fontSize;
   std::string color;
@@ -24,12 +25,13 @@ typedef struct {
 
 
 typedef struct {
-  std::string name;
+  std::string gstName;
   bool sync;
   int maxBuffers;
   bool drop;
   bool emitSignals;
 } AppSinkOptions;
+
 
 /**
  * @brief Create pipeline segments for video post processing.
@@ -47,7 +49,7 @@ class GstVideoPostProcess {
     void addTextOverlay(GstPipelineImx &pipeline, 
                         const TextOverlayOptions &options);
 
-    void addCairoOverlay(GstPipelineImx &pipeline, const std::string &name);
+    void addCairoOverlay(GstPipelineImx &pipeline, const std::string &gstName);
    
     void saveToVideo(GstPipelineImx &pipeline,
                      const std::string &format,

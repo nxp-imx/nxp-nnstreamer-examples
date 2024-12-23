@@ -132,7 +132,7 @@ void GstVideoImx::videoscaleToRGB(GstPipelineImx &pipeline,
  * @brief Create pipeline segment for accelerated video cropping.
  * 
  * @param pipeline: GstPipelineImx pipeline.
- * @param name: GStreamer videocrop element name.
+ * @param gstName: GStreamer videocrop element name.
  * @param width: output video width after rescale.
  * @param height: output video height after rescale.
  * @param top: top pixels to be cropped, default is 0.
@@ -141,7 +141,7 @@ void GstVideoImx::videoscaleToRGB(GstPipelineImx &pipeline,
  * @param right: right pixels to be cropped, default is 0.
  */
 void GstVideoImx::videocrop(GstPipelineImx &pipeline,
-                            const std::string &name, 
+                            const std::string &gstName, 
                             const int &width,
                             const int &height,
                             const int &top,
@@ -150,7 +150,7 @@ void GstVideoImx::videocrop(GstPipelineImx &pipeline,
                             const int &right)
 {
   std::string cmd;
-  cmd = "videocrop name=" + name + " ";
+  cmd = "videocrop name=" + gstName + " ";
   if(top != 0)
     cmd += "top=" + std::to_string(top) + " ";
   if(bottom != 0)
@@ -172,12 +172,12 @@ void GstVideoImx::videocrop(GstPipelineImx &pipeline,
  * @brief Create pipeline segment for accelerated video mixing.
  * 
  * @param pipeline: GstPipelineImx pipeline.
- * @param name: GStreamer compositor element name.
+ * @param gstName: GStreamer compositor element name.
  * @param latency: time for a capture to reach the sink, default 0.
  * @param position: displayPosition structure, default is displayPosition::centered.
  */
 void GstVideoImx::videoCompositor(GstPipelineImx &pipeline,
-                                  const std::string &name,
+                                  const std::string &gstName,
                                   const int &latency,
                                   const displayPosition &position)
  {
@@ -186,7 +186,7 @@ void GstVideoImx::videoCompositor(GstPipelineImx &pipeline,
   std::string secondStream = "sink_1";
   
   if(this->imx.hasGPU2d()) {
-    cmd = "imxcompositor_g2d name=" + name + " ";
+    cmd = "imxcompositor_g2d name=" + gstName + " ";
     cmd += firstStream + "::zorder=2 ";
     cmd += secondStream + "::zorder=1 ";
   } else if(this->imx.hasPxP()) {
@@ -194,14 +194,14 @@ void GstVideoImx::videoCompositor(GstPipelineImx &pipeline,
      * imxcompositor_pxp does not support RGBA sink
      * and use CPU to convert RGBA to RGB
      */ 
-    cmd = "imxcompositor_pxp name=" + name + " ";
+    cmd = "imxcompositor_pxp name=" + gstName + " ";
     cmd += firstStream + "::zorder=2 ";
     cmd += secondStream + "::zorder=1 ";
     if (position == displayPosition::mixed)
       cmd += firstStream + "::alpha=0.3 ";
   } else {
     /*  no acceleration */
-    cmd = "compositor name=" + name + " ";
+    cmd = "compositor name=" + gstName + " ";
   }
 
   if(latency != 0) {

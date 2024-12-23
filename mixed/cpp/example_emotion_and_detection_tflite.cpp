@@ -31,19 +31,14 @@
 
 #include <iostream>
 #include <getopt.h>
-#include <math.h>
-#include <cassert>
 
-// Check if command parser has an optional argument
 #define OPTIONAL_ARGUMENT_IS_PRESENT \
     ((optarg == NULL && optind < argc && argv[optind][0] != '-') \
      ? (bool) (optarg = argv[optind++]) \
      : (optarg != NULL))
-
-
-const int MODEL_LATENCY_NS_CPU = 500000000;
-const int MODEL_LATENCY_NS_GPU_VSI = 1000000000;
-const int MODEL_LATENCY_NS_NPU_VSI = 25000000;
+#define MODEL_LATENCY_NS_CPU      500000000
+#define MODEL_LATENCY_NS_GPU_VSI  1000000000
+#define MODEL_LATENCY_NS_NPU_VSI  25000000
 
 
 typedef struct {
@@ -59,10 +54,10 @@ typedef struct {
   std::string eNorm;
   std::string dNorm;
   DataDir dDataDir;
-  bool time = false;
-  bool freq = false;
+  bool time;
+  bool freq;
   std::string textColor;
-  char* graphPath = getenv("HOME");
+  char* graphPath;
 } ParserOptions;
 
 
@@ -231,7 +226,7 @@ int cmdParser(int argc, char **argv, ParserOptions& options)
 
 int main(int argc, char **argv)
 {
-  // Set command line parser with default values
+  // Initialize command line parser with default values
   ParserOptions options;
   options.eBackend = "NPU";
   options.eNorm = "none";
@@ -239,11 +234,14 @@ int main(int argc, char **argv)
   options.fNorm = "none";
   options.dBackend = "NPU";
   options.dNorm = "none";
+  options.time = false;
+  options.freq = false;
+  options.graphPath = getenv("HOME");
   if (cmdParser(argc, argv, options))
     return 0;
 
   imx::Imx imx{};
-  if ((imx.socId() == imx::IMX95) && (options.fBackend == "NPU")) {
+  if (imx.isIMX95() && (options.fBackend == "NPU")) {
     log_error("Example can't run on NPU in i.MX95\n");
     return 0;
   }
@@ -334,7 +332,7 @@ int main(int argc, char **argv)
   };
   pipeline.addBranch(teeName, sinkQueue);
   AppSinkOptions asOptions = {
-    .name         = "appsink_video",
+    .gstName      = "appsink_video",
     .sync         = false,
     .maxBuffers   = 1,
     .drop         = true,

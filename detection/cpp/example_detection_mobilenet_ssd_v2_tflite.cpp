@@ -20,20 +20,17 @@
 #include <iostream>
 #include <getopt.h>
 
-// Check if command parser has an optional argument
 #define OPTIONAL_ARGUMENT_IS_PRESENT \
     ((optarg == NULL && optind < argc && argv[optind][0] != '-') \
      ? (bool) (optarg = argv[optind++]) \
      : (optarg != NULL))
-
-
-const int CAMERA_INPUT_WIDTH = 640;
-const int CAMERA_INPUT_HEIGHT = 480;
-const int MODEL_LATENCY_NS_CPU = 300000000;
-const int MODEL_LATENCY_NS_GPU_VSI = 500000000;
-const int MODEL_LATENCY_NS_NPU_VSI = 20000000;
-const int MODEL_LATENCY_NS_NPU_ETHOS = 15000000;
-const int MODEL_LATENCY_NS_NPU_NEUTRON = 20000000;
+#define CAMERA_INPUT_WIDTH            640
+#define CAMERA_INPUT_HEIGHT           480
+#define MODEL_LATENCY_NS_CPU          300000000
+#define MODEL_LATENCY_NS_GPU_VSI      500000000
+#define MODEL_LATENCY_NS_NPU_VSI      20000000
+#define MODEL_LATENCY_NS_NPU_ETHOS    15000000
+#define MODEL_LATENCY_NS_NPU_NEUTRON  20000000
 
 
 typedef struct {
@@ -42,10 +39,10 @@ typedef struct {
   std::string backend;
   std::string norm;
   DataDir dataDir;
-  bool time = false;
-  bool freq = false;
+  bool time;
+  bool freq;
   std::string textColor;
-  char* graphPath = getenv("HOME");
+  char* graphPath;
 } ParserOptions;
 
 
@@ -183,15 +180,18 @@ int cmdParser(int argc, char **argv, ParserOptions& options)
 
 int main(int argc, char **argv)
 {
-  // Create pipeline object
-  GstPipelineImx pipeline;
-
-  // Set command line parser with default values
+  // Initialize command line parser with default values
   ParserOptions options;
   options.backend = "NPU";
   options.norm = "none";
+  options.time = false;
+  options.freq = false;
+  options.graphPath = getenv("HOME");
   if (cmdParser(argc, argv, options))
     return 0;
+
+  // Initialize pipeline object
+  GstPipelineImx pipeline;
   
   // Add camera to pipeline
   GstCameraImx camera(options.camDevice,

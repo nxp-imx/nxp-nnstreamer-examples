@@ -9,6 +9,7 @@
 #include "imx_devices.hpp"
 #include "gst_pipeline_imx.hpp"
 
+
 enum class displayPosition {
   mixed,
   split
@@ -38,7 +39,7 @@ class GstVideoImx {
                          const int &height);
 
     void videocrop(GstPipelineImx &pipeline,
-                   const std::string &name,
+                   const std::string &gstName,
                    const int &width,
                    const int &height,
                    const int &top=0,
@@ -47,7 +48,7 @@ class GstVideoImx {
                    const int &right=0);
 
     void videoCompositor(GstPipelineImx &pipeline,
-                         const std::string &name,
+                         const std::string &gstName,
                          const int &latency = 0,
                          const displayPosition &position=displayPosition::mixed);
 };

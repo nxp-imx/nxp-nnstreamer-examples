@@ -13,6 +13,7 @@
 #include "gst_pipeline_imx.hpp"
 #include "tensor_custom_data_generator.hpp"
 
+
 /**
  * @brief Create pipeline segments for various models.
  */
@@ -46,7 +47,7 @@ class ModelInfos {
     bool isRGB() const  { return ((modelChannel == 3) ? true : false); }
 
     void addInferenceToPipeline(GstPipelineImx &pipeline,
-                                const std::string &name="",
+                                const std::string &gstName="",
                                 const std::string &format="RGB");
 
     void setTensorFilterConfig(imx::Imx &imx);

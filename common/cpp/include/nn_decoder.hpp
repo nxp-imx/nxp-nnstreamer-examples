@@ -12,6 +12,7 @@
 #include "gst_pipeline_imx.hpp"
 #include "tensor_custom_data_generator.hpp"
 
+
 /**
  * @brief Enum of available models for bounding_boxes mode.
  */

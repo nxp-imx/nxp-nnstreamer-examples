@@ -45,11 +45,11 @@ ModelInfos::ModelInfos(const std::filesystem::path &path,
  * @brief Create pipeline segment for inference.
  * 
  * @param pipeline: GstPipelineImx pipeline.
- * @param name: tensor_filter element name, empty by default.
+ * @param gstName: tensor_filter element name, empty by default.
  * @param format: tensor_filter input format, RGB by default.
  */
 void ModelInfos::addInferenceToPipeline(GstPipelineImx &pipeline,
-                                        const std::string &name,
+                                        const std::string &gstName,
                                         const std::string &format)
 {
   std::string cmd;
@@ -63,9 +63,9 @@ void ModelInfos::addInferenceToPipeline(GstPipelineImx &pipeline,
   cmd += "tensor_filter latency=1 framework=" + framework + "  model=";
   cmd += modelPath.string() + " ";
   cmd += tensorData.tensorFilterCustom;
-  if (name.length() != 0) {
-    cmd += " name=" + name;
-    pipeline.addFilterName(name);
+  if (gstName.length() != 0) {
+    cmd += " name=" + gstName;
+    pipeline.addFilterName(gstName);
   }
   cmd += " ! ";
   pipeline.addToPipeline(cmd);
@@ -101,10 +101,10 @@ void ModelInfos::setTensorFilterConfig(imx::Imx &imx)
       if (imx.isIMX8() && imx.hasNPU())
         tensorData.tensorFilterCustom = tensorCustomData.vsiNPU();
 
-      if (imx.isIMX9() && imx.hasEthosNPU())
+      if (imx.hasEthosNPU())
         tensorData.tensorFilterCustom = tensorCustomData.ethosNPU();
 
-      if (imx.isIMX9() && imx.hasNeutronNPU())
+      if (imx.hasNeutronNPU())
         tensorData.tensorFilterCustom = tensorCustomData.neutronNPU();
 
       break;
@@ -113,10 +113,10 @@ void ModelInfos::setTensorFilterConfig(imx::Imx &imx)
       if (imx.isIMX8() && imx.hasNPU())
         tensorData.tensorFilterCustom = tensorCustomData.vsiNPU();
 
-      if (imx.isIMX9() && imx.hasEthosNPU())
+      if (imx.hasEthosNPU())
         tensorData.tensorFilterCustom = tensorCustomData.ethosNPU();
 
-      if (imx.isIMX9() && imx.hasNeutronNPU())
+      if (imx.hasNeutronNPU())
         tensorData.tensorFilterCustom = tensorCustomData.neutronNPU();
 
       break;

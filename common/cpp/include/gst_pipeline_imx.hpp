@@ -108,34 +108,34 @@ class GstPipelineImx {
 
     AppData getAppData() const { return gApp; }
 
-    void linkToTextOverlay(const std::string &name);
+    void linkToTextOverlay(const std::string &gstName);
 
-    void linkToVideoCompositor(const std::string &name);
+    void linkToVideoCompositor(const std::string &gstName);
 
-    void addTensorSink(const std::string &name, const bool &qos=true);
+    void addTensorSink(const std::string &gstName, const bool &qos=true);
 
     void setSave(const bool &save);
 
-    GstElement* getElement(const std::string &name);
+    GstElement* getElement(const std::string &gstName);
 
     template<typename F>
-    void connectToElementSignal(const std::string &name,
+    void connectToElementSignal(const std::string &gstName,
                                 F callback,
                                 const std::string &signal,
                                 gpointer data)
     {
-      GstElement *element = getElement(name);
+      GstElement *element = getElement(gstName);
       if (element) {
         u_long handleID = g_signal_connect(element,
                                            signal.c_str(),
                                            G_CALLBACK(callback),
                                            data);
         if (handleID <= 0) {
-          log_error("could not connect %s\n", name.c_str());
+          log_error("could not connect %s\n", gstName.c_str());
           exit(-1);
         }
       } else {
-        log_error("Could not get %s\n", name.c_str());
+        log_error("Could not get %s\n", gstName.c_str());
         exit(-1);
       }
     }
@@ -156,6 +156,6 @@ class GstPipelineImx {
                                  guint64 duration,
                                  gpointer user_data);
 
-    void addFilterName(std::string name);
+    void addFilterName(std::string gstName);
 };
 #endif

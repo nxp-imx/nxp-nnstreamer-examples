@@ -25,10 +25,7 @@
 
 #include <iostream>
 #include <getopt.h>
-#include <math.h>
-#include <cassert>
 
-// Check if command parser has an optional argument
 #define OPTIONAL_ARGUMENT_IS_PRESENT \
     ((optarg == NULL && optind < argc && argv[optind][0] != '-') \
      ? (bool) (optarg = argv[optind++]) \
@@ -43,10 +40,10 @@ typedef struct {
   std::string eBackend;
   std::string fNorm;
   std::string eNorm;
-  bool time = false;
-  bool freq = false;
+  bool time;
+  bool freq;
   std::string textColor;
-  char* graphPath = getenv("HOME");
+  char* graphPath;
 } ParserOptions;
 
 
@@ -179,17 +176,20 @@ int cmdParser(int argc, char **argv, ParserOptions& options)
  */
 int main(int argc, char **argv)
 {
-  // Set command line parser with default values
+  // Initialize command line parser with default values
   ParserOptions options;
   options.eBackend = "NPU";
   options.eNorm = "none";
   options.fBackend = "NPU";
   options.fNorm = "none";
+  options.time = false;
+  options.freq = false;
+  options.graphPath = getenv("HOME");
   if (cmdParser(argc, argv, options))
     return 0;
   
   imx::Imx imx{};
-  if ((imx.socId() == imx::IMX95) && (options.fBackend == "NPU")) {
+  if (imx.isIMX95() && (options.fBackend == "NPU")) {
     log_error("Example can't run on NPU in i.MX95\n");
     return 0;
   }
@@ -278,7 +278,7 @@ int main(int argc, char **argv)
   };
   pipeline.addBranch(teeName, sinkQueue);
   AppSinkOptions asOptions = {
-    .name         = "appsink_video",
+    .gstName      = "appsink_video",
     .sync         = false,
     .maxBuffers   = 1,
     .drop         = true,

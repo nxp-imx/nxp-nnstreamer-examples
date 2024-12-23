@@ -203,11 +203,13 @@ void GstPipelineImx::busCallback(GstBus* bus,
       gchar *debugInfo;
 
       gst_message_parse_error(message, &err, &debugInfo);
-      log_error("Error received from element %s: %s.\n",
-                GST_OBJECT_NAME(message->src),
-                err->message);
-      log_error("Debugging information: %s.\n",
-                debugInfo ? debugInfo : "none");
+      std::string name = GST_OBJECT_NAME(message->src);
+  
+      log_error("Error received from element %s: %s.\n", name.c_str(), err->message);
+      if (!name.compare(0, 7,"cam_src")) {
+        log_error("Use 'gst-device-monitor-1.0 Video/Source' command to check supported camera device resolution and framerate\n");
+      }
+      log_debug("Debugging information: %s.\n", debugInfo ? debugInfo : "none");
       g_error_free(err);
       g_free(debugInfo);
       log_debug("Closing the main loop.\n");
@@ -284,33 +286,33 @@ void GstPipelineImx::doInParallel(const std::string &teeName)
 /**
  * @brief Link text to textoverlay.
  * 
- * @param name: name of textoverlay element.
+ * @param gstName: name of textoverlay element.
  */
-void GstPipelineImx::linkToTextOverlay(const std::string &name)
+void GstPipelineImx::linkToTextOverlay(const std::string &gstName)
 {
-  addToPipeline(name + ".text_sink ");
+  addToPipeline(gstName + ".text_sink ");
 }
 
 
 /**
  * @brief Link video to compositor.
  * 
- * @param name: name of compositor element.
+ * @param gstName: name of compositor element.
  */
-void GstPipelineImx::linkToVideoCompositor(const std::string &name)
+void GstPipelineImx::linkToVideoCompositor(const std::string &gstName)
 {
-  addToPipeline(name + ". ");
+  addToPipeline(gstName + ". ");
 }
 
 
 /**
  * @brief Add tensor_sink element to retrieve tensors.
  * 
- * @param name: name of tensor_sink element.
+ * @param gstName: name of tensor_sink element.
  */
-void GstPipelineImx::addTensorSink(const std::string &name, const bool &qos)
+void GstPipelineImx::addTensorSink(const std::string &gstName, const bool &qos)
 {
-  addToPipeline("tensor_sink name=" + name + " ");
+  addToPipeline("tensor_sink name=" + gstName + " ");
   if (qos == false)
     addToPipeline("qos=false ");
 }
@@ -330,11 +332,11 @@ void GstPipelineImx::setSave(const bool &save)
 /**
  * @brief Get element from parsed pipeline as a GstElement.
  * 
- * @param name: name of element.
+ * @param gstName: name of element.
  */
-GstElement* GstPipelineImx::getElement(const std::string &name)
+GstElement* GstPipelineImx::getElement(const std::string &gstName)
 {
-  return gst_bin_get_by_name(GST_BIN(gApp.gstPipeline), name.c_str());
+  return gst_bin_get_by_name(GST_BIN(gApp.gstPipeline), gstName.c_str());
 }
 
 
@@ -464,9 +466,9 @@ void GstPipelineImx::perfDrawCallback(GstElement* overlay,
 /**
  * @brief Get tensor_filter name of all pipelines.
  * 
- * @param name: name of tensor_filter element.
+ * @param gstName: name of tensor_filter element.
  */
-void GstPipelineImx::addFilterName(std::string name) {
-  gApp.filterNames.push_back(name);
-  namesVector.push_back(name);
+void GstPipelineImx::addFilterName(std::string gstName) {
+  gApp.filterNames.push_back(gstName);
+  namesVector.push_back(gstName);
 }

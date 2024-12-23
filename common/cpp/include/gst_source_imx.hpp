@@ -37,7 +37,7 @@ class GstSourceImx {
  */
 class GstCameraImx : public GstSourceImx {
   private:
-    std::string name;
+    std::string gstName;
     bool flip;
     GstVideoImx videoscale{};
     std::filesystem::path device;
@@ -97,7 +97,7 @@ class GstSlideshowImx : public GstSourceImx {
  */
 class GstAppSrcImx : public GstSourceImx {
   private:
-    std::string name;
+    std::string gstName;
     bool isLive;
     bool emitSignal;
     int maxBuffers;
@@ -107,7 +107,7 @@ class GstAppSrcImx : public GstSourceImx {
     GstVideoImx videoscale{};
 
   public:
-    GstAppSrcImx(const std::string &name,
+    GstAppSrcImx(const std::string &gstName,
                  const bool &isLive,
                  const bool &emitSignal,
                  const int &maxBuffers,

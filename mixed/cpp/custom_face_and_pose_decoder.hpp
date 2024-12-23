@@ -16,21 +16,21 @@
 #include "logging.hpp"
 
 /* Face detection constants */
-const int MODEL_UFACE_NUMBER_BOXES                = 100;
-const int NUM_BOX_DATA                            = 6;
-const int NUMBER_OF_COORDINATES                   = 4;
-const float MODEL_UFACE_CLASSIFICATION_THRESHOLD  = 0.7f;
-const int MODEL_UFACE_NUMBER_MAX                  = 15;
-const int INPUT_WIDTH                             = 480;
-const int INPUT_HEIGHT                            = 480;
+#define MODEL_UFACE_NUMBER_BOXES              100
+#define NUM_BOX_DATA                          6
+#define NUMBER_OF_COORDINATES                 4
+#define MODEL_UFACE_CLASSIFICATION_THRESHOLD  0.7f
+#define MODEL_UFACE_NUMBER_MAX                15
+#define INPUT_WIDTH                           480
+#define INPUT_HEIGHT                          480
 
 
 /* Pose detection constants */
-const int KPT_SIZE                                = 17;
-const int Y_INDEX                                 = 0;
-const int X_INDEX                                 = 1;
-const int SCORE_INDEX                             = 2;
-const float SCORE_THRESHOLD                       = 0.4f;
+#define KPT_SIZE                              17
+#define Y_INDEX                               0
+#define X_INDEX                               1
+#define SCORE_INDEX                           2
+#define SCORE_THRESHOLD                       0.4f
 
 
 typedef struct {

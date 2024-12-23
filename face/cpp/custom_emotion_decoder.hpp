@@ -17,13 +17,13 @@
 
 #include "logging.hpp"
 
-const int MODEL_UFACE_NUMBER_BOXES                = 100;
-const int NUM_BOX_DATA                            = 6;
-const int NUMBER_OF_COORDINATES                   = 4;
-const float MODEL_UFACE_CLASSIFICATION_THRESHOLD  = 0.7f;
-const int MODEL_UFACE_NUMBER_MAX                  = 15;
-const int CAMERA_INPUT_WIDTH                      = 640;
-const int CAMERA_INPUT_HEIGHT                     = 480;
+#define MODEL_UFACE_NUMBER_BOXES              100
+#define NUM_BOX_DATA                          6
+#define NUMBER_OF_COORDINATES                 4
+#define MODEL_UFACE_CLASSIFICATION_THRESHOLD  0.7f
+#define MODEL_UFACE_NUMBER_MAX                15
+#define CAMERA_INPUT_WIDTH                    640
+#define CAMERA_INPUT_HEIGHT                   480
 
 
 typedef struct {

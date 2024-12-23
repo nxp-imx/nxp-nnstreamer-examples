@@ -23,15 +23,12 @@
 #include <math.h>
 #include <cassert>
 
-// Check if command parser has an optional argument
 #define OPTIONAL_ARGUMENT_IS_PRESENT \
     ((optarg == NULL && optind < argc && argv[optind][0] != '-') \
      ? (bool) (optarg = argv[optind++]) \
      : (optarg != NULL))
-
-
-const int INPUT_WIDTH = 480;
-const int INPUT_HEIGHT = 480;
+#define INPUT_WIDTH         480
+#define INPUT_HEIGHT        480
 
 
 typedef struct {
@@ -41,10 +38,10 @@ typedef struct {
   std::string backend;
   std::string norm;
   std::string useCamera;
-  bool time = false;
-  bool freq = false;
+  bool time;
+  bool freq;
   std::string textColor;
-  char* graphPath = getenv("HOME");
+  char* graphPath;
 } ParserOptions;
 
 
@@ -182,24 +179,27 @@ int cmdParser(int argc, char **argv, ParserOptions& options)
 
 int main(int argc, char **argv)
 {
-  // Create pipeline object
-  GstPipelineImx pipeline;
-
-  // Set command line parser with default values
+  // Initialize command line parser with default values
   ParserOptions options;
   options.backend = "NPU";
   options.norm = "castuInt8";
   options.useCamera = "0";
+  options.time = false;
+  options.freq = false;
+  options.graphPath = getenv("HOME");
   if (cmdParser(argc, argv, options))
     return 0;
 
   imx::Imx imx{};
-  if ((imx.socId() == imx::IMX95) && (options.backend == "NPU")) {
+  if (imx.isIMX95() && (options.backend == "NPU")) {
     log_error("Example can't run on NPU in i.MX95\n");
     return 0;
   }
 
-  if ((options.useCamera == "1") || (imx.isIMX9())) {
+  // Initialize pipeline object
+  GstPipelineImx pipeline;
+
+  if ((options.useCamera == "1") || imx.isIMX93() || imx.isIMX95()) {
     // Add camera to pipeline
     GstCameraImx camera(options.camDevice,
                         "cam_src",
