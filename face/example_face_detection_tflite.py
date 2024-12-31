@@ -17,14 +17,12 @@ from imxpy.imx_dev import Imx, SocId  # noqa
 if __name__ == '__main__':
 
     imx = Imx()
-    soc = imx.id()
-
-    if soc == SocId.IMX8MP:
+    if imx.id() == SocId.IMX8MP:
         default_camera = '/dev/video3'
-    elif soc == SocId.IMX95:
-        default_camera = '/dev/video13'
-    elif soc == SocId.IMX93:
+    elif imx.is_imx93():
         default_camera = '/dev/video0'
+    elif imx.is_imx95():
+        default_camera = '/dev/video13'
     else:
         name = imx.name()
         raise NotImplementedError(f'Platform not supported [{name}]')

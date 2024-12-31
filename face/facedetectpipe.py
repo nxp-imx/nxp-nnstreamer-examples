@@ -22,7 +22,7 @@ from gi.repository import Gst, GLib, GstApp, GstVideo  # noqa
 python_path = os.path.join(os.path.dirname(os.path.abspath(__file__)),
                            '../common/python')
 sys.path.append(python_path)
-from imxpy.imx_dev import Imx, SocId  # noqa
+from imxpy.imx_dev import Imx  # noqa
 from imxpy.common_utils import GstVideoImx, store_vx_graph_compilation  # noqa
 
 
@@ -625,45 +625,3 @@ class FaceDetectPipe(Pipe):
 
         self.stop()
         stdin.set_attr_restore()
-
-
-if __name__ == '__main__':
-
-    imx = Imx()
-    soc = imx.id()
-    if not (soc == SocId.IMX8MP or soc == SocId.IMX93):
-        name = imx.name()
-        raise NotImplementedError(f'Platform not supported [{name}]')
-
-    if soc == SocId.IMX8MP:
-        default_camera = '/dev/video3'
-    else:
-        default_camera = '/dev/video0'
-
-    parser = argparse.ArgumentParser(description='Face Identification')
-    parser.add_argument('--camera_device', '-c',
-                        type=str,
-                        help='camera device node',
-                        default=default_camera)
-    parser.add_argument('--mirror', '-m',
-                        default=False, action='store_true',
-                        help='flip image to display as a mirror')
-    args = parser.parse_args()
-
-    format = '%(asctime)s.%(msecs)03d %(levelname)s:\t%(message)s'
-    datefmt = '%Y-%m-%d %H:%M:%S'
-    logging.basicConfig(level=logging.INFO, format=format, datefmt=datefmt)
-
-    # pipeline parameters - no secondary pipeline
-    camera_device = args.camera_device
-    flip = args.mirror
-    vr = (640, 480)
-    fps = 30
-    secondary = None
-
-    pipe = FaceDetectPipe(camera_device=camera_device,
-                          video_resolution=vr,
-                          video_fps=fps,
-                          flip=flip,
-                          secondary_pipe=secondary)
-    pipe.run()
