@@ -1,7 +1,7 @@
 #!/bin/bash
-
+#
+# Copyright 2022-2025 NXP
 # SPDX-License-Identifier: BSD-3-Clause
-# Copyright 2022, 2024 NXP
 
 function gst_exec_detection {
 

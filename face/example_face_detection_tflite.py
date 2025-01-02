@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
+#
+# Copyright 2022-2025 NXP
 # SPDX-License-Identifier: BSD-3-Clause
-# Copyright 2022-2024 NXP
 
 import argparse
 from facedetectpipe import FaceDetectPipe
 import logging
 import os
-import sys
 
 python_path = os.path.join(
     os.path.dirname(

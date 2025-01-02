@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
+#
+# Copyright 2022-2025 NXP
 # SPDX-License-Identifier: BSD-3-Clause
-# Copyright 2022-2024 NXP
 
 import argparse
 import cairo

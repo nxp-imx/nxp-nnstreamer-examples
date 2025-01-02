@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
+#
+# Copyright 2022-2025 NXP
 # SPDX-License-Identifier: BSD-3-Clause
-# Copyright 2022-2024 NXP
 
 import argparse
 import cairo
@@ -13,7 +14,6 @@ import numpy as np
 import re
 import os
 import sys
-import ultraface
 
 gi.require_version('Gst', '1.0')
 gi.require_version('GstApp', '1.0')

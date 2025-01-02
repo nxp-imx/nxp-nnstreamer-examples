@@ -1,6 +1,7 @@
 #!/bin/bash
+#
+# Copyright 2022-2025 NXP
 # SPDX-License-Identifier: BSD-3-Clause
-# Copyright 2022-2024 NXP
 
 # segmentation pipeline g2d accelerated for video rescaling
 # video compositor elements are not working for 513x513 - nnstreamer bug
