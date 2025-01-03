@@ -1,5 +1,5 @@
 /**
- * Copyright 2024 NXP
+ * Copyright 2024-2025 NXP
  * SPDX-License-Identifier: BSD-3-Clause
  */
 
@@ -350,7 +350,7 @@ GstElement* GstPipelineImx::getElement(const std::string &gstName)
  */
 void GstPipelineImx::enablePerfDisplay(const bool &frequency,
                                        const bool &temporal,
-                                       const int &fontSize,
+                                       const float &fontSize,
                                        const std::string &color)
 {
   perfColor = color;
@@ -437,6 +437,8 @@ void GstPipelineImx::perfDrawCallback(GstElement* overlay,
 
   std::string pipeDuration;
   std::string FPS;
+  float scaleFactor = 15.0f/640; // Default font size is 15 pixels for a width of 640
+  float width = perfFontSize/scaleFactor;
   if (hasPerf.freq == true)
     FPS = std::to_string(gApp->FPS).substr(0, 5) + " FPS";
 
@@ -445,7 +447,8 @@ void GstPipelineImx::perfDrawCallback(GstElement* overlay,
     if ((hasPerf.temp == true) && (hasPerf.freq == true))
       pipeDuration.append(" / ");
   }
-  outlineText(cr, 14, 18, ("Pipeline: " + pipeDuration + FPS), perfColor);
+  // 18 pixels for a width of 640 is default for space between top of screen and first line
+  outlineText(cr, 14, width * 18/640, ("Pipeline: " + pipeDuration + FPS), perfColor);
 
   std::string inference;
   std::string IPS;
@@ -458,7 +461,9 @@ void GstPipelineImx::perfDrawCallback(GstElement* overlay,
       if ((hasPerf.temp == true) && (hasPerf.freq == true))
         inference.append(" / ");
     }
-    outlineText(cr, 14, 38 + 20*i, ("Inference for " + namesVector.at(i) + " : " + inference + IPS), perfColor);
+    // 38 pixels for a width of 640 is default for space between inference and duration text
+    // 20 pixels for a width of 640 is default for space between lines
+    outlineText(cr, 14, width * 38/640 + width * 20/640 * i, ("Inference for " + namesVector.at(i) + " : " + inference + IPS), perfColor);
   }
 }
 

@@ -233,8 +233,8 @@ int main(int argc, char **argv)
                       1,
                       GstQueueLeaky::downstream,
                       3,
-                      256,
-                      256,
+                      depthEstimation.getModelWidth(),
+                      depthEstimation.getModelHeight(),
                       "GRAY8",
                       1);
   appsrc.addAppSrcToPipeline(displayPipeline);
@@ -244,7 +244,8 @@ int main(int argc, char **argv)
   gstvideoimx.videoTransform(displayPipeline, "", -1, -1, false, false, true);
 
   // Display processed video
-  pipeline.enablePerfDisplay(options.freq, options.time, 10, options.textColor);
+  float scaleFactor = 15.0f/640; // Default font size is 15 pixels for a width of 640
+  pipeline.enablePerfDisplay(options.freq, options.time, depthEstimation.getModelWidth() * scaleFactor, options.textColor);
   GstVideoPostProcess postProcess;
   postProcess.display(displayPipeline, false);
 

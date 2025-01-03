@@ -1,5 +1,5 @@
 /**
- * Copyright 2024 NXP
+ * Copyright 2024-2025 NXP
  * SPDX-License-Identifier: BSD-3-Clause
  */
 
@@ -80,7 +80,7 @@ class GstPipelineImx {
     static inline int runCount = 0;
     static inline std::vector<std::string> namesVector;
     static inline std::vector<float> infVector;
-    static inline int perfFontSize = 0;
+    static inline float perfFontSize = 0;
     static inline std::string perfColor = "";
 
   public:
@@ -142,7 +142,7 @@ class GstPipelineImx {
 
     void enablePerfDisplay(const bool &frequency,
                            const bool &temporal,
-                           const int &fontSize=15,
+                           const float &fontSize,
                            const std::string &color="");
 
     Performance isPerfAvailable() const

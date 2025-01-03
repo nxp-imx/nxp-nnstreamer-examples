@@ -127,12 +127,12 @@ void drawCallback(GstElement* overlay,
   std::vector<int> boxes = boxesData->selectedBoxes;
 
   cairo_set_source_rgb(cr, 0.85, 0, 1);
-  cairo_move_to(cr, boxesData->camWidth - 150, 18);
+  cairo_move_to(cr, boxesData->camWidth * (1 - 160.0/640), boxesData->camWidth * 18/640);
   cairo_select_font_face(cr,
                          "Arial",
                          CAIRO_FONT_SLANT_NORMAL,
                          CAIRO_FONT_WEIGHT_NORMAL);
-  cairo_set_font_size(cr, 15);
+  cairo_set_font_size(cr, boxesData->camWidth * 15/640);
   cairo_show_text(cr, ("Faces detected: " + std::to_string(numFaces)).c_str());
 
   cairo_set_source_rgb(cr, 1, 0, 0);

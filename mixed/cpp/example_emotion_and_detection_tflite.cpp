@@ -431,7 +431,7 @@ int main(int argc, char **argv)
   GstVideoImx gstvideosink{};
   gstvideosink.videoCompositor(pipeline, compositorName, latency);
   gstvideosink.videoCompositor(pipeline, compositor, 8*latency, displayPosition::split);
-  pipeline.enablePerfDisplay(options.freq, options.time, 15, options.textColor);
+  pipeline.enablePerfDisplay(options.freq, options.time, options.camWidth * 0.0234275, options.textColor);
   postProcess.display(pipeline, false);
   
   // Parse pipelines to GStreamer pipelines

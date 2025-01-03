@@ -350,7 +350,9 @@ int main(int argc, char **argv)
   GstVideoImx gstvideoimx{};
   int modelLatency = 10000000;
   gstvideoimx.videoCompositor(pipeline, compositorName, modelLatency, displayPosition::split);
-  pipeline.enablePerfDisplay(options.freq, options.time, 15, options.textColor);
+
+  float scaleFactor = 15.0f/640; // Default font size is 15 pixels for a width of 640
+  pipeline.enablePerfDisplay(options.freq, options.time, options.camWidth * scaleFactor, options.textColor);
   postProcess.display(pipeline);
 
   // Parse pipeline to GStreamer pipeline

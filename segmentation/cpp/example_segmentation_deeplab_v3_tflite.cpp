@@ -1,5 +1,5 @@
 /**
- * Copyright 2024 NXP
+ * Copyright 2024-2025 NXP
  * SPDX-License-Identifier: BSD-3-Clause 
  */ 
 
@@ -231,7 +231,8 @@ int main(int argc, char **argv)
 
   // Display processed video
   GstVideoPostProcess postProcess;
-  pipeline.enablePerfDisplay(options.freq, options.time, 15, options.textColor);
+  float scaleFactor = 15.0f/640; // Default font size is 15 pixels for a width of 640
+  pipeline.enablePerfDisplay(options.freq, options.time, segmentation.getModelWidth() * scaleFactor, options.textColor);
   postProcess.display(pipeline, true);
 
   // Parse pipeline to GStreamer pipeline
