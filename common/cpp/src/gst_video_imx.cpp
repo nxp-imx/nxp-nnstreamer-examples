@@ -1,5 +1,5 @@
 /**
- * Copyright 2024 NXP
+ * Copyright 2024-2025 NXP
  * SPDX-License-Identifier: BSD-3-Clause
  */
 
@@ -212,6 +212,7 @@ void GstVideoImx::videoCompositor(GstPipelineImx &pipeline,
   if (position == displayPosition::split) {
     cmd += "sink_0::xpos=0 sink_0::ypos=0 sink_0::width=960 sink_0::height=720 ";
     cmd += "sink_1::xpos=960 sink_1::ypos=0 sink_1::width=960 sink_1::height=720 ";
+    cmd += "sink_0::keep-ratio=true sink_1::keep-ratio=true ";
   }
   cmd += "! ";
   pipeline.addToPipeline(cmd);
