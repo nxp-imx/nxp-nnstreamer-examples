@@ -61,6 +61,14 @@ For i.MX 93 use vela converted model:
 ```bash
 ./build/face/example_face_detection_tflite -p ${ULTRAFACE_QUANT_VELA}
 ```
+Inference on CPU with the following script:
+```bash
+./build/face/example_face_detection_tflite -p ${ULTRAFACE_QUANT} -b CPU
+```
+NOTE: inferences on i.MX8MPlus GPU have low performances, but are possible with the following script:
+```bash
+./build/face/example_face_detection_tflite -p ${ULTRAFACE_QUANT} -b GPU
+```
 The following execution parameters are available (Run ``` ./example_face_detection_tflite -h``` to see option details):
 
 Option | Description
@@ -110,7 +118,14 @@ For i.MX 93 use vela converted model:
 ```bash
 ./build/face/example_emotion_detection_tflite -p ${ULTRAFACE_QUANT_VELA},${EMOTION_QUANT_VELA}
 ```
-
+Inference on CPU with the following script:
+```bash
+./build/face/example_emotion_detection_tflite -p ${ULTRAFACE_QUANT},${EMOTION_QUANT} -b CPU,CPU
+```
+NOTE: Inference on i.MX8MPlus GPU is possible but not recommended because of low performances:
+```bash
+./build/face/example_emotion_detection_tflite -p ${ULTRAFACE_QUANT},${EMOTION_QUANT} -b GPU,GPU
+```
 The following execution parameters are available (Run ``` ./example_emotion_detection_tflite -h``` to see option details):
 
 Option | Description
