@@ -25,26 +25,27 @@
 
 
 typedef struct {
-  std::vector<std::string> emotions;
-  std::vector<float> values;
-  std::vector<int> boxes;
+  int box[4];
+  std::string emotion;
+  float confidence;
 } EmotionData;
 
 
 typedef struct {
-  int SubFaceCount = 0;
+  GstElement *appSrc;
+  GstElement *videocrop;
+  int camWidth;
+  int camHeight;
+  int faceCount = 0;
   std::vector<int> faceBoxes;
   int bufferSize = NUM_BOX_DATA * MODEL_UFACE_NUMBER_BOXES;
-  int faceCount = 0;
+  int emotionCount = 0;
   std::vector<int> emotionBoxes;
   std::string emotionsList[7] = {"angry", "disgust", "fear", "happy", "sad", "surprise", "neutral"};
   GstBuffer *imagesBuffer = gst_buffer_new();
-  bool subActive = false;
-  GstElement *appSrc;
-  GstElement *videocrop;
-  EmotionData result;
-  int camWidth;
-  int camHeight;
+  bool processEmotions = false;
+  std::vector<EmotionData> results;
+  std::vector<EmotionData> detections;
 } DecoderData;
 
 

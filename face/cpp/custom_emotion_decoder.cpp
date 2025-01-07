@@ -8,6 +8,7 @@
 #include <math.h>
 #include <cassert>
 #include <iostream>
+#include <sys/time.h>
 
 BufferInfo getTensorInfo(GstBuffer *buffer, int tensorIndex)
 {
@@ -146,9 +147,7 @@ void getEmotionResult(GstBuffer *buffer,
                       DecoderData *boxesData)
 {
   if (boxes.empty() || (buffer == nullptr)) {
-    boxesData->result.emotions.clear();
-    boxesData->result.values.clear();
-    boxesData->result.boxes.clear();
+    boxesData->results.clear();
     return;
   }
 
@@ -156,29 +155,28 @@ void getEmotionResult(GstBuffer *buffer,
   checkNumTensor(buffer, 1);
   bufferInfo = getTensorInfo(buffer, 0);
 
-  float value = 0.0f;
-  std::string emotion;
+  EmotionData data;
+  data.confidence = 0.0f;
   // Get emotion and its associated probability for a detected face
   for (int i = 0; i < bufferInfo.size; i++) {
-    if (value < bufferInfo.bufferFP32[i]) {
-      value = bufferInfo.bufferFP32[i];
-      emotion = boxesData->emotionsList[i];
+    if (data.confidence < bufferInfo.bufferFP32[i]) {
+      data.confidence = bufferInfo.bufferFP32[i];
+      data.emotion = boxesData->emotionsList[i];
     }
   }
 
   if (index == 0) {
-    boxesData->result.emotions.clear();
-    boxesData->result.values.clear();
-    boxesData->result.boxes.clear();
+    boxesData->results.clear();
   }
 
-  int faceIndex = index * 4;
-  boxesData->result.emotions.push_back(emotion);
-  boxesData->result.values.push_back(value);
-  boxesData->result.boxes.push_back(boxes.at(0 + faceIndex));
-  boxesData->result.boxes.push_back(boxes.at(1 + faceIndex));
-  boxesData->result.boxes.push_back(boxes.at(2 + faceIndex));
-  boxesData->result.boxes.push_back(boxes.at(3 + faceIndex));
+  data.box[0] = boxes.at(0 + index * 4);
+  data.box[1] = boxes.at(1 + index * 4);
+  data.box[2] = boxes.at(2 + index * 4);
+  data.box[3] = boxes.at(3 + index * 4);
+  boxesData->results.push_back(data);
+
+  if (index + 1 == boxes.size()/4)
+    boxesData->detections = boxesData->results;
 }
 
 
@@ -188,16 +186,15 @@ void secondaryNewDataCallback(GstElement* element,
 {
   DecoderData* boxesData = (DecoderData *) user_data;
 
-  getEmotionResult(buffer, boxesData->emotionBoxes, boxesData->SubFaceCount, boxesData);
-  boxesData->SubFaceCount += 1;
+  getEmotionResult(buffer, boxesData->emotionBoxes, boxesData->emotionCount, boxesData);
+  boxesData->emotionCount += 1;
   int total = boxesData->emotionBoxes.size()/4;
-  if (boxesData->SubFaceCount < total) {
-    pushBuffer(boxesData->imagesBuffer, boxesData->emotionBoxes, boxesData->SubFaceCount, boxesData);
+  if (boxesData->emotionCount < total) {
+    pushBuffer(boxesData->imagesBuffer, boxesData->emotionBoxes, boxesData->emotionCount, boxesData);
   } else {
-    gst_buffer_unref(boxesData->imagesBuffer);
     boxesData->emotionBoxes.clear();
-    boxesData->SubFaceCount = 0;
-    boxesData->subActive = false;
+    boxesData->emotionCount = 0;
+    boxesData->processEmotions = false;
   }
 }
 
@@ -215,29 +212,27 @@ GstFlowReturn sinkCallback(GstAppSink* appsink, gpointer user_data)
     return GST_FLOW_ERROR;
   }
 
-  GstBuffer *buffer = gst_sample_get_buffer(sample);
-
-  if (boxesData->subActive == true) {
+  if (boxesData->processEmotions == true) {
+    gst_sample_unref(sample);
+    return GST_FLOW_OK;
+  }
+  
+  if (boxesData->faceBoxes.empty()) {
+    boxesData->results.clear();
+    boxesData->detections.clear();
     gst_sample_unref(sample);
     return GST_FLOW_OK;
   }
 
+  gst_buffer_unref(boxesData->imagesBuffer);
   boxesData->emotionBoxes = boxesData->faceBoxes;
-  if (boxesData->emotionBoxes.size() == 0) {
-    boxesData->result.emotions.clear();
-    boxesData->result.values.clear();
-    boxesData->result.boxes.clear();
-    gst_sample_unref(sample);
-    return GST_FLOW_OK;
-  }
-
-  boxesData->subActive = true;
-  boxesData->SubFaceCount = 0;
+  boxesData->processEmotions = true;
+  boxesData->emotionCount = 0;
+  GstBuffer *buffer = gst_sample_get_buffer(sample);
   boxesData->imagesBuffer = gst_buffer_copy_deep(buffer);
-  pushBuffer(buffer, boxesData->emotionBoxes, 0, boxesData);
-
   gst_sample_unref(sample);
 
+  pushBuffer(boxesData->imagesBuffer, boxesData->emotionBoxes, 0, boxesData);
   return GST_FLOW_OK;
 }
 
@@ -249,27 +244,33 @@ void drawCallback(GstElement* overlay,
                   gpointer user_data)
 {
   DecoderData *boxesData = (DecoderData *) user_data;
+  std::vector<EmotionData> results = boxesData->detections;
 
-  int numFaces = boxesData->result.boxes.size()/4;
-  if (numFaces == 0)
+  cairo_set_source_rgb(cr, 0.85, 0, 1);
+  cairo_move_to(cr, boxesData->camWidth * (1 - 160.0/640), boxesData->camWidth * 18/640);
+  cairo_select_font_face(cr,
+                         "Arial",
+                         CAIRO_FONT_SLANT_NORMAL,
+                         CAIRO_FONT_WEIGHT_NORMAL);
+  cairo_set_font_size(cr, boxesData->camWidth * 15/640);
+  cairo_show_text(cr, ("Faces detected: " + std::to_string(results.size())).c_str());
+
+  if (boxesData->detections.empty())
     return;
-
-  std::vector<int> boxes = boxesData->result.boxes;
-  std::vector<std::string> emotion = boxesData->result.emotions;
-  std::vector<float> value = boxesData->result.values;
 
   cairo_set_line_width(cr, 1.0);
   cairo_set_source_rgb(cr, 1, 1, 0);
 
   int w, h;
-  for (int faceIndex = 0; faceIndex < 4 * numFaces; faceIndex += 4) {
-    w = boxes.at(2 + faceIndex) - boxes.at(0 + faceIndex);
-    h = boxes.at(3 + faceIndex) - boxes.at(1 + faceIndex);
-    cairo_rectangle(cr, boxes.at(0 + faceIndex), boxes.at(1 + faceIndex), w, h);
-    cairo_move_to(cr, boxes.at(0 + faceIndex) + 5, boxes.at(1 + faceIndex) + 10);
-    std::string text = emotion.at(faceIndex/4)
+  for (int i = 0; i < results.size(); i += 1) {
+    int box[4] = {results.at(i).box[0], results.at(i).box[1], results.at(i).box[2], results.at(i).box[3]};
+    w = box[2] - box[0];
+    h = box[3] - box[1];
+    cairo_rectangle(cr, box[0], box[1], w, h);
+    cairo_move_to(cr, box[0], box[1] + h + 20);
+    std::string text = results.at(i).emotion
                        + "("
-                       + std::to_string(value.at(faceIndex/4)).substr(0,4)
+                       + std::to_string(results.at(i).confidence).substr(0,4)
                        + ")";
     cairo_show_text(cr, text.c_str());
   }
