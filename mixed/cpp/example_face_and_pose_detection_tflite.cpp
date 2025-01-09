@@ -258,7 +258,12 @@ int main(int argc, char **argv)
   pipeline.addBranch(teeName, nnFaceQueue);
 
   // Add face detection inference
-  TFliteModelInfos faceDetection(options.fPath, options.fBackend, options.fNorm);
+  int numThreads;
+  if ((options.fBackend == "CPU") && (options.pBackend == "CPU"))
+    numThreads = std::thread::hardware_concurrency()/2;
+  else
+    numThreads = std::thread::hardware_concurrency();
+  TFliteModelInfos faceDetection(options.fPath, options.fBackend, options.fNorm, numThreads);
   faceDetection.addInferenceToPipeline(pipeline, "face_filter");
 
   // Get inference output for custom processing
@@ -275,7 +280,7 @@ int main(int argc, char **argv)
   pipeline.addBranch(teeName, nnPoseQueue);
 
   // Add pose detection inference
-  TFliteModelInfos pose(options.pPath, options.pBackend, options.pNorm);
+  TFliteModelInfos pose(options.pPath, options.pBackend, options.pNorm, numThreads);
   pose.addInferenceToPipeline(pipeline, "pose_filter");
 
   // Get inference output for custom processing

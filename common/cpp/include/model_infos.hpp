@@ -1,5 +1,5 @@
 /**
- * Copyright 2024 NXP
+ * Copyright 2024-2025 NXP
  * SPDX-License-Identifier: BSD-3-Clause 
  */ 
 
@@ -7,6 +7,7 @@
 #define CPP_MODEL_INFOS_H_
 
 #include <filesystem>
+#include <thread>
 
 #include "imx_devices.hpp"
 #include "gst_video_imx.hpp"
@@ -26,7 +27,7 @@ class ModelInfos {
     std::string backend;
     std::string normType;
     std::string framework;
-    TensorCustomGenerator tensorCustomData{};
+    TensorCustomGenerator tensorCustomData;
     imx::Imx imx{};
     GstVideoImx videoscale{};
     TensorData tensorData;
@@ -34,7 +35,8 @@ class ModelInfos {
   public:
     ModelInfos(const std::filesystem::path &path,
                const std::string &backend,
-               const std::string &norm);
+               const std::string &norm,
+               const int &numThreads);
 
     int getModelWidth() const { return modelWidth; }
 
@@ -50,7 +52,7 @@ class ModelInfos {
                                 const std::string &gstName="",
                                 const std::string &format="RGB");
 
-    void setTensorFilterConfig(imx::Imx &imx);
+    void setTensorFilterConfig(imx::Imx &imx, const int &numThreads);
 };
 
 
@@ -61,6 +63,7 @@ class TFliteModelInfos : public ModelInfos {
   public:
     TFliteModelInfos(const std::filesystem::path &path,
                      const std::string &backend,
-                     const std::string &norm);
+                     const std::string &norm,
+                     const int &numThreads=std::thread::hardware_concurrency());
 };
 #endif

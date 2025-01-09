@@ -1,5 +1,5 @@
 /**
- * Copyright 2024 NXP
+ * Copyright 2024-2025 NXP
  * SPDX-License-Identifier: BSD-3-Clause 
  */ 
 
@@ -26,16 +26,15 @@ std::map<std::string, imx::Backend> inferenceHardwareBackend = {
  * @param path: model path.
  * @param backend: second argument at runtime corresponding to backend use.
  * @param norm: normalization to apply to input data.
+ * @param numThreads: number of threads for XNNPACK (CPU backend).
  */
 ModelInfos::ModelInfos(const std::filesystem::path &path,
                        const std::string &backend,
-                       const std::string &norm) 
+                       const std::string &norm,
+                       const int &numThreads)
     : modelPath(path), backend(backend), normType(norm)
 {
-  /* Set tensor_filter element. */
-  setTensorFilterConfig(imx);
-
-  /* Set tensor_transform element. */
+  setTensorFilterConfig(imx, numThreads);
   tensorCustomData.setNorm(normType);
   tensorData.tensorTransform = tensorCustomData.setTensorTransformConfig();
 }
@@ -77,13 +76,14 @@ void ModelInfos::addInferenceToPipeline(GstPipelineImx &pipeline,
  *        compositor segment pipeline.
  * 
  * @param imx: i.MX used.
+ * @param numThreads: number of threads for XNNPACK (CPU backend).
  */
-void ModelInfos::setTensorFilterConfig(imx::Imx &imx)
+void ModelInfos::setTensorFilterConfig(imx::Imx &imx, const int &numThreads)
 {
   switch (selectFromDictionary(backend, inferenceHardwareBackend))
   {
     case imx::Backend::CPU:
-      tensorData.tensorFilterCustom = tensorCustomData.CPU();
+      tensorData.tensorFilterCustom = tensorCustomData.CPU(numThreads);
       break;
 
     case imx::Backend::GPU:
@@ -133,8 +133,9 @@ void ModelInfos::setTensorFilterConfig(imx::Imx &imx)
  */
 TFliteModelInfos::TFliteModelInfos(const std::filesystem::path &path,
                                    const std::string &backend,
-                                   const std::string &norm) 
-                  : ModelInfos(path, backend, norm)
+                                   const std::string &norm,
+                                   const int &numThreads) 
+                  : ModelInfos(path, backend, norm, numThreads)
 {
 if (modelPath.extension() == ".tflite") {
     framework = "tensorflow-lite";

@@ -240,7 +240,12 @@ int main(int argc, char **argv)
   gstvideoimx.videocrop(emotionPipeline, "video_crop", -1, -1);
 
   // Add model inference to get the emotion of a face
-  TFliteModelInfos emotionDetection(options.ePath, options.eBackend, options.eNorm);
+  int numThreads;
+  if ((options.eBackend == "CPU") && (options.fBackend == "CPU"))
+    numThreads = std::thread::hardware_concurrency()/2;
+  else
+    numThreads = std::thread::hardware_concurrency();
+  TFliteModelInfos emotionDetection(options.ePath, options.eBackend, options.eNorm, numThreads);
   emotionDetection.addInferenceToPipeline(emotionPipeline, "emotion_filter", "GRAY8");
 
   // Get inference output for custom processing
@@ -276,7 +281,7 @@ int main(int argc, char **argv)
   pipeline.addBranch(teeName, nnQueue);
 
   // Add model inference
-  TFliteModelInfos faceDetection(options.fPath, options.fBackend, options.fNorm);
+  TFliteModelInfos faceDetection(options.fPath, options.fBackend, options.fNorm, numThreads);
   faceDetection.addInferenceToPipeline(pipeline, "face_filter");
 
   // Get inference output for custom processing

@@ -9,18 +9,18 @@
  * and ssdlite_mobilenet_v2_coco_no_postprocess.tflite for object detection,
  * which can be retrieved from https://github.com/nxp-imx/nxp-nnstreamer-examples/blob/main/downloads/download.ipynb 
  * Pipeline:
- * pipeline 1: v4l2src -- tee -- imxvideoconvert -----------------------------------------------------------------
- *                |                                                                                     |
- *                |                                                                                    cairooverlay ---
- *                |                                                                                     |       |      |
- *                --- imxvideoconvert -- tensor_converter -- tensor_transform -- tensor_filter -- tensor_sink   |      |
- *                |                                                                                             |      |
- *                --- appsink                                                                        ------------      |
- *                                                                                                   |                 |
- * pipeline 2: appsrc -- videocrop -- tensor_converter -- tensor_transform -- tensor_filter -- tensor_sink             |
- *                                                                                                                     |
- *             filesrc -- tee ---------------------------------------------------------------------------              |
- *                |                                                                                     |              |
+ * pipeline 1: v4l2src -- tee -- imxvideoconvert ----------------------------------------------------------------
+ *                         |                                                                                     |
+ *                         |                                                                                    cairooverlay --
+ *                         |                                                                                     |       |     |
+ *                         --- imxvideoconvert -- tensor_converter -- tensor_transform -- tensor_filter -- tensor_sink   |     |
+ *                         |                                                                                             |     |
+ *                         --- appsink                                                               ---------------------     |
+ *                                                                                                   |                         |
+ * pipeline 2: appsrc -- videocrop -- tensor_converter -- tensor_transform -- tensor_filter -- tensor_sink                     |
+ *                                                                                                                             |
+ * pipeline 1: filesrc -- tee --------------------------------------------------------------------------                       |
+ *                |                                                                                     |                      |
  *                |                                                                              video_compositor -- video_compositor -- waylandsink
  *                |                                                                                     |
  *                --- imxvideoconvert -- tensor_converter -- tensor_transform -- tensor_filter -- tensor_decoder
@@ -315,11 +315,10 @@ int main(int argc, char **argv)
   camera.addCameraToPipeline(pipeline);
 
   // Add another tee element for parallelization of tasks
-  std::string teeName = "tvideo";
+  std::string teeName = "t";
   pipeline.doInParallel(teeName);
 
-  // Add a branch to tee element for face inference
-  // and model post processing
+  // Add a branch to tee element for inference and model post processing
   GstQueueOptions nnQueue = {
     .queueName     = "thread-nn",
     .maxSizeBuffer = 1,
@@ -349,7 +348,7 @@ int main(int argc, char **argv)
   gstvideoimx.videoTransform(pipeline, "RGB16", -1, -1, false);
   postProcess.addCairoOverlay(pipeline, cairoName);
 
-  std::string compositor = "comp";
+  std::string compositor = "emoResult";
   pipeline.linkToVideoCompositor(compositor);
 
   // Add a branch to tee element to get video stream with appsink
@@ -408,8 +407,8 @@ int main(int argc, char **argv)
   detDecoder.addBoundingBoxes(pipeline, decOptions);
 
   // Link decoder result to a video compositor
-  std::string compositorName = "mix";
-  pipeline.linkToVideoCompositor(compositorName);
+  std::string detCompositor = "mix";
+  pipeline.linkToVideoCompositor(detCompositor);
 
   // Add a branch to tee element for inference and model post processing
   GstQueueOptions outputQueue = {
@@ -429,9 +428,10 @@ int main(int argc, char **argv)
     latency = MODEL_LATENCY_NS_CPU;
   }
   GstVideoImx gstvideosink{};
-  gstvideosink.videoCompositor(pipeline, compositorName, latency);
-  gstvideosink.videoCompositor(pipeline, compositor, 8*latency, displayPosition::split);
-  pipeline.enablePerfDisplay(options.freq, options.time, options.camWidth * 0.0234275, options.textColor);
+  gstvideosink.videoCompositor(pipeline, detCompositor, latency);
+  gstvideosink.videoCompositor(pipeline, compositor, 0, displayPosition::split);
+  float scaleFactor = 15.0f/640; // Default font size is 15 pixels for a width of 640
+  pipeline.enablePerfDisplay(options.freq, options.time, options.camWidth * scaleFactor, options.textColor);
   postProcess.display(pipeline, false);
   
   // Parse pipelines to GStreamer pipelines

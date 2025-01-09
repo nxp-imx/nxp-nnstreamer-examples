@@ -1,12 +1,11 @@
 /**
- * Copyright 2024 NXP
+ * Copyright 2024-2025 NXP
  * SPDX-License-Identifier: BSD-3-Clause 
  */
 
 #ifndef CPP_TENSOR_CUSTOM_DATA_GENERATOR_H_
 #define CPP_TENSOR_CUSTOM_DATA_GENERATOR_H_
 
-#include <thread>
 #include <map>
 #include <string>
 #include <filesystem>
@@ -76,21 +75,15 @@ extern std::map<std::string, Normalization> normDictionary;
 /**
  * @brief Create pipeline segments for customized tensor data and
  *        set up USE_GPU_INFERENCE, an environment variable used
- *        for the GPU backend.
+ *        for the GPU backend on i.MX 8M Plus.
  */
 class TensorCustomGenerator {
   private:
     TensorData tensorData;
-    std::string numThreads;
     std::string norm;
 
   public:
-    TensorCustomGenerator()
-    {
-      numThreads = std::to_string(std::thread::hardware_concurrency());
-    }
-
-    std::string CPU();
+    std::string CPU(const int &numThreads);
 
     std::string vsiGPU();
 

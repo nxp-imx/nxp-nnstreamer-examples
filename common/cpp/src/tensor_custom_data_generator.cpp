@@ -1,5 +1,5 @@
 /**
- * Copyright 2024 NXP
+ * Copyright 2024-2025 NXP
  * SPDX-License-Identifier: BSD-3-Clause 
  */
 
@@ -20,11 +20,13 @@ std::map<std::string, Normalization> normDictionary = {
 
 /**
  * @brief Add tensor_filter option for CPU backend.
+ *
+ * @param numThreads: number of threads for XNNPACK (CPU backend).
  */
-std::string TensorCustomGenerator::CPU()
+std::string TensorCustomGenerator::CPU(const int &numThreads)
 {
   tensorData.tensorFilterCustom = "custom=Delegate:XNNPACK,";
-  tensorData.tensorFilterCustom += "NumThreads:" + numThreads;
+  tensorData.tensorFilterCustom += "NumThreads:" + std::to_string(numThreads);
   return tensorData.tensorFilterCustom;
 }
 

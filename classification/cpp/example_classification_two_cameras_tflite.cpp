@@ -254,7 +254,12 @@ int main(int argc, char **argv)
   pipeline.addBranch(firstCamTee, nnQueue);
 
   // Add model inference
-  TFliteModelInfos firstModel(options.modelPathCam1, options.backendCam1, options.normCam1);
+  int numThreads;
+  if ((options.backendCam1 == "CPU") && (options.backendCam2 == "CPU"))
+    numThreads = std::thread::hardware_concurrency()/2;
+  else
+    numThreads = std::thread::hardware_concurrency();
+  TFliteModelInfos firstModel(options.modelPathCam1, options.backendCam1, options.normCam1, numThreads);
   firstModel.addInferenceToPipeline(pipeline, "cam1");
 
   // Add NNStreamer inference output decoding
@@ -315,7 +320,7 @@ int main(int argc, char **argv)
   pipeline.addBranch(secondCamTee, nn2Queue);
 
   // Add model inference
-  TFliteModelInfos secondModel(options.modelPathCam2, options.backendCam2, options.normCam2);
+  TFliteModelInfos secondModel(options.modelPathCam2, options.backendCam2, options.normCam2, numThreads);
   secondModel.addInferenceToPipeline(pipeline, "cam2");
 
   // Add NNStreamer inference output decoding
