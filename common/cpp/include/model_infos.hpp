@@ -25,7 +25,6 @@ class ModelInfos {
     int modelChannel;
     std::filesystem::path modelPath;
     std::string backend;
-    std::string normType;
     std::string framework;
     TensorCustomGenerator tensorCustomData;
     imx::Imx imx{};

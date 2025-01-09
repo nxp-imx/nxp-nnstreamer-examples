@@ -90,7 +90,7 @@ std::string TensorCustomGenerator::GPU()
 /**
  * @brief Add element for normalization to pipeline.
  */
-std::string TensorCustomGenerator::setTensorTransformConfig()
+std::string TensorCustomGenerator::setTensorTransformConfig(const std::string &norm)
 {
   std::string tensorTransformCustom;
   switch (selectFromDictionary(norm, normDictionary))

@@ -80,7 +80,6 @@ extern std::map<std::string, Normalization> normDictionary;
 class TensorCustomGenerator {
   private:
     TensorData tensorData;
-    std::string norm;
 
   public:
     std::string CPU(const int &numThreads);
@@ -95,8 +94,6 @@ class TensorCustomGenerator {
 
     std::string GPU();
 
-    std::string setTensorTransformConfig();
-
-    void setNorm(const std::string &normalization) { norm = normalization; }
+    std::string setTensorTransformConfig(const std::string &norm);
 };
 #endif

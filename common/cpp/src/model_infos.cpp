@@ -32,11 +32,10 @@ ModelInfos::ModelInfos(const std::filesystem::path &path,
                        const std::string &backend,
                        const std::string &norm,
                        const int &numThreads)
-    : modelPath(path), backend(backend), normType(norm)
+    : modelPath(path), backend(backend)
 {
   setTensorFilterConfig(imx, numThreads);
-  tensorCustomData.setNorm(normType);
-  tensorData.tensorTransform = tensorCustomData.setTensorTransformConfig();
+  tensorData.tensorTransform = tensorCustomData.setTensorTransformConfig(norm);
 }
 
 
