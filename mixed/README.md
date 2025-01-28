@@ -59,7 +59,7 @@ Press ```Esc or ctrl+C``` to stop the execution of the pipeline.
 | ------------ | --- | --- | --- |
 | i.MX 8M Plus | :white_check_mark: | :white_check_mark: | :white_check_mark: |
 |   i.MX 93    | :white_check_mark: | :white_check_mark: | :x: |
-|   i.MX 95    | :x: | :white_check_mark: | :white_check_mark: |
+|   i.MX 95    | :x: | :x: | :x: |
 
 C++ example script needs to be generated with [cross compilation](../). [setup_environment.sh](../tools/setup_environment.sh) script needs to be executed in [nxp-nnstreamer-examples](../) folder to define data paths:
 ```bash

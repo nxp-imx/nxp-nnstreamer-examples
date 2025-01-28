@@ -215,9 +215,11 @@ int main(int argc, char **argv)
     return 0;
 
   imx::Imx imx{};
-  if (imx.isIMX95() && (options.backend == "NPU")) {
-    log_error("Example can't run on NPU in i.MX95\n");
-    return 0;
+  if (options.backend == "NPU") {
+    if (imx.isIMX95() || imx.isIMX93()) {
+      log_error("Example can't run on NPU in %s\n", imx.socName().c_str());
+      return 0;
+    }
   }
 
   // Initialize pipeline object

@@ -64,7 +64,7 @@ class StdInHelper:
 
 class PoseExample:
 
-    def __init__(self, video_file, video_dims, flip=False, argv=[]):
+    def __init__(self, video_file, video_dims, camera_device, flip=False, argv=[]):
         # video input definitions
         self.VIDEO_INPUT_WIDTH = video_dims[0]
         self.VIDEO_INPUT_HEIGHT = video_dims[1]
@@ -73,6 +73,9 @@ class PoseExample:
         self.VIDEO_INPUT_RESIZED_WIDTH = cropped_wh
         self.VIDEO_INPUT_RESIZED_HEIGHT = cropped_wh
         self.flip = flip
+
+        #camera definition
+        self.camera_device = camera_device
 
         # model constants
         self.MODEL_KEYPOINT_SIZE = 17
@@ -127,6 +130,11 @@ class PoseExample:
         self.imx = Imx()
         vela = self.imx.has_npu_ethos()
         store_vx_graph_compilation(self.imx)
+
+        if self.backend == 'NPU':
+            if self.imx.is_imx93() or self.imx.is_imx95():
+                name = imx.name()
+                raise NotImplementedError(f"Example can't run on {name} NPU")
 
         try:
             transform = {
@@ -195,7 +203,7 @@ class PoseExample:
         gstvideoimx = GstVideoImx(self.imx)
 
         # i.MX93 and  i.MX95 does not support video file decoding
-        if self.imx.is_imx93()  or self.imx.is_imx95():
+        if self.imx.is_imx93() or self.imx.is_imx95():
             print('video file cannot be decoded, use camera source instead')
             self.source = 'CAMERA'
 
@@ -215,13 +223,7 @@ class PoseExample:
                 .format(self.VIDEO_INPUT_RESIZED_WIDTH, self.VIDEO_INPUT_RESIZED_HEIGHT)
 
         elif self.source == 'CAMERA':
-            if self.imx.is_imx93():
-                default_camera = '/dev/video0'
-            elif self.imx.is_imx95():
-                default_camera = '/dev/video13'
-            else:
-                default_camera = '/dev/video3'
-            cmdline = 'v4l2src name=cam_src device={:s} num-buffers=-1 ! '.format(default_camera)
+            cmdline = 'v4l2src name=cam_src device={:s} num-buffers=-1 ! '.format(self.camera_device)
 
         else:
             raise ValueError('Wrong source, must be VIDEO or CAMERA')
@@ -427,6 +429,17 @@ if __name__ == '__main__':
     default_video = 'Conditioning_Drill_1-_Power_Jump.webm.480p.vp9.webm'
     default_dims = (854, 480)
 
+    imx = Imx()
+    if imx.id() == SocId.IMX8MP:
+        default_camera = '/dev/video3'
+    elif imx.is_imx93():
+        default_camera = '/dev/video0'
+    elif imx.is_imx95():
+        default_camera = '/dev/video13'
+    else:
+        name = imx.name()
+        raise NotImplementedError(f'Platform not supported [{name}]')
+
     parser = argparse.ArgumentParser(description='Pose Detection')
     parser.add_argument('--video_file', '-f',
                         type=str,
@@ -441,10 +454,15 @@ if __name__ == '__main__':
                         type=int,
                         help='input resolution (width x height)',
                         default=default_dims)
+    parser.add_argument('--camera_device', '-c',
+                        type=str,
+                        help='camera device node',
+                        default=default_camera)
     args = parser.parse_args()
 
     video_file = args.video_file
+    camera_device = args.camera_device
     video_dims = tuple(args.video_dims)
     flip = args.mirror
-    example = PoseExample(video_file, video_dims, flip, sys.argv[2:])
+    example = PoseExample(video_file, video_dims, camera_device, flip, sys.argv[2:])
     example.run()

@@ -11,7 +11,7 @@ Name | Implementation | Model | ML engine |Features
 |   Platforms  | NPU | CPU | GPU |
 | ------------ | --- | --- | --- |
 | i.MX 8M Plus | :white_check_mark: | :white_check_mark: | :x: |
-|   i.MX 93    | :white_check_mark: | :white_check_mark: | :x: |
+|   i.MX 93    | :x: | :white_check_mark: | :x: |
 |   i.MX 95    | :x: | :white_check_mark: | :x: |
 
 Default backend can be overriden by explicitly defining BACKEND variable, and source can be selected as VIDEO or CAMERA, for instance:
@@ -32,7 +32,7 @@ Option | Description
 |   Platforms  | NPU | CPU | GPU |
 | ------------ | --- | --- | --- |
 | i.MX 8M Plus | :white_check_mark: | :white_check_mark: | :white_check_mark: |
-|   i.MX 93    | :white_check_mark: | :white_check_mark: | :x: |
+|   i.MX 93    | :x: | :white_check_mark: | :x: |
 |   i.MX 95    | :x: | :white_check_mark: | :white_check_mark: |
 
 C++ example script needs to be generated with [cross compilation](../). [setup_environment.sh](../tools/setup_environment.sh) script needs to be executed in [nxp-nnstreamer-examples](../) folder to define data paths:
