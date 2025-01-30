@@ -1,5 +1,5 @@
 /**
- * Copyright 2024 NXP
+ * Copyright 2024-2025 NXP
  * SPDX-License-Identifier: BSD-3-Clause
  */
 
@@ -22,13 +22,12 @@
 #include <getopt.h>
 #include <math.h>
 #include <cassert>
+#include <algorithm>
 
 #define OPTIONAL_ARGUMENT_IS_PRESENT \
     ((optarg == NULL && optind < argc && argv[optind][0] != '-') \
      ? (bool) (optarg = argv[optind++]) \
      : (optarg != NULL))
-#define INPUT_WIDTH         480
-#define INPUT_HEIGHT        480
 
 
 typedef struct {
@@ -42,6 +41,9 @@ typedef struct {
   bool freq;
   std::string textColor;
   char* graphPath;
+  int camWidth;
+  int camHeight;
+  int framerate;
 } ParserOptions;
 
 
@@ -50,6 +52,8 @@ int cmdParser(int argc, char **argv, ParserOptions& options)
   int c;
   int optionIndex;
   std::string perfDisplay;
+  std::string camParams;
+  std::string temp;
   imx::Imx imx{};
   static struct option longOptions[] = {
     {"help",          no_argument,       0, 'h'},
@@ -62,12 +66,13 @@ int cmdParser(int argc, char **argv, ParserOptions& options)
     {"display_perf",  optional_argument, 0, 'd'},
     {"text_color",    required_argument, 0, 't'},
     {"graph_path",    required_argument, 0, 'g'},
+    {"cam_params",    required_argument, 0, 'r'},
     {0,               0,                 0,   0}
   };
 
   while ((c = getopt_long(argc,
                           argv,
-                          "hb:n:c:p:f:u:d::t:g:",
+                          "hb:n:c:p:f:u:d::t:g:r:",
                           longOptions,
                           &optionIndex)) != -1) {
     switch (c)
@@ -116,7 +121,11 @@ int cmdParser(int argc, char **argv, ParserOptions& options)
                   
                   << std::setw(25) << std::left << "  -g, --graph_path"
                   << std::setw(25) << std::left
-                  << "Path to store the result of the OpenVX graph compilation (only for i.MX8MPlus)" << std::endl;
+                  << "Path to store the result of the OpenVX graph compilation (only for i.MX8MPlus)" << std::endl
+
+                  << std::setw(25) << std::left << "  -r, --cam_params"
+                  << std::setw(25) << std::left
+                  << "Use the selected camera resolution and framerate" << std::endl;
         return 1;
  
       case 'b':
@@ -169,6 +178,18 @@ int cmdParser(int argc, char **argv, ParserOptions& options)
         options.graphPath = optarg;
         break;
 
+      case 'r':
+        camParams.assign(optarg);
+        if (std::count( camParams.begin(), camParams.end(), ',') != 2) {
+          log_error("-r parameter needs the following argument: width,height,framerate\n");
+          return 1;
+        }
+        options.camWidth = std::stoi(camParams.substr(0, camParams.find(",")));
+        temp = camParams.substr(camParams.find(",")+1);
+        options.camHeight = std::stoi(temp.substr(0, temp.find(",")));
+        options.framerate = std::stoi(temp.substr(temp.find(",")+1));
+        break;
+
       default:
         break;
     }
@@ -187,6 +208,9 @@ int main(int argc, char **argv)
   options.time = false;
   options.freq = false;
   options.graphPath = getenv("HOME");
+  options.camWidth = 640;
+  options.camHeight = 480;
+  options.framerate = 30;
   if (cmdParser(argc, argv, options))
     return 0;
 
@@ -201,11 +225,16 @@ int main(int argc, char **argv)
 
   if ((options.useCamera == "1") || imx.isIMX93() || imx.isIMX95()) {
     // Add camera to pipeline
-    GstCameraImx camera(options.camDevice,
-                        "cam_src",
-                        INPUT_WIDTH,
-                        INPUT_HEIGHT,
-                        false);
+    CameraOptions camOpt = {
+      .cameraDevice   = options.camDevice,
+      .gstName        = "cam_src",
+      .width          = options.camWidth,
+      .height         = options.camHeight,
+      .horizontalFlip = false,
+      .format         = "",
+      .framerate      = options.framerate,
+    };
+    GstCameraImx camera(camOpt);
     camera.addCameraToPipeline(pipeline);
   } else {
     // Add video to pipeline
@@ -215,10 +244,11 @@ int main(int argc, char **argv)
 
   // Video pre processing
   GstVideoImx gstvideoimx;
+  int inputDim = std::min(options.camWidth, options.camHeight);
   gstvideoimx.videocrop(pipeline,
                         "crop",
-                        INPUT_WIDTH,
-                        INPUT_HEIGHT,
+                        inputDim,
+                        inputDim,
                         -1,
                         -1,
                         -1,
@@ -264,6 +294,7 @@ int main(int argc, char **argv)
   // Connect callback functions to tensor sink and cairo overlay,
   // to process inference output
   DecoderData kptsData;
+  kptsData.inputDim = inputDim;
   pipeline.connectToElementSignal(tensorSinkName, newDataCallback, "new-data", &kptsData);
   pipeline.connectToElementSignal(overlayName, drawCallback, "draw", &kptsData);
 

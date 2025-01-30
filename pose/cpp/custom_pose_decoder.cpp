@@ -1,5 +1,5 @@
 /**
- * Copyright 2024 NXP
+ * Copyright 2024-2025 NXP
  * SPDX-License-Identifier: BSD-3-Clause
  */
 
@@ -57,7 +57,7 @@ void newDataCallback(GstElement* element,
   for (int i = 0; i < bufferInfo.size; i++) {
 
     if ((col == kptsData->xIndex) or (col == kptsData->yIndex)) {
-      kptsData->npKpts[row][col] = bufferInfo.bufferFP32[i] * 480;
+      kptsData->npKpts[row][col] = bufferInfo.bufferFP32[i] * kptsData->inputDim;
     } else {
       kptsData->npKpts[row][col] = bufferInfo.bufferFP32[i];
       score = kptsData->npKpts[row][kptsData->scoreIndex];

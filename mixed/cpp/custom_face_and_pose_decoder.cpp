@@ -1,5 +1,5 @@
 /**
- * Copyright 2024 NXP
+ * Copyright 2024-2025 NXP
  * SPDX-License-Identifier: BSD-3-Clause 
  */ 
 
@@ -61,19 +61,19 @@ void newDataFaceCallback(GstElement* element,
       faceCount += 1;
       // Store x1
       boxes.push_back(
-            static_cast<int>(bufferInfo.bufferFP32[i+2] * INPUT_WIDTH)
+            static_cast<int>(bufferInfo.bufferFP32[i+2] * boxesData->inputDim)
         );
       // Store y1
       boxes.push_back(
-            static_cast<int>(bufferInfo.bufferFP32[i+3] * INPUT_HEIGHT)
+            static_cast<int>(bufferInfo.bufferFP32[i+3] * boxesData->inputDim)
         );
       // Store x2
       boxes.push_back(
-            static_cast<int>(bufferInfo.bufferFP32[i+4] * INPUT_WIDTH)
+            static_cast<int>(bufferInfo.bufferFP32[i+4] * boxesData->inputDim)
         );
       // Store y2
       boxes.push_back(
-            static_cast<int>(bufferInfo.bufferFP32[i+5] * INPUT_HEIGHT)
+            static_cast<int>(bufferInfo.bufferFP32[i+5] * boxesData->inputDim)
         );
     }
   }
@@ -91,17 +91,17 @@ void newDataFaceCallback(GstElement* element,
 
     d = std::max(w, h) * k;
     d = std::min(d, static_cast<float>(
-        std::min(INPUT_WIDTH, INPUT_HEIGHT)
+        std::min(boxesData->inputDim, boxesData->inputDim)
     ));
     d = std::max(d, minwh);
     d2 = static_cast<int>(d/2);
 
-    if ((cx + d2) >= INPUT_WIDTH)
-      cx = INPUT_WIDTH - d2 - 1;
+    if ((cx + d2) >= boxesData->inputDim)
+      cx = boxesData->inputDim - d2 - 1;
     if ((cx - d2) < 0)
       cx = d2;
-    if ((cy + d2) >= INPUT_HEIGHT)
-      cy = INPUT_HEIGHT - d2 - 1;
+    if ((cy + d2) >= boxesData->inputDim)
+      cy = boxesData->inputDim - d2 - 1;
     if ((cy - d2) < 0)
       cy = d2;
     boxes.at(0 + faceIndex) = cx - d2;
@@ -127,7 +127,7 @@ void drawFaceCallback(GstElement* overlay,
   std::vector<int> boxes = boxesData->selectedBoxes;
 
   cairo_set_source_rgb(cr, 0.85, 0, 1);
-  cairo_move_to(cr, 480, 18);
+  cairo_move_to(cr, boxesData->inputDim - 150, 18);
   cairo_select_font_face(cr,
                          "Arial",
                          CAIRO_FONT_SLANT_NORMAL,
@@ -165,7 +165,7 @@ void newDataPoseCallback(GstElement* element,
   for (int i = 0; i < bufferInfo.size; i++) {
 
     if ((col == X_INDEX) or (col == Y_INDEX)) {
-      kptsData->npKpts[row][col] = bufferInfo.bufferFP32[i] * 480;
+      kptsData->npKpts[row][col] = bufferInfo.bufferFP32[i] * kptsData->inputDim;
     } else {
       kptsData->npKpts[row][col] = bufferInfo.bufferFP32[i];
       score = kptsData->npKpts[row][SCORE_INDEX];

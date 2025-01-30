@@ -1,5 +1,5 @@
 /**
- * Copyright 2024 NXP
+ * Copyright 2024-2025 NXP
  * SPDX-License-Identifier: BSD-3-Clause 
  */ 
 
@@ -12,6 +12,17 @@
 #include "gst_video_imx.hpp"
 #include "gst_pipeline_imx.hpp"
 #include "imx_devices.hpp"
+
+typedef struct {
+  std::filesystem::path cameraDevice;
+  std::string gstName;
+  int width;
+  int height;
+  bool horizontalFlip;
+  std::string format;
+  int framerate;
+} CameraOptions;
+
 
 /**
  * @brief Parent class for the various input source.
@@ -44,13 +55,7 @@ class GstCameraImx : public GstSourceImx {
     int framerate;
 
   public:
-    GstCameraImx(const std::filesystem::path &cameraDevice,
-                 const std::string &name,
-                 const int &width,
-                 const int &height,
-                 const bool &flip,
-                 const std::string &format="",
-                 const int &framerate=30);
+    GstCameraImx(CameraOptions &options);
 
     void addCameraToPipeline(GstPipelineImx &pipeline);
 };

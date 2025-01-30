@@ -1,5 +1,5 @@
 /**
- * Copyright 2024 NXP
+ * Copyright 2024-2025 NXP
  * SPDX-License-Identifier: BSD-3-Clause 
  */ 
 
@@ -22,8 +22,6 @@
 #define NUMBER_OF_COORDINATES                 4
 #define MODEL_UFACE_CLASSIFICATION_THRESHOLD  0.7f
 #define MODEL_UFACE_NUMBER_MAX                15
-#define CAMERA_INPUT_WIDTH                    640
-#define CAMERA_INPUT_HEIGHT                   480
 
 
 typedef struct {
@@ -45,6 +43,8 @@ typedef struct {
   GstElement *appSrc;
   GstElement *videocrop;
   EmotionData result;
+  int camWidth;
+  int camHeight;
 } DecoderData;
 
 

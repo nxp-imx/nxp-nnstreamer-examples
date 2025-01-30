@@ -1,5 +1,5 @@
 /**
- * Copyright 2024 NXP
+ * Copyright 2024-2025 NXP
  * SPDX-License-Identifier: BSD-3-Clause 
  */ 
 
@@ -62,19 +62,19 @@ void newDataCallback(GstElement *element,
       faceCount += 1;
       // Store x1
       boxes.push_back(
-            static_cast<int>(bufferInfo.bufferFP32[i+2] * CAMERA_INPUT_WIDTH)
+            static_cast<int>(bufferInfo.bufferFP32[i+2] * boxesData->camWidth)
         );
       // Store y1
       boxes.push_back(
-            static_cast<int>(bufferInfo.bufferFP32[i+3] * CAMERA_INPUT_HEIGHT)
+            static_cast<int>(bufferInfo.bufferFP32[i+3] * boxesData->camHeight)
         );
       // Store x2
       boxes.push_back(
-            static_cast<int>(bufferInfo.bufferFP32[i+4] * CAMERA_INPUT_WIDTH)
+            static_cast<int>(bufferInfo.bufferFP32[i+4] * boxesData->camWidth)
         );
       // Store y2
       boxes.push_back(
-            static_cast<int>(bufferInfo.bufferFP32[i+5] * CAMERA_INPUT_HEIGHT)
+            static_cast<int>(bufferInfo.bufferFP32[i+5] * boxesData->camHeight)
         );
     }
   }
@@ -92,17 +92,17 @@ void newDataCallback(GstElement *element,
 
     d = std::max(w, h) * k;
     d = std::min(d, static_cast<float>(
-        std::min(CAMERA_INPUT_WIDTH, CAMERA_INPUT_HEIGHT)
+        std::min(boxesData->camWidth, boxesData->camHeight)
     ));
     d = std::max(d, minwh);
     d2 = static_cast<int>(d/2);
 
-    if ((cx + d2) >= CAMERA_INPUT_WIDTH)
-      cx = CAMERA_INPUT_WIDTH - d2 - 1;
+    if ((cx + d2) >= boxesData->camWidth)
+      cx = boxesData->camWidth - d2 - 1;
     if ((cx - d2) < 0)
       cx = d2;
-    if ((cy + d2) >= CAMERA_INPUT_HEIGHT)
-      cy = CAMERA_INPUT_HEIGHT - d2 - 1;
+    if ((cy + d2) >= boxesData->camHeight)
+      cy = boxesData->camHeight - d2 - 1;
     if ((cy - d2) < 0)
       cy = d2;
     boxes.at(0 + faceIndex) = cx - d2;
@@ -122,9 +122,9 @@ void pushBuffer(GstBuffer *buffer,
 {
   int faceIndex = index * 4;
   gint ctop = boxes.at(1 + faceIndex);
-  gint cbottom = CAMERA_INPUT_HEIGHT - boxes.at(3 + faceIndex);
+  gint cbottom = boxesData->camHeight - boxes.at(3 + faceIndex);
   gint cleft = boxes.at(0 + faceIndex);
-  gint cright = CAMERA_INPUT_WIDTH - boxes.at(2 + faceIndex);
+  gint cright = boxesData->camWidth - boxes.at(2 + faceIndex);
 
   g_object_set((boxesData->videocrop), "top", ctop, NULL);
   g_object_set((boxesData->videocrop), "bottom", cbottom, NULL);

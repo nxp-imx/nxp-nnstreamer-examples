@@ -1,5 +1,5 @@
 /**
- * Copyright 2024 NXP
+ * Copyright 2024-2025 NXP
  * SPDX-License-Identifier: BSD-3-Clause
  */
 
@@ -31,6 +31,7 @@
 
 #include <iostream>
 #include <getopt.h>
+#include <algorithm>
 
 #define OPTIONAL_ARGUMENT_IS_PRESENT \
     ((optarg == NULL && optind < argc && argv[optind][0] != '-') \
@@ -58,6 +59,9 @@ typedef struct {
   bool freq;
   std::string textColor;
   char* graphPath;
+  int camWidth;
+  int camHeight;
+  int framerate;
 } ParserOptions;
 
 
@@ -71,6 +75,7 @@ int cmdParser(int argc, char **argv, ParserOptions& options)
   DataDir dataDir;
   std::string temp;
   std::string perfDisplay;
+  std::string camParams;
   imx::Imx imx{};
   static struct option longOptions[] = {
     {"help",          no_argument,       0, 'h'},
@@ -84,12 +89,13 @@ int cmdParser(int argc, char **argv, ParserOptions& options)
     {"display_perf",  optional_argument, 0, 'd'},
     {"text_color",    required_argument, 0, 't'},
     {"graph_path",    required_argument, 0, 'g'},
+    {"cam_params",    required_argument, 0, 'r'},
     {0,               0,                 0,   0}
   };
   
   while ((c = getopt_long(argc,
                           argv,
-                          "hb:n:c:p:l:x:f:d::t:g:",
+                          "hb:n:c:p:l:x:f:d::t:g:r:",
                           longOptions,
                           &optionIndex)) != -1) {
     switch (c)
@@ -142,7 +148,11 @@ int cmdParser(int argc, char **argv, ParserOptions& options)
                   
                   << std::setw(25) << std::left << "  -g, --graph_path"
                   << std::setw(25) << std::left
-                  << "Path to store the result of the OpenVX graph compilation (only for i.MX8MPlus)" << std::endl;
+                  << "Path to store the result of the OpenVX graph compilation (only for i.MX8MPlus)" << std::endl
+
+                  << std::setw(25) << std::left << "  -r, --cam_params"
+                  << std::setw(25) << std::left
+                  << "Use the selected camera resolution and framerate" << std::endl;
         return 1;
 
       case 'b':
@@ -216,6 +226,18 @@ int cmdParser(int argc, char **argv, ParserOptions& options)
         options.graphPath = optarg;
         break;
 
+      case 'r':
+        camParams.assign(optarg);
+        if (std::count( camParams.begin(), camParams.end(), ',') != 2) {
+          log_error("-r parameter needs the following argument: width,height,framerate\n");
+          return 1;
+        }
+        options.camWidth = std::stoi(camParams.substr(0, camParams.find(",")));
+        temp = camParams.substr(camParams.find(",")+1);
+        options.camHeight = std::stoi(temp.substr(0, temp.find(",")));
+        options.framerate = std::stoi(temp.substr(temp.find(",")+1));
+        break;
+
       default:
         break;
     }
@@ -237,6 +259,9 @@ int main(int argc, char **argv)
   options.time = false;
   options.freq = false;
   options.graphPath = getenv("HOME");
+  options.camWidth = 640;
+  options.camHeight = 480;
+  options.framerate = 30;
   if (cmdParser(argc, argv, options))
     return 0;
 
@@ -256,8 +281,8 @@ int main(int argc, char **argv)
                       1,
                       GstQueueLeaky::downstream,
                       3,
-                      640,
-                      480,
+                      options.camWidth,
+                      options.camHeight,
                       "YUY2");
   appsrc.addAppSrcToPipeline(emotionPipeline);
 
@@ -277,13 +302,16 @@ int main(int argc, char **argv)
   GstPipelineImx pipeline;
 
   // Add camera to pipeline
-  GstCameraImx camera(options.camDevice,
-                      "cam_src",
-                      CAMERA_INPUT_WIDTH,
-                      CAMERA_INPUT_HEIGHT,
-                      false,
-                      "",
-                      30);
+  CameraOptions camOpt = {
+    .cameraDevice   = options.camDevice,
+    .gstName        = "cam_src",
+    .width          = options.camWidth,
+    .height         = options.camHeight,
+    .horizontalFlip = false,
+    .format         = "",
+    .framerate      = options.framerate,
+  };
+  GstCameraImx camera(camOpt);
   camera.addCameraToPipeline(pipeline);
 
   // Add another tee element for parallelization of tasks
@@ -413,6 +441,8 @@ int main(int argc, char **argv)
   // Connect callback functions to tensor sink of each pipeline, cairo overlay,
   // appsink, and appsrc to process inference output
   DecoderData boxesData;
+  boxesData.camWidth = options.camWidth;
+  boxesData.camHeight = options.camHeight;
   boxesData.appSrc = emotionPipeline.getElement("appsrc_video");
   boxesData.videocrop = emotionPipeline.getElement("video_crop");
   emotionPipeline.connectToElementSignal(tensorSinkEmo, secondaryNewDataCallback, "new-data", &boxesData);

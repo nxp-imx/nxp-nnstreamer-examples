@@ -1,5 +1,5 @@
 /**
- * Copyright 2024 NXP
+ * Copyright 2024-2025 NXP
  * SPDX-License-Identifier: BSD-3-Clause 
  */ 
 
@@ -21,9 +21,6 @@
 #define NUMBER_OF_COORDINATES                 4
 #define MODEL_UFACE_CLASSIFICATION_THRESHOLD  0.7f
 #define MODEL_UFACE_NUMBER_MAX                15
-#define INPUT_WIDTH                           480
-#define INPUT_HEIGHT                          480
-
 
 /* Pose detection constants */
 #define KPT_SIZE                              17
@@ -37,6 +34,7 @@ typedef struct {
   std::vector<int> selectedBoxes;
   int bufferSize = NUM_BOX_DATA * MODEL_UFACE_NUMBER_BOXES;
   int faceCount = 0;
+  int inputDim;
 } FaceData;
 
 
@@ -53,6 +51,7 @@ typedef struct {
       {6, 7, 11}, {5, 8, 12}, {5, 9, -1}, {6, 10, -1}, {7, -1, -1},
       {8, -1, -1}, {5, 12, 13}, {6, 11, 14}, {11, 15, -1},
       {12, 16, -1}, {13, -1, -1}, {14, -1, -1}};
+  int inputDim;
 } PoseData;
 
 

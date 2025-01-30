@@ -48,6 +48,7 @@ Option | Description
 -d, --display_perf |Display performances, can specify time or freq
 -t, --text_color | Color of performances displayed, can choose between red, green, blue, and black<br> default: white
 -g, --graph_path | Path to store the result of the OpenVX graph compilation (only for i.MX8MPlus)<br> default: home directory
+-r, --cam_params | Use the selected camera resolution and framerate<br> default: 640x480, 30fps
 -f, --video_file | Use the selected path to generate a video (only for i.MX 8M Plus)
 
 Press ```Esc or ctrl+C``` to stop the execution of the pipeline.
@@ -86,6 +87,7 @@ Option | Description
 -d, --display_perf |Display performances, can specify time or freq
 -t, --text_color | Color of performances displayed, can choose between red, green, blue, and black<br> default: white
 -g, --graph_path | Path to store the result of the OpenVX graph compilation (only for i.MX8MPlus)<br> default: home directory
+-r, --cam_params | Use the selected camera resolution and framerate<br> default: 640x480, 30fps
 
 Press ```Esc or ctrl+C``` to stop the execution of the pipeline.
 
@@ -120,5 +122,6 @@ Option | Description
 -d, --display_perf |Display performances, can specify time or freq
 -t, --text_color | Color of performances displayed, can choose between red, green, blue, and black<br> default: white
 -g, --graph_path | Path to store the result of the OpenVX graph compilation (only for i.MX8MPlus)<br> default: home directory
+-r, --cam_params | Use the selected camera resolution and framerate<br> default: 640x480, 30fps
 
 Press ```Esc or ctrl+C``` to stop the execution of the pipeline.

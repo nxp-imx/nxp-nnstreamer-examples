@@ -1,5 +1,5 @@
 /**
- * Copyright 2024 NXP
+ * Copyright 2024-2025 NXP
  * SPDX-License-Identifier: BSD-3-Clause 
  */ 
 
@@ -32,6 +32,7 @@ typedef struct {
       {6, 7, 11}, {5, 8, 12}, {5, 9, -1}, {6, 10, -1}, {7, -1, -1},
       {8, -1, -1}, {5, 12, 13}, {6, 11, 14}, {11, 15, -1},
       {12, 16, -1}, {13, -1, -1}, {14, -1, -1}};
+  int inputDim;
 } DecoderData;
 
 

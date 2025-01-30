@@ -1,5 +1,5 @@
 /**
- * Copyright 2024 NXP
+ * Copyright 2024-2025 NXP
  * SPDX-License-Identifier: BSD-3-Clause 
  */ 
 
@@ -61,19 +61,19 @@ void newDataCallback(GstElement* element,
       faceCount += 1;
       // Store x1
       boxes.push_back(
-            static_cast<int>(bufferInfo.bufferFP32[i+2] * CAMERA_INPUT_WIDTH)
+            static_cast<int>(bufferInfo.bufferFP32[i+2] * boxesData->camWidth)
         );
       // Store y1
       boxes.push_back(
-            static_cast<int>(bufferInfo.bufferFP32[i+3] * CAMERA_INPUT_HEIGHT)
+            static_cast<int>(bufferInfo.bufferFP32[i+3] * boxesData->camHeight)
         );
       // Store x2
       boxes.push_back(
-            static_cast<int>(bufferInfo.bufferFP32[i+4] * CAMERA_INPUT_WIDTH)
+            static_cast<int>(bufferInfo.bufferFP32[i+4] * boxesData->camWidth)
         );
       // Store y2
       boxes.push_back(
-            static_cast<int>(bufferInfo.bufferFP32[i+5] * CAMERA_INPUT_HEIGHT)
+            static_cast<int>(bufferInfo.bufferFP32[i+5] * boxesData->camHeight)
         );
     }
   }
@@ -91,17 +91,17 @@ void newDataCallback(GstElement* element,
 
     d = std::max(w, h) * k;
     d = std::min(d, static_cast<float>(
-        std::min(CAMERA_INPUT_WIDTH, CAMERA_INPUT_HEIGHT)
+        std::min(boxesData->camWidth, boxesData->camHeight)
     ));
     d = std::max(d, minwh);
     d2 = static_cast<int>(d/2);
 
-    if ((cx + d2) >= CAMERA_INPUT_WIDTH)
-      cx = CAMERA_INPUT_WIDTH - d2 - 1;
+    if ((cx + d2) >= boxesData->camWidth)
+      cx = boxesData->camWidth - d2 - 1;
     if ((cx - d2) < 0)
       cx = d2;
-    if ((cy + d2) >= CAMERA_INPUT_HEIGHT)
-      cy = CAMERA_INPUT_HEIGHT - d2 - 1;
+    if ((cy + d2) >= boxesData->camHeight)
+      cy = boxesData->camHeight - d2 - 1;
     if ((cy - d2) < 0)
       cy = d2;
     boxes.at(0 + faceIndex) = cx - d2;
@@ -127,7 +127,7 @@ void drawCallback(GstElement* overlay,
   std::vector<int> boxes = boxesData->selectedBoxes;
 
   cairo_set_source_rgb(cr, 0.85, 0, 1);
-  cairo_move_to(cr, 480, 18);
+  cairo_move_to(cr, boxesData->camWidth - 150, 18);
   cairo_select_font_face(cr,
                          "Arial",
                          CAIRO_FONT_SLANT_NORMAL,

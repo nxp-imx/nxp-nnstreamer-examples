@@ -1,5 +1,5 @@
 /**
- * Copyright 2024 NXP
+ * Copyright 2024-2025 NXP
  * SPDX-License-Identifier: BSD-3-Clause 
  */ 
 
@@ -8,40 +8,36 @@
 /**
  * @brief Parameterized constructor.
  * 
- * @param cameraDevice: camera device to use.
- * @param name: name for GStreamer camera element.
- * @param width: camera width.
- * @param height: camera height.
- * @param flip: camera horizontal flip.
- * @param format: GStreamer video format.
- * @param framerate: camera framerate.
+ * @param options: structure of camera parameters.
  */
-GstCameraImx::GstCameraImx(const std::filesystem::path &cameraDevice,
-                           const std::string &name,
-                           const int &width,
-                           const int &height,
-                           const bool &flip,
-                           const std::string &format,
-                           const int &framerate)
-    : GstSourceImx(width, height, format),
-      device(cameraDevice),
-      flip(flip),
-      gstName(name),
-      framerate(framerate)
+GstCameraImx::GstCameraImx(CameraOptions &options)
+    : GstSourceImx(options.width, options.height, options.format),
+      flip(options.horizontalFlip),
+      gstName(options.gstName),
+      framerate(options.framerate)
 {
-  if (cameraDevice.string().length() != 0) {
-    device = cameraDevice;
+  if (options.cameraDevice.string().length() != 0) {
+    device = options.cameraDevice;
   } else {
     imx::Imx imx{};
-    device = (imx.socId() == imx::IMX8MP) ? "/dev/video3" : "/dev/video0";
-  }
+    switch (imx.socId())
+    {
+      case imx::IMX8MP:
+        device = "/dev/video3";
+        break;
 
-  if (width <= 320 and height <= 240) {
-    this->width = 320;
-    this->height = 240;
-  } else {
-    this->width = 640;
-    this->height = 480;        
+      case imx::IMX93:
+        device = "/dev/video0";
+        break;
+
+      case imx::IMX95:
+        device = "/dev/video13";
+        break;
+
+      default:
+        log_error("Select a camera device using -c argument option\n");
+        break;
+    }
   }
 }
 
