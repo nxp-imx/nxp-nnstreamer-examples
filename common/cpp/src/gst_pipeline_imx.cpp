@@ -295,17 +295,6 @@ void GstPipelineImx::linkToTextOverlay(const std::string &gstName)
 
 
 /**
- * @brief Link video to compositor.
- * 
- * @param gstName: name of compositor element.
- */
-void GstPipelineImx::linkToVideoCompositor(const std::string &gstName)
-{
-  addToPipeline(gstName + ". ");
-}
-
-
-/**
  * @brief Add tensor_sink element to retrieve tensors.
  * 
  * @param gstName: name of tensor_sink element.

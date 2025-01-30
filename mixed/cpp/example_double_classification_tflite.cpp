@@ -291,8 +291,18 @@ int main(int argc, char **argv)
   };
   postProcess.addTextOverlay(pipeline, firstOverlayOpt);
 
+  // Initialize compositor element
   std::string compositorName = "mix";
-  pipeline.linkToVideoCompositor(compositorName);
+  GstVideoCompositorImx compositor(compositorName);
+
+  // Add text overlay output to the compositor
+  compositorInputParams firstInputParams = {
+    .position     = displayPosition::left,
+    .order        = 1,
+    .keepRatio    = true,
+    .transparency = false,
+  };
+  compositor.addToCompositor(pipeline, firstInputParams);
 
   // Add second camera to pipeline
   CameraOptions camOpt2 = {
@@ -351,10 +361,18 @@ int main(int argc, char **argv)
 
   postProcess.addTextOverlay(pipeline, secondOverlayOpt);
 
+  // Add camera input to the compositor
+  compositorInputParams secondInputParams = {
+    .position     = displayPosition::right,
+    .order        = 2,
+    .keepRatio    = true,
+    .transparency = false,
+  };
+  compositor.addToCompositor(pipeline, secondInputParams);
+
   // Add video compositor to display both cameras
-  GstVideoImx gstvideoimx{};
   int modelLatency = 10000000;
-  gstvideoimx.videoCompositor(pipeline, compositorName, modelLatency, displayPosition::split);
+  compositor.addCompositorToPipeline(pipeline, modelLatency);
 
   float scaleFactor = 15.0f/640; // Default font size is 15 pixels for a width of 640
   pipeline.enablePerfDisplay(options.freq, options.time, options.camWidth * scaleFactor, options.textColor);

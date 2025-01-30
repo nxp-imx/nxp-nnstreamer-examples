@@ -1,5 +1,5 @@
 /**
- * Copyright 2024 NXP
+ * Copyright 2024-2025 NXP
  * SPDX-License-Identifier: BSD-3-Clause
  */
 
@@ -155,7 +155,7 @@ void GstVideoPostProcess::saveToVideo(GstPipelineImx &pipeline,
  * @param options: AppSinkOptions structure, setup appsink options.
  */  
 void GstVideoPostProcess::addAppSink(GstPipelineImx &pipeline,
-                                     AppSinkOptions &options)
+                                     const AppSinkOptions &options)
 {
   std::string cmd;
   cmd = "appsink";
@@ -172,4 +172,93 @@ void GstVideoPostProcess::addAppSink(GstPipelineImx &pipeline,
      cmd += " emit-signals=true";
 
   pipeline.addToPipeline(cmd + " ");
+}
+
+
+/**
+ * @brief Link video to compositor.
+ * 
+ * @param pipeline: GstPipelineImx pipeline.
+ * @param inputParams: structure of parameters for an input video.
+ */
+void GstVideoCompositorImx::addToCompositor(GstPipelineImx &pipeline,
+                                            const compositorInputParams &inputParams)
+{
+  pipeline.addToPipeline(this->gstName + ".sink_" + std::to_string(sinkNumber) + " ");
+  this->compositorInputs.push_back(inputParams);
+  sinkNumber += 1;
+}
+
+/**
+ * @brief Create pipeline segment for accelerated video mixing.
+ * 
+ * @param pipeline: GstPipelineImx pipeline.
+ * @param latency: time for a capture to reach the sink, default 0.
+ */
+void GstVideoCompositorImx::addCompositorToPipeline(GstPipelineImx &pipeline,
+                                                    const int &latency)
+ {
+  std::string cmd;
+  std::string customParams;
+
+  for (int i=0; i < this->compositorInputs.size(); i++) {
+    compositorInputParams inputParams = compositorInputs.at(i);
+    std::string stream = "sink_" + std::to_string(i);
+    customParams += stream + "::zorder=" + std::to_string(inputParams.order) + " ";
+
+    if (this->imx.hasPxP() && (inputParams.transparency == true))
+      customParams += stream + "::alpha=0.3 ";
+  
+    switch (inputParams.position)
+    {
+      case displayPosition::left:
+        customParams += stream + "::xpos=0 ";
+        customParams += stream + "::ypos=0 ";
+        customParams += stream + "::width=960 ";
+        customParams += stream + "::height=720 ";
+        if (inputParams.keepRatio == true)
+          customParams += stream + "::keep-ratio=true ";
+        break;
+
+      case displayPosition::right:
+        customParams += stream + "::xpos=960 ";
+        customParams += stream + "::ypos=0 ";
+        customParams += stream + "::width=960 ";
+        customParams += stream + "::height=720 ";
+        if (inputParams.keepRatio == true)
+          customParams += stream + "::keep-ratio=true ";
+        break;
+
+      case displayPosition::center:
+        break;
+
+      default:
+        break;
+    }
+  }
+
+  if(this->imx.hasGPU2d()) {
+    cmd = "imxcompositor_g2d name=" + this->gstName + " ";
+    cmd += customParams;
+  } else if(this->imx.hasPxP()) {
+    /** 
+     * imxcompositor_pxp does not support RGBA sink
+     * and use CPU to convert RGBA to RGB
+     */ 
+    cmd = "imxcompositor_pxp name=" + this->gstName + " ";
+    cmd += customParams;
+  } else {
+    /*  no acceleration */
+    cmd = "compositor name=" + gstName + " ";
+    cmd += customParams;
+  }
+
+  if(latency != 0) {
+    cmd += "latency=" + std::to_string(latency);
+    cmd += " min-upstream-latency=" + std::to_string(latency);
+    cmd += " ";
+  }
+
+  cmd += "! ";
+  pipeline.addToPipeline(cmd);
 }

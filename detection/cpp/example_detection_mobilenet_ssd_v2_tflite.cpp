@@ -265,9 +265,18 @@ int main(int argc, char **argv)
   };
   decoder.addBoundingBoxes(pipeline, decOptions);
 
-  // Link decoder result to a video compositor
+  // Initialize compositor element
   std::string compositorName = "mix";
-  pipeline.linkToVideoCompositor(compositorName);
+  GstVideoCompositorImx compositor(compositorName);
+
+  // Add tensor decoder output to the compositor
+  compositorInputParams firstInputParams = {
+    .position     = displayPosition::center,
+    .order        = 2,
+    .keepRatio    = false,
+    .transparency = true,
+  };
+  compositor.addToCompositor(pipeline, firstInputParams);
 
   // Add a branch to tee element to display result
   GstQueueOptions imgQueue = {
@@ -293,14 +302,22 @@ int main(int argc, char **argv)
     latency = MODEL_LATENCY_NS_CPU;
   }
 
-  // Add video compositor
-  GstVideoImx gstvideoimx{};
-  gstvideoimx.videoCompositor(pipeline, compositorName, latency);
+  // Add camera input to the compositor
+  compositorInputParams secondInputParams = {
+    .position     = displayPosition::center,
+    .order        = 1,
+    .keepRatio    = false,
+    .transparency = false,
+  };
+  compositor.addToCompositor(pipeline, secondInputParams);
+
+  // Compositing pipeline input video with model processed output
+  compositor.addCompositorToPipeline(pipeline, latency);
 
   // Display processed video
-  GstVideoPostProcess postProcess;
   float scaleFactor = 15.0f/640; // Default font size is 15 pixels for a width of 640
   pipeline.enablePerfDisplay(options.freq, options.time, options.camWidth * scaleFactor, options.textColor);
+  GstVideoPostProcess postProcess;
   postProcess.display(pipeline, false);
 
   // Parse pipeline to GStreamer pipeline

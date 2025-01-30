@@ -110,8 +110,6 @@ class GstPipelineImx {
 
     void linkToTextOverlay(const std::string &gstName);
 
-    void linkToVideoCompositor(const std::string &gstName);
-
     void addTensorSink(const std::string &gstName, const bool &qos=true);
 
     void setSave(const bool &save);

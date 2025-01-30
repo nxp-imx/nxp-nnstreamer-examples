@@ -324,9 +324,18 @@ int main(int argc, char **argv)
   };
   detDecoder.addBoundingBoxes(pipeline, decOptions);
 
-  // Link decoder result to a video compositor
+  // Initialize compositor element
   std::string compositorName = "mix";
-  pipeline.linkToVideoCompositor(compositorName);
+  GstVideoCompositorImx compositor(compositorName);
+
+  // Add tensor decoder output to the compositor
+  compositorInputParams firstInputParams = {
+    .position     = displayPosition::center,
+    .order        = 2,
+    .keepRatio    = false,
+    .transparency = true,
+  };
+  compositor.addToCompositor(pipeline, firstInputParams);
 
   // Add a branch to tee element to display result
   GstQueueOptions imgQueue = {
@@ -346,9 +355,17 @@ int main(int argc, char **argv)
     latency = MODEL_LATENCY_NS_CPU;
   }
 
-  // Add video compositor
-  GstVideoImx gstvideosink{};
-  gstvideosink.videoCompositor(pipeline, compositorName, latency);
+  // Add camera input to the compositor
+  compositorInputParams secondInputParams = {
+    .position     = displayPosition::center,
+    .order        = 1,
+    .keepRatio    = false,
+    .transparency = false,
+  };
+  compositor.addToCompositor(pipeline, secondInputParams);
+
+  // Compositing pipeline input video with model processed output
+  compositor.addCompositorToPipeline(pipeline, latency);
 
   // Add text overlay
   GstVideoPostProcess postProcess;

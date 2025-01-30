@@ -1,5 +1,5 @@
 /**
- * Copyright 2024 NXP
+ * Copyright 2024-2025 NXP
  * SPDX-License-Identifier: BSD-3-Clause 
  */
 
@@ -9,6 +9,7 @@
 #include <map>
 #include <string>
 #include <filesystem>
+#include <vector>
 
 #include "gst_pipeline_imx.hpp"
 
@@ -31,6 +32,21 @@ typedef struct {
   bool drop;
   bool emitSignals;
 } AppSinkOptions;
+
+
+enum class displayPosition {
+  left,
+  right,
+  center
+};
+
+
+typedef struct {
+  displayPosition position;
+  int order;
+  bool keepRatio;
+  bool transparency;
+} compositorInputParams;
 
 
 /**
@@ -56,6 +72,28 @@ class GstVideoPostProcess {
                      const std::filesystem::path &path);
     
     void addAppSink(GstPipelineImx &pipeline,
-                    AppSinkOptions &options);
+                    const AppSinkOptions &options);
+};
+
+
+/**
+ * @brief Create pipeline segments for video compositor.
+ */
+class GstVideoCompositorImx {
+  private:
+    imx::Imx imx{};
+    std::string gstName;
+    std::vector<compositorInputParams> compositorInputs;
+    static inline int sinkNumber = 0;
+
+  public:
+    GstVideoCompositorImx(const std::string &gstName)
+        : gstName(gstName) {}
+
+    void addToCompositor(GstPipelineImx &pipeline,
+                         const compositorInputParams &inputParams);
+    
+    void addCompositorToPipeline(GstPipelineImx &pipeline,
+                                 const int &latency = 0);
 };
 #endif

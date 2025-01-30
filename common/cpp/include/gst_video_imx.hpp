@@ -1,5 +1,5 @@
 /**
- * Copyright 2024 NXP
+ * Copyright 2024-2025 NXP
  * SPDX-License-Identifier: BSD-3-Clause 
  */ 
 
@@ -8,12 +8,6 @@
 
 #include "imx_devices.hpp"
 #include "gst_pipeline_imx.hpp"
-
-
-enum class displayPosition {
-  mixed,
-  split
-};
 
 
 /**
@@ -46,10 +40,5 @@ class GstVideoImx {
                    const int &bottom=0,
                    const int &left=0,
                    const int &right=0);
-
-    void videoCompositor(GstPipelineImx &pipeline,
-                         const std::string &gstName,
-                         const int &latency = 0,
-                         const displayPosition &position=displayPosition::mixed);
 };
 #endif

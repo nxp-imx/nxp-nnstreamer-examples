@@ -348,8 +348,18 @@ int main(int argc, char **argv)
   gstvideoimx.videoTransform(pipeline, "RGB16", -1, -1, false);
   postProcess.addCairoOverlay(pipeline, cairoName);
 
-  std::string compositor = "emoResult";
-  pipeline.linkToVideoCompositor(compositor);
+  // Initialize compositor element
+  std::string compositorName = "mix";
+  GstVideoCompositorImx compositor(compositorName);
+
+  // Add emotion detection result to the compositor
+  compositorInputParams firstInputParams = {
+    .position     = displayPosition::left,
+    .order        = 1,
+    .keepRatio    = true,
+    .transparency = false,
+  };
+  compositor.addToCompositor(pipeline, firstInputParams);
 
   // Add a branch to tee element to get video stream with appsink
   GstQueueOptions sinkQueue = {
@@ -406,9 +416,14 @@ int main(int argc, char **argv)
   };
   detDecoder.addBoundingBoxes(pipeline, decOptions);
 
-  // Link decoder result to a video compositor
-  std::string detCompositor = "mix";
-  pipeline.linkToVideoCompositor(detCompositor);
+  // Add object detection decoding output to the compositor
+  compositorInputParams secondInputParams = {
+    .position     = displayPosition::right,
+    .order        = 2,
+    .keepRatio    = true,
+    .transparency = true,
+  };
+  compositor.addToCompositor(pipeline, secondInputParams);
 
   // Add a branch to tee element for inference and model post processing
   GstQueueOptions outputQueue = {
@@ -427,9 +442,17 @@ int main(int argc, char **argv)
   } else {
     latency = MODEL_LATENCY_NS_CPU;
   }
-  GstVideoImx gstvideosink{};
-  gstvideosink.videoCompositor(pipeline, detCompositor, latency);
-  gstvideosink.videoCompositor(pipeline, compositor, 0, displayPosition::split);
+
+  // Add video input to the compositor
+  compositorInputParams thirdInputParams = {
+    .position     = displayPosition::right,
+    .order        = 1,
+    .keepRatio    = true,
+    .transparency = false,
+  };
+  compositor.addToCompositor(pipeline, thirdInputParams);
+  compositor.addCompositorToPipeline(pipeline, latency);
+
   float scaleFactor = 15.0f/640; // Default font size is 15 pixels for a width of 640
   pipeline.enablePerfDisplay(options.freq, options.time, options.camWidth * scaleFactor, options.textColor);
   postProcess.display(pipeline, false);

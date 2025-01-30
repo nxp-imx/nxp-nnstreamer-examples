@@ -209,9 +209,13 @@ int main(int argc, char **argv)
   };
   decoder.addImageSegment(pipeline, decOptions);
 
+  // compositor class is not used because
+  // it doesn't support 513x513 input dimension,
+  // so videomixer is added manually.
+
   // Link decoder result to a video compositor
   std::string compositorName = "mix";
-  pipeline.linkToVideoCompositor(compositorName);
+  pipeline.addToPipeline(compositorName + ". "); 
 
   // Add a branch to tee element to display result
   GstQueueOptions imgQueue = {
@@ -221,8 +225,7 @@ int main(int argc, char **argv)
   };
   pipeline.addBranch(teeName, imgQueue);
 
-  // Add video compositor, we use videomixer because of height and weight
-  // constraint on video compositor
+  // Add video compositing
   pipeline.addToPipeline("videomixer name="
                          + compositorName
                          + " sink_1::alpha=0.4 " 
