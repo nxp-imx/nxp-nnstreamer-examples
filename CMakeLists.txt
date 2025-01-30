@@ -62,10 +62,10 @@ target_include_directories(example_face_and_pose_detection_tflite PRIVATE ${CMAK
 target_link_libraries(example_face_and_pose_detection_tflite ${GSTREAMER_LIBRARIES} ${CAIRO_LIBRARIES} tensorflow-lite)
 set_target_properties(example_face_and_pose_detection_tflite PROPERTIES RUNTIME_OUTPUT_DIRECTORY ./mixed)
 
-# Example of object classification (mobilenet_v1) on 2 cameras
-add_executable(example_classification_two_cameras_tflite ${all_SRCS} classification/cpp/example_classification_two_cameras_tflite.cpp)
-target_link_libraries(example_classification_two_cameras_tflite ${GSTREAMER_LIBRARIES} ${CAIRO_LIBRARIES} tensorflow-lite)
-set_target_properties(example_classification_two_cameras_tflite PROPERTIES RUNTIME_OUTPUT_DIRECTORY ./classification)
+# Example of double object classification (mobilenet_v1)
+add_executable(example_double_classification_tflite ${all_SRCS} mixed/cpp/example_double_classification_tflite.cpp)
+target_link_libraries(example_double_classification_tflite ${GSTREAMER_LIBRARIES} ${CAIRO_LIBRARIES} tensorflow-lite)
+set_target_properties(example_double_classification_tflite PROPERTIES RUNTIME_OUTPUT_DIRECTORY ./mixed)
 
 # Example of emotion detection (UltraFace slim, and Deepface-emotion)
 add_executable(example_emotion_detection_tflite ${all_SRCS} face/cpp/example_emotion_detection_tflite.cpp face/cpp/custom_emotion_decoder.cpp)
