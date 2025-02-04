@@ -19,17 +19,19 @@ This object is used by various classes to add elements to the pipeline :
 # <a name="first-title"></a> Input sources
 
 ## Camera
-Camera is handled by `GstCamera` class. Camera is first initialized using the parameterized constructor with the following argument options : device name, GStreamer element name, dimension, mirror option, format, and framerate.<br> The method `addCameraToPipeline` is then used to add GStreamer camera element to the pipeline, by passing the pipeline object in argument.
+Camera is handled by `GstCamera` class. Camera is first initialized using the parameterized constructor with the following `CameraOptions` structure, including the following options: device name, GStreamer element name, dimension, mirror option, format, and framerate.<br> The method `addCameraToPipeline` is then used to add GStreamer camera element to the pipeline, by passing the pipeline object in argument.
 ```cpp
-// Add camera to pipeline
-GstCamera camera("/dev/video3",         // Camera device used
-                 "cam_src",             // GStreamer element name
-                 640,                   // Resized width
-                 480,                   // Resized weight
-                 false,                 // If horizontal flip
-                 "YUY2",                // Format
-                 30);                   // Framerate
-camera.addCameraToPipeline(pipeline);   // GstPipelineImx object
+CameraOptions camOpt = {
+    .cameraDevice   = "/dev/video3",
+    .gstName        = "cam_src",
+    .width          = 640,
+    .height         = 480,
+    .horizontalFlip = false,
+    .format         = "YUY2",
+    .framerate      = 30,
+  };
+GstCameraImx camera(camOpt);
+camera.addCameraToPipeline(pipeline); // pipeline: GstPipelineImx object
 ```
 NOTES:
 * GstCamera parameterized constructor has default values for format (""), and framerate (30).
@@ -38,8 +40,10 @@ NOTES:
 Video is handled by `GstVideo` class. Like `GstCamera` class, video is first initialized using the parameterized constructor with the following argument option : file path.<br> The method `addVideoToPipeline` is then used to add GStreamer video element to the pipeline, by passing the pipeline object in argument.
 ```cpp
 // Add video to pipeline
-GstVideo PowerJump("/path/to/video/");  // Video file path
-PowerJump.addVideoToPipeline(pipeline); // GstPipelineImx object
+GstVideo PowerJump("/path/to/video/",   // Video file path
+                   480,                 // (optional) new video width
+                   480);                // (optional) new video height
+PowerJump.addVideoToPipeline(pipeline); // pipeline: GstPipelineImx object
 ```
 NOTES:
 * Video formats can only be MKV, WEBM, and MP4.
@@ -51,7 +55,7 @@ slideshow is handled by `GstSlideshow` class. Like the previous classes, slidesh
 GstSlideshow slideshow("/path/to/images/images%04d.jpg" // Images path
                        640,                             // Resized width
                        480);                            // Resized height
-slideshow.addSlideshowToPipeline(pipeline);             // GstPipelineImx object
+slideshow.addSlideshowToPipeline(pipeline);             // pipeline: GstPipelineImx object
 ```
 NOTES:
 * Slideshow can only be composed of jpg images.
@@ -62,7 +66,7 @@ NOTES:
 `GstVideoImx` class have pre-processing tools which use the hardware specific accelerators to accelerate video mixing, video formatting, and video cropping.
 
 ## Video resizing and format change
-`videoTransform` can be used to change video format, flip the image horizontally, and resize the GStreamer video stream :
+`videoTransform` can be used to change video format, flip the image horizontally, and resize the GStreamer video stream:
 ```cpp
 GstPipelineImx pipeline;
 GstVideoImx gstvideoimx{};
@@ -72,7 +76,7 @@ gstvideoimx.videoTransform(pipeline,  // Apply changes to this pipeline
                            480,       // Resized height
                            false,     // If horizontal flip
                            false,     // Aspect ratio set to 1/1 (square shape output image)
-                           true);     // Deactivate hardware acceleration to use CPU instead
+                           true);     // Deactivate hardware acceleration to use CPU
 
 ```
 NOTES:
@@ -82,7 +86,7 @@ NOTES:
 
 ## Video resizing to RGB
 imxvideoconvert_g2d and imxvideoconvert_pxp don't support RGB, so a specific method is used to convert a GStreamer video stream to RGB format.<br>
-`videoscaleToRGB` can be used to change video format to RGB, and resize the GStreamer video stream :
+`videoscaleToRGB` can be used to change video format to RGB, and resize the GStreamer video stream:
 ```cpp
 GstPipelineImx pipeline;
 GstVideoImx gstvideoimx{};
@@ -92,7 +96,7 @@ gstvideoimx.videoscaleToRGB(pipeline,  // Apply changes to this pipeline
 ```
 
 ## Video cropping
-`videocrop` can be used to crop a GStreamer video stream :
+`videocrop` can be used to crop a GStreamer video stream:
 ```cpp
 GstPipelineImx pipeline;
 GstVideoImx gstvideoimx{};
@@ -106,25 +110,6 @@ gstvideoimx.videocrop(pipeline,  // Apply changes to this pipeline
 ```
 NOTES:
 * Top, bottom, left, and right are set to 0 by default.
-
-## Video mixing
-`videoCompositor` can be used to mix two GStreamer video streams together.<br>
-This method comes with `linkToVideoCompositor` method of `GstPipelineImx`, which link element the second GStreamer video stream to the video compositor :
-```cpp
-// First call linkToVideoCompositor to link one source to the video compositor
-GstPipelineImx pipeline;
-pipeline.linkToVideoCompositor("mix");
-[...]
-// Video compositor is called after the second source
-GstVideoImx gstvideoimx{};
-gstvideoimx.videoCompositor(pipeline,                   // Apply changes to this pipeline
-                            "mix",                      // GStreamer element name
-                            150000000,                  // Latency in ns
-                            displayPosition::split);    // Position of the videos to mix
-```
-NOTES:
-* Latency is an optional parameter set to 0 by default.
-* Position is set to displayPosition::centered by default, so videos are mixed.
 
 # <a name="third-title"></a> Parallelization of process
 Parallelization is possible using `GstPipelineImx` method `doInParallel` to add a tee element, then `addBranch` method is used to create thread : <br>
@@ -155,22 +140,22 @@ pipeline.addBranch(teeName, imgQueue);
 ```
 
 # <a name="fourth-title"></a> ML model processing tools
-`TFliteModelInfos` class is used to get informations from a TFlite model to run inference. Inference depends on the backend used (CPU, GPU, or NPU).<br> `addInferenceToPipeline` method is called to add model inference to the pipeline :
+`TFliteModelInfos` class is used to get informations from a TFlite model to run inference. Inference depends on the backend used (CPU, GPU, or NPU).<br> `addInferenceToPipeline` method is called to add model inference to the pipeline:
 ```cpp
 GstpipelineImx pipeline;
 TFliteModelInfos classification("/path/to/model",       // Model path
                                 "CPU",                  // Backend used
                                 "centeredReduced");     // Input normalization
 classification.addInferenceToPipeline(pipeline,         // GstPipelineImx object
-                                      "classification", // Element name (optional)
-                                      "GRAY8");         // Input format (optional)
+                                      "classification", // (optional) Element name
+                                      "GRAY8");         // (optional) Input format
 ```
 NOTES:
 * addInferenceToPipeline method has no "name" element set by default, and format set to "RGB" by default.
 
 ## NNStreamer decoder
 `NNDecoder` class uses NNStreamer output decoder to process model inference output. Three types of decoding are available :<br>
-`addImageSegment` method which decode segmentation models (TFlite Deeplab, SNPE Deeplab, SNPE Depth) :
+`addImageSegment` method which decode segmentation models (TFlite Deeplab, SNPE Deeplab, SNPE Depth):
 ```cpp
 GstpipelineImx pipeline;
 
@@ -194,7 +179,7 @@ NNDecoder decoder;
 decoder.addImageLabeling(pipeline, "/path/to/labels");// Labels path
 ```
 
-And finally, `addBoundingBoxes` method which decode detection models (yolov5, mobilenet SSD, MP palm detection) :
+And finally, `addBoundingBoxes` method which decode detection models (yolov5, mobilenet SSD, MP palm detection):
 ```cpp
 GstpipelineImx pipeline;
 
@@ -222,7 +207,7 @@ NOTES:
 To create a custom decoding of the inference result, the inference output need to be retrieved using a tensor_sink element that can be added with `GstPipelineImx` method `addTensorSink`, and then a custom display with a Cairo overlay can be used with `GstVideoPostProcess` method `addCairoOverlay`.<br>
 Then, inference decoding custom functions and custom display need to be added using callback functions, which are linked respectively to tensor_sink and Cairo overlay element signal "new-data" and "draw" using `GstPipelineImx` method `connectToElementSignal`.<br>
 A data structure need to be created for variables that need to be shared between the callback functions, or need to be retrieved outside the callback functions.<br>
-For instance, the inference output data are processed in tensor_sink callback function, and shared to Cairo overlay callback function to draw or display the result using a variable in the data structure :
+For instance, the inference output data are processed in tensor_sink callback function, and shared to Cairo overlay callback function to draw or display the result using a variable in the data structure:
 ```cpp
 // Retrieves output tensor from inference output
 std::string tensorSinkName = "tensor_sink";
@@ -260,18 +245,45 @@ NOTES:
 `GstVideoPostProcess` class have post-processing tools used to display GStreamer video stream, add a text overlay, and save GStreamer video stream to video.
 
 ## Display
-The method `display` is used to display the GStreamer video stream :
+The method `display` is used to display the GStreamer video stream:
 ```cpp
 GstVideoPostProcess postProcess;
 postProcess.display(pipeline,     // Pipeline to display
                     false);       // If display element is synchronized or not
-
 ```
 NOTES:
 * Second argument is set to false by default, and third argument to true.
 
+## Video mixing
+`GstVideoCompositorImx` structure is used to mix GStreamer video streams together.<br>
+The element needs to be initialized using `GstVideoCompositorImx` constructor:
+```cpp
+std::string compositorName = "mix";
+GstVideoCompositorImx compositor(compositorName);
+```
+A structure needs to be defined for each GStreamer video stream, to describe its behaviour with the following options:<br> 
+- position: image can be displayed in the center, the left, or the right.
+- order: order to display the image. For instance, image of order 1 is displayed on top an image of order 0.
+- keepRatio: boolean to specify if the image will keep its aspect ratio.
+- transparency: compositor element doesn't support ARGB in i.MX 93. This option allows to substitute ARGB with transparency.
+
+Then `addToCompositor` method is called after the GStreamer video stream:
+```cpp
+compositorInputParams firstInputParams = {
+  .position     = displayPosition::center,
+  .order        = 2,
+  .keepRatio    = false,
+  .transparency = false,
+};
+compositor.addToCompositor(pipeline, firstInputParams);
+```
+Compositor is added to the the pipeline, with an optional latency parameter:
+```cpp
+compositor.addCompositorToPipeline(pipeline, latency);
+```
+
 ## Text overlay
-To add a text overlay to a pipeline, use `addTextOverlay` to create the GStreamer element, and then `linkToTextOverlay` method of `GstPipelineImx` if the text to display is the output of another element :
+To add a text overlay to a pipeline, use `addTextOverlay` to create the GStreamer element, and then `linkToTextOverlay` method of `GstPipelineImx` if the text to display is the output of another element:
 ```cpp
 // Link text stream to text overlay
 std::string overlayName = "overlay";
@@ -296,7 +308,7 @@ NOTES:
 * Horizontal alignement can be "left", "center", "right", "Absolute position clamped to canvas", and "Absolute position".
 
 ## Save to video
-`GstVideoPostProcess` allows to save GStreamer video stream to MP4, and MKV using `saveToVideo` method :
+`GstVideoPostProcess` allows to save GStreamer video stream to MP4, and MKV using `saveToVideo` method:
 ```cpp
 // Save output to MKV video
 postProcess.saveToVideo(pipeline,
@@ -305,19 +317,19 @@ postProcess.saveToVideo(pipeline,
 ```
 
 # <a name="sixth-title"></a> Performances display
-Performances can be displayed with `enablePerfDisplay` method of `GstPipelineImx` and `display` method of `GstVideoPstProcess` :
+Performances are displayed with `enablePerfDisplay` method of `GstPipelineImx`, before adding the display method described in Pre-processing tools:
 ```cpp
-pipeline.enablePerfDisplay(true,  // Display temporal performances (pipeline duration and inferences duration)
+pipeline.enablePerfDisplay(true,  // Display temporal performances (pipeline and inferences durations)
                            true,  // Display performances in frequency (FPS and IPS)
-                           10);   // Optional parameter, setting font size (default is 15) 
-postProcess.display(pipeline,
-                    false);
+                           10,    // (optional) Font size (default is 15)
+                           "red");// (optional) Text color between red, green, blue, and black (white by default)
+postProcess.display(pipeline, false);
 ```
 NOTES:
 * To display performances related to a given model (inference duration and/or IPS), it is required to give a name to the addInferenceToPipeline method that execute the model's inference using dedicating method argument. Performances will not be displayed for the addInferenceToPipeline who do not have a given name.
 
 # <a name="seventh-title"></a>  Run pipeline
-To run the pipeline, `GstPipelineImx` class method `parse` is first used to parse the pipeline to a GStreamer pipeline, and then, use `run` method :
+To run the pipeline, `GstPipelineImx` class method `parse` is first used to parse the pipeline to a GStreamer pipeline, and then, use `run` method:
 ```cpp
 // Parse pipeline to GStreamer pipeline
 pipeline.parse(argc, argv);
