@@ -32,6 +32,14 @@
     ((optarg == NULL && optind < argc && argv[optind][0] != '-') \
      ? (bool) (optarg = argv[optind++]) \
      : (optarg != NULL))
+#define MODEL_LATENCY_NS_CPU          28000000
+#define MODEL_LATENCY_NS_CPU_93       100000000
+#define MODEL_LATENCY_NS_CPU_8MP      100000000
+#define MODEL_LATENCY_NS_GPU_VSI      600000000
+#define MODEL_LATENCY_NS_NPU_VSI      10000000
+#define MODEL_LATENCY_NS_NPU_ETHOS    6500000
+#define MODEL_LATENCY_NS_GPU_95       70000000
+#define MODEL_LATENCY_NS_NPU_NEUTRON  5000000
 
 
 typedef struct {
@@ -370,9 +378,32 @@ int main(int argc, char **argv)
   };
   compositor.addToCompositor(pipeline, secondInputParams);
 
+  // Set latency of model for video compositor
+  int latency;
+  imx::Imx imx{};
+  if ((options.backendCam1 == "NPU") || (options.backendCam2 == "NPU")) {
+    if (imx.isIMX8())
+      latency = MODEL_LATENCY_NS_NPU_VSI;
+    else if (imx.hasEthosNPU())
+      latency = MODEL_LATENCY_NS_NPU_ETHOS;
+    else
+      latency = MODEL_LATENCY_NS_NPU_NEUTRON;
+  } else if ((options.backendCam1 == "GPU") || (options.backendCam2 == "GPU")) {
+    if (imx.isIMX8())
+      latency = MODEL_LATENCY_NS_GPU_VSI;
+    else
+      latency = MODEL_LATENCY_NS_GPU_95;
+  } else {
+    if (imx.isIMX8())
+      latency = MODEL_LATENCY_NS_CPU_8MP;
+    else if (imx.isIMX93())
+      latency = MODEL_LATENCY_NS_CPU_93;
+    else
+    latency = MODEL_LATENCY_NS_CPU;
+  }
+
   // Add video compositor to display both cameras
-  int modelLatency = 10000000;
-  compositor.addCompositorToPipeline(pipeline, modelLatency);
+  compositor.addCompositorToPipeline(pipeline, latency);
 
   float scaleFactor = 15.0f/640; // Default font size is 15 pixels for a width of 640
   pipeline.enablePerfDisplay(options.freq, options.time, options.camWidth * scaleFactor, options.textColor);
