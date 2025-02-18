@@ -13,7 +13,7 @@ Name | Implementation | Model | ML engine | Features
 | ------------ | --- | --- | --- |
 | i.MX 8M Plus | :white_check_mark: | :white_check_mark: | :x: |
 |   i.MX 93    | :white_check_mark: | :white_check_mark: | :x: |
-|   i.MX 95    | :x: | :x: | :x: |
+|   i.MX 95    | :x: | :white_check_mark: | :x: |
 
 *NOTE: YOLOv4 Tiny output does not directly work with the YOLOv5 mode of tensor_decoder element, so a python filter is used to post-process and reshape this output as required.*
 
