@@ -166,36 +166,38 @@ void GstVideoImx::videoscaleToRGB(GstPipelineImx &pipeline,
  * 
  * @param pipeline: GstPipelineImx pipeline.
  * @param gstName: GStreamer videocrop element name.
- * @param width: output video width after rescale.
- * @param height: output video height after rescale.
- * @param top: top pixels to be cropped, default is 0.
- * @param bottom: bottom pixels to be cropped, default is 0.
- * @param left: left pixels to be cropped, default is 0.
- * @param right: right pixels to be cropped, default is 0.
+ * @param newWidth: output video width after crop.
+ * @param newHeight: output video height after crop.
  */
 void GstVideoImx::videocrop(GstPipelineImx &pipeline,
                             const std::string &gstName, 
-                            const int &width,
-                            const int &height,
-                            const int &top,
-                            const int &bottom,
-                            const int &left,
-                            const int &right)
+                            const int &newWidth,
+                            const int &newHeight)
 {
+  int width = pipeline.getDisplayWidth();
+  int height = pipeline.getDisplayHeight();
+
   std::string cmd;
-  cmd = "videocrop name=" + gstName + " ";
-  if(top != 0)
-    cmd += "top=" + std::to_string(top) + " ";
-  if(bottom != 0)
+  cmd = "videocrop name=" + gstName;
+
+  if ((newWidth > 0) || (newHeight > 0)) {
+    int left = (width - newWidth)/2;
+    int right = left;
+    if ((left * 2 + newWidth) != width)
+      right += 1;
+    int top = (height - newHeight)/2;
+    int bottom = top;
+    if ((top * 2 + newHeight) != height)
+      bottom += 1;
+    cmd += " top=" + std::to_string(top) + " ";
     cmd += "bottom=" + std::to_string(bottom) + " ";
-  if(left != 0)
     cmd += "left=" + std::to_string(left) + " ";
-  if(right != 0)
-    cmd += "right=" + std::to_string(right) + " ";
-  cmd += "! ";
-  if (width > 0 && height > 0) {
-    cmd += "video/x-raw,width=" + std::to_string(width) +
-           ",height=" + std::to_string(height) + " ! ";
+    cmd += "right=" + std::to_string(right) + " ! ";
+    if (imx.hasGPU2d())
+      cmd += "imxvideoconvert_g2d videocrop-meta-enable=true ! ";
+    cmd += "video/x-raw,width=" + std::to_string(newWidth) +
+            ",height=" + std::to_string(newHeight);
   }
+  cmd += " ! ";
   pipeline.addToPipeline(cmd);
 }

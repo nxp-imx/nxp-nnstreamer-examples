@@ -101,14 +101,8 @@ GstPipelineImx pipeline;
 GstVideoImx gstvideoimx{};
 gstvideoimx.videocrop(pipeline,  // Apply changes to this pipeline
                       640,       // Cropped width
-                      480,       // Cropped height
-                      -1,        // Pixels to crop at top (-1 to auto-crop)
-                      -1,        // Pixels to crop at bottom (-1 to auto-crop)
-                      -1,        // Pixels to crop at left (-1 to auto-crop)
-                      -1);       // Pixels to crop at right (-1 to auto-crop)
+                      480);      // Cropped height
 ```
-NOTES:
-* Top, bottom, left, and right are set to 0 by default.
 
 # <a name="third-title"></a> Parallelization of process
 Parallelization is possible using `GstPipelineImx` method `doInParallel` to add a tee element, then `addBranch` method is used to create thread : <br>

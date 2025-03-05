@@ -238,11 +238,7 @@ int main(int argc, char **argv)
   gstvideoimx.videocrop(pipeline,
                         "crop",
                         cropDim,
-                        cropDim,
-                        -1,
-                        -1,
-                        -1,
-                        -1);
+                        cropDim);
 
   // Add a tee element for parallelization of tasks
   std::string teeName = "t";

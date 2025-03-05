@@ -34,11 +34,7 @@ class GstVideoImx {
 
     void videocrop(GstPipelineImx &pipeline,
                    const std::string &gstName,
-                   const int &width,
-                   const int &height,
-                   const int &top=0,
-                   const int &bottom=0,
-                   const int &left=0,
-                   const int &right=0);
+                   const int &newWidth,
+                   const int &newHeight);
 };
 #endif
