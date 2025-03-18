@@ -34,8 +34,8 @@ typedef struct {
 typedef struct {
   GstElement *appSrc;
   GstElement *videocrop;
-  int camWidth;
-  int camHeight;
+  int width;
+  int height;
   int faceCount = 0;
   std::vector<int> faceBoxes;
   int bufferSize = NUM_BOX_DATA * MODEL_UFACE_NUMBER_BOXES;

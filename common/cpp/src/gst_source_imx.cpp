@@ -49,6 +49,8 @@ GstCameraImx::GstCameraImx(CameraOptions &options)
  */
 void GstCameraImx::addCameraToPipeline(GstPipelineImx &pipeline)
 {
+  pipeline.setDisplayResolution(this->width, this->height);
+
   std::string cmd;
   cmd += "v4l2src name=" + gstName + " device=" + device.string();
   cmd += " num-buffers=-1 ! video/x-raw,width=";
@@ -186,6 +188,8 @@ GstVideoFileImx::GstVideoFileImx(const std::filesystem::path &path,
  */
 void GstVideoFileImx::addVideoToPipeline(GstPipelineImx &pipeline)
 {
+  pipeline.setDisplayResolution(this->width, this->height);
+
   std::string cmd;   
   cmd += "filesrc location=" + videoPath.string() + " ! " + this->cmdDecoder;
   cmd += "video/x-raw,width=" + std::to_string(this->videoWidth)
@@ -273,6 +277,8 @@ GstAppSrcImx::GstAppSrcImx(const std::string &gstName,
  */
 void GstAppSrcImx::addAppSrcToPipeline(GstPipelineImx &pipeline)
 {
+  pipeline.setDisplayResolution(this->width, this->height);
+
   std::string cmd;
   std::string caps;
   cmd = "appsrc";

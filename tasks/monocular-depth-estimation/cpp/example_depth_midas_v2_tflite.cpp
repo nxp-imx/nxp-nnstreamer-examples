@@ -32,8 +32,7 @@ typedef struct {
   std::filesystem::path modelPath;
   std::string backend;
   std::string norm;
-  bool time;
-  bool freq;
+  PerformanceType perfType;
   std::string textColor;
   char* graphPath;
   int camWidth;
@@ -134,12 +133,11 @@ int cmdParser(int argc, char **argv, ParserOptions& options)
             perfDisplay.assign(optarg);
 
         if (perfDisplay == "freq") {
-          options.freq = true;
+          options.perfType = PerformanceType::frequency;
         } else if (perfDisplay == "time") {
-          options.time = true;
+          options.perfType = PerformanceType::temporal;
         } else {
-          options.time = true;
-          options.freq = true;
+          options.perfType = PerformanceType::all;
         }
         break;
 
@@ -181,8 +179,7 @@ int main(int argc, char **argv)
   ParserOptions options;
   options.backend = "NPU";
   options.norm = "none";
-  options.time = false;
-  options.freq = false;
+  options.perfType = PerformanceType::none;
   options.graphPath = getenv("HOME");
   options.camWidth = 640;
   options.camHeight = 480;
@@ -239,15 +236,13 @@ int main(int argc, char **argv)
                       1);
   appsrc.addAppSrcToPipeline(displayPipeline);
 
-  // Add video transform because cairooverlay from enablePerfDisplay doesn't accept GRAY8
+  // Add video transform because cairooverlay element displaying performances doesn't support GRAY8 format
   GstVideoImx gstvideoimx;
   gstvideoimx.videoTransform(displayPipeline, "", -1, -1, false, false, true);
 
   // Display processed video
-  float scaleFactor = 15.0f/640; // Default font size is 15 pixels for a width of 640
-  pipeline.enablePerfDisplay(options.freq, options.time, depthEstimation.getModelWidth() * scaleFactor, options.textColor);
   GstVideoPostProcess postProcess;
-  postProcess.display(displayPipeline, false);
+  postProcess.display(displayPipeline, options.perfType, options.textColor);
 
   // Parse pipeline to GStreamer pipeline
   displayPipeline.parse(options.graphPath);

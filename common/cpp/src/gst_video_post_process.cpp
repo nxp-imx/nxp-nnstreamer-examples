@@ -20,22 +20,23 @@ std::map<std::string, int> DictionaryColorARGB = {
  * @brief Display GStreamer pipeline output.
  * 
  * @param pipeline: GstPipelineImx pipeline.
- * @param sync: specifiy if we synchronized display with input buffer.
+ * @param perfType: type of performances to display.
+ * @param color: color of displayed performances.
  */
 void GstVideoPostProcess::display(GstPipelineImx &pipeline,
-                                  const bool &sync)
+                                  PerformanceType &perfType,
+                                  const std::string &color)
 {
-  std::string cmdSync = (sync == false) ? "sync=false " : "";
-
+  pipeline.enablePerfDisplay(perfType, color);
   std::string cmd;
-  if ((pipeline.isPerfAvailable().freq == true) || (pipeline.isPerfAvailable().temp == true)) {
+  if (pipeline.isPerfAvailable() != PerformanceType::none) {
     if (cairoNeeded == true) {
       cmd = "cairooverlay name=perf ! ";
       cairoNeeded = false;
     }
-    cmd += "fpsdisplaysink name=img_tensor text-overlay=false video-sink=waylandsink " + cmdSync;
+    cmd += "fpsdisplaysink name=img_tensor text-overlay=false video-sink=waylandsink ";
   } else {
-    cmd = "waylandsink " + cmdSync;
+    cmd = "waylandsink ";
   }
 
   pipeline.addToPipeline(cmd);

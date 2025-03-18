@@ -60,7 +60,8 @@ class GstVideoPostProcess {
     GstVideoPostProcess() = default;
 
     void display(GstPipelineImx &pipeline,
-                 const bool &sync=false);
+                 PerformanceType &perfType,
+                 const std::string &color="");
 
     void addTextOverlay(GstPipelineImx &pipeline, 
                         const TextOverlayOptions &options);

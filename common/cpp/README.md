@@ -13,8 +13,7 @@ This object is used by various classes to add elements to the pipeline :
 - [Parallelization of process](#third-title)
 - [ML model processing tools](#fourth-title)
 - [Post-processing tools](#fifth-title)
-- [Performances display](#sixth-title)
-- [Run pipeline](#seventh-title)
+- [Run pipeline](#sixth-title)
 
 # <a name="first-title"></a> Input sources
 
@@ -245,14 +244,24 @@ NOTES:
 `GstVideoPostProcess` class have post-processing tools used to display GStreamer video stream, add a text overlay, and save GStreamer video stream to video.
 
 ## Display
-The method `display` is used to display the GStreamer video stream:
+The method `display` is used to display the GStreamer video stream. The first argument of this method is the GstPipelineImx object to which the display element is added. Then, the second argument defines the type of performances to display with the enumeration `PerformanceType`:
+- If no performances need to be displayed, use `PerformanceType::none`
+- If temporal performances (inference time and pipeline duration) need to be displayed, use `PerformanceType::temporal`
+- If frequency performances (IPS and FPS) need to be displayed, use `PerformanceType::frequency`
+- If both frequency and temporal performances need to be displayed, use `PerformanceType::all`
+
+Finally, the third argument set the color of the text displayed for performances.
+Available colors are white (default), red, green, blue or black.
+No effect if PerformanceType::none is selected as second argument.
 ```cpp
 GstVideoPostProcess postProcess;
-postProcess.display(pipeline,     // Pipeline to display
-                    false);       // If display element is synchronized or not
+PerformanceType perfType = PerformanceType::all;
+std::string color = "red";
+postProcess.display(pipeline, perfType, color);
 ```
 NOTES:
-* Second argument is set to false by default, and third argument to true.
+* To display performances related to a given model (inference duration and/or IPS), it is required to give a name to the addInferenceToPipeline method that execute the model's inference using [dedicating method argument](#fourth-title).
+Performances will not be displayed for the addInferenceToPipeline methods that have not been given a name.
 
 ## Video mixing
 `GstVideoCompositorImx` structure is used to mix GStreamer video streams together.<br>
@@ -316,19 +325,7 @@ postProcess.saveToVideo(pipeline,
                         "/path/to/save/video"); // path to save the video generated
 ```
 
-# <a name="sixth-title"></a> Performances display
-Performances are displayed with `enablePerfDisplay` method of `GstPipelineImx`, before adding the display method described in Pre-processing tools:
-```cpp
-pipeline.enablePerfDisplay(true,  // Display temporal performances (pipeline and inferences durations)
-                           true,  // Display performances in frequency (FPS and IPS)
-                           10,    // (optional) Font size (default is 15)
-                           "red");// (optional) Text color between red, green, blue, and black (white by default)
-postProcess.display(pipeline, false);
-```
-NOTES:
-* To display performances related to a given model (inference duration and/or IPS), it is required to give a name to the addInferenceToPipeline method that execute the model's inference using dedicating method argument. Performances will not be displayed for the addInferenceToPipeline who do not have a given name.
-
-# <a name="seventh-title"></a>  Run pipeline
+# <a name="sixth-title"></a>  Run pipeline
 To run the pipeline, `GstPipelineImx` class method `parse` is first used to parse the pipeline to a GStreamer pipeline, and then, use `run` method:
 ```cpp
 // Parse pipeline to GStreamer pipeline

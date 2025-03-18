@@ -52,8 +52,7 @@ typedef struct {
   std::string normCam1;
   std::string normCam2;
   DataDir dataDir;
-  bool time;
-  bool freq;
+  PerformanceType perfType;
   std::string textColor;
   char* graphPath;
   int camWidth;
@@ -175,12 +174,11 @@ int cmdParser(int argc, char **argv, ParserOptions& options)
             perfDisplay.assign(optarg);
 
         if (perfDisplay == "freq") {
-          options.freq = true;
+          options.perfType = PerformanceType::frequency;
         } else if (perfDisplay == "time") {
-          options.time = true;
+          options.perfType = PerformanceType::temporal;
         } else {
-          options.time = true;
-          options.freq = true;
+          options.perfType = PerformanceType::all;
         }
         break;
 
@@ -224,8 +222,7 @@ int main(int argc, char **argv)
   options.backendCam2 = "NPU";
   options.normCam1 = "none";
   options.normCam2 = "none";
-  options.time = false;
-  options.freq = false;
+  options.perfType = PerformanceType::none;
   options.graphPath = getenv("HOME");
   options.camWidth = 640;
   options.camHeight = 480;
@@ -405,9 +402,8 @@ int main(int argc, char **argv)
   // Add video compositor to display both cameras
   compositor.addCompositorToPipeline(pipeline, latency);
 
-  float scaleFactor = 15.0f/640; // Default font size is 15 pixels for a width of 640
-  pipeline.enablePerfDisplay(options.freq, options.time, options.camWidth * scaleFactor, options.textColor);
-  postProcess.display(pipeline);
+  // Add display
+  postProcess.display(pipeline, options.perfType, options.textColor);
 
   // Parse pipeline to GStreamer pipeline
   pipeline.parse(options.graphPath);

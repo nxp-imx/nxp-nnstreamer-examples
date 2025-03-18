@@ -6,6 +6,16 @@
 #include "gst_pipeline_imx.hpp"
 #include <cmath>
 
+
+// Default font size is 15 pixels for a width of 640
+const float scaleFactor = 15.0f/640;
+// 38 pixels for a width of 640 is default for space between inference and duration text
+const float textSpace = 38.0f/640;
+// 20 pixels for a width of 640 is default for space between lines
+const float lineSpace = 20.0f/640;
+// 18 pixels for a width of 640 is default for space between top of screen and first line
+const float firstLineSpace = 18.0f/640;
+
 /**
  * @brief Store on disk .nb files that contains the result of the OpenVX graph
  *        compilation. This feature is only available for iMX8 platforms to get
@@ -112,7 +122,7 @@ void GstPipelineImx::parse(char *graphPath)
  */
 void GstPipelineImx::run()
 {
-  if ((hasPerf.freq == true) || (hasPerf.temp == true)) {
+  if (this->perfType != PerformanceType::none) {
     if (gst_bin_get_by_name(GST_BIN(gApp.gstPipeline), "perf")) {
       std::vector<float> tempVector(namesVector.size());
       infVector = tempVector;
@@ -333,21 +343,17 @@ GstElement* GstPipelineImx::getElement(const std::string &gstName)
 
 
 /**
- * @brief Add performances display of pipeline and models inference.
+ * @brief Display performances of models inference and pipeline duration.
  * 
- * @param frequency: if we display performances in frequency domain.
- * @param temporal: if we display performances in temporal domain.
- * @param fontSize: font size of displayed performances.
+ * @param perfType: type of performances to display.
  * @param color: color of displayed performances.
  */
-void GstPipelineImx::enablePerfDisplay(const bool &frequency,
-                                       const bool &temporal,
-                                       const float &fontSize,
+void GstPipelineImx::enablePerfDisplay(PerformanceType &perfType,
                                        const std::string &color)
 {
   perfColor = color;
-  perfFontSize = fontSize;
-  hasPerf = {frequency, temporal};
+  perfFontSize = this->displayWidth * scaleFactor;
+  this->perfType = perfType;
 }
 
 
@@ -429,33 +435,30 @@ void GstPipelineImx::perfDrawCallback(GstElement* overlay,
 
   std::string pipeDuration;
   std::string FPS;
-  float scaleFactor = 15.0f/640; // Default font size is 15 pixels for a width of 640
   float width = perfFontSize/scaleFactor;
-  if (hasPerf.freq == true)
+  if ((perfType == PerformanceType::frequency) || (perfType == PerformanceType::all))
     FPS = std::to_string(gApp->FPS).substr(0, 5) + " FPS";
 
-  if (hasPerf.temp == true) {
+  if ((perfType == PerformanceType::temporal) || (perfType == PerformanceType::all)) {
     pipeDuration = std::to_string(1000/gApp->FPS).substr(0, 5) + " ms";
-    if ((hasPerf.temp == true) && (hasPerf.freq == true))
+    if (perfType == PerformanceType::all)
       pipeDuration.append(" / ");
   }
-  // 18 pixels for a width of 640 is default for space between top of screen and first line
-  outlineText(cr, 14, width * 18/640, ("Pipeline: " + pipeDuration + FPS), perfColor);
+
+  outlineText(cr, 14, width * firstLineSpace, ("Pipeline: " + pipeDuration + FPS), perfColor);
 
   std::string inference;
   std::string IPS;
   for (int i = 0; i < namesVector.size(); i++) {
-    if (hasPerf.freq == true)
+    if ((perfType == PerformanceType::frequency) || (perfType == PerformanceType::all))
       IPS = std::to_string(1000000.0/infVector.at(i)).substr(0, 5) + " IPS";
 
-    if (hasPerf.temp == true) {
+    if ((perfType == PerformanceType::temporal) || (perfType == PerformanceType::all)) {
       inference = std::to_string(infVector.at(i)/1000.0).substr(0, 5) + " ms";
-      if ((hasPerf.temp == true) && (hasPerf.freq == true))
+      if (perfType == PerformanceType::all)
         inference.append(" / ");
     }
-    // 38 pixels for a width of 640 is default for space between inference and duration text
-    // 20 pixels for a width of 640 is default for space between lines
-    outlineText(cr, 14, width * 38/640 + width * 20/640 * i, ("Inference for " + namesVector.at(i) + " : " + inference + IPS), perfColor);
+    outlineText(cr, 14, width * textSpace + width * lineSpace * i, ("Inference for " + namesVector.at(i) + " : " + inference + IPS), perfColor);
   }
 }
 
@@ -465,7 +468,21 @@ void GstPipelineImx::perfDrawCallback(GstElement* overlay,
  * 
  * @param gstName: name of tensor_filter element.
  */
-void GstPipelineImx::addFilterName(std::string gstName) {
+void GstPipelineImx::addFilterName(std::string gstName)
+{
   gApp.filterNames.push_back(gstName);
   namesVector.push_back(gstName);
+}
+
+
+/**
+ * @brief Set display resolution for display element to retrieve.
+ * 
+ * @param width: display width.
+ * @param height: display height.
+ */
+void GstPipelineImx::setDisplayResolution(const int &width, const int &height)
+{
+  this->displayWidth = width;
+  this->displayHeight = height;
 }

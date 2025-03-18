@@ -33,8 +33,7 @@ typedef struct {
   std::string backend;
   std::string norm;
   DataDir dataDir;
-  bool time;
-  bool freq;
+  PerformanceType perfType;
   std::string textColor;
   char* graphPath;
   int camWidth;
@@ -144,12 +143,11 @@ int cmdParser(int argc, char **argv, ParserOptions& options)
             perfDisplay.assign(optarg);
 
         if (perfDisplay == "freq") {
-          options.freq = true;
+          options.perfType = PerformanceType::frequency;
         } else if (perfDisplay == "time") {
-          options.time = true;
+          options.perfType = PerformanceType::temporal;
         } else {
-          options.time = true;
-          options.freq = true;
+          options.perfType = PerformanceType::all;
         }
         break;
 
@@ -191,8 +189,7 @@ int main(int argc, char **argv)
   ParserOptions options;
   options.backend = "NPU";
   options.norm = "none";
-  options.time = false;
-  options.freq = false;
+  options.perfType = PerformanceType::none;
   options.graphPath = getenv("HOME");
   options.camWidth = 640;
   options.camHeight = 480;
@@ -260,10 +257,7 @@ int main(int argc, char **argv)
     .text       = "", // set only if linkToTextOverlay is not used
   };
   postProcess.addTextOverlay(pipeline, overlayOptions);
-
-  float scaleFactor = 15.0f/640; // Default font size is 15 pixels for a width of 640
-  pipeline.enablePerfDisplay(options.freq, options.time, options.camWidth * scaleFactor, options.textColor);
-  postProcess.display(pipeline);
+  postProcess.display(pipeline, options.perfType, options.textColor);
 
   // Parse pipeline to GStreamer pipeline
   pipeline.parse(options.graphPath);

@@ -47,13 +47,12 @@ typedef struct {
 } GstQueueOptions;
 
 
-/**
- * @brief Performances options.
- */
-typedef struct {
-  bool freq;
-  bool temp;
-} Performance;
+enum class PerformanceType {
+  temporal,
+  frequency,
+  all,
+  none
+};
 
 
 /**
@@ -74,7 +73,7 @@ class GstPipelineImx {
     std::string strPipeline;
     AppData gApp {};
     static inline bool save = false;
-    static inline Performance hasPerf = {false, false};
+    static inline PerformanceType perfType = PerformanceType::none;
     static inline GMainLoop *loop = g_main_loop_new(NULL, FALSE);
     static inline int pipeCount = 0;
     static inline int runCount = 0;
@@ -82,6 +81,8 @@ class GstPipelineImx {
     static inline std::vector<float> infVector;
     static inline float perfFontSize = 0;
     static inline std::string perfColor = "";
+    int displayWidth;
+    int displayHeight;
 
   public:
     static int elemNameCount;
@@ -145,14 +146,12 @@ class GstPipelineImx {
       }
     }
 
-    void enablePerfDisplay(const bool &frequency,
-                           const bool &temporal,
-                           const float &fontSize,
-                           const std::string &color="");
+    void enablePerfDisplay(PerformanceType &perfType,
+                           const std::string &color);
 
-    Performance isPerfAvailable() const
+    PerformanceType& isPerfAvailable() const
     {
-      return hasPerf;
+      return perfType;
     }
 
     static void perfDrawCallback(GstElement* overlay,
@@ -162,5 +161,11 @@ class GstPipelineImx {
                                  gpointer user_data);
 
     void addFilterName(std::string gstName);
+
+    void setDisplayResolution(const int &width, const int &height);
+
+    int getDisplayWidth() { return this->displayWidth; };
+
+    int getDisplayHeight() { return this->displayHeight; };
 };
 #endif
