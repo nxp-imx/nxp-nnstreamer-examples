@@ -19,7 +19,7 @@ declare -A MODEL_BACKEND
 declare -A MODEL_BACKEND_NPU
 MODEL_BACKEND_NPU[IMX8MP]="${MODELS_DIR}/ssdlite_mobilenet_v2_coco_quant_uint8_float32_no_postprocess.tflite"
 MODEL_BACKEND_NPU[IMX93]="${MODELS_DIR}/ssdlite_mobilenet_v2_coco_quant_uint8_float32_no_postprocess_vela.tflite"
-MODEL_BACKEND_NPU[IMX95]="${MODELS_DIR}/ssdlite_mobilenet_v2_coco_quant_uint8_float32_no_postprocess.tflite"
+MODEL_BACKEND_NPU[IMX95]="${MODELS_DIR}/ssdlite_mobilenet_v2_coco_quant_uint8_float32_no_postprocess_neutron.tflite"
 
 MODEL_BACKEND[CPU]="${MODELS_DIR}/ssdlite_mobilenet_v2_coco_quant_uint8_float32_no_postprocess.tflite"
 MODEL_BACKEND[GPU]="${MODELS_DIR}/ssdlite_mobilenet_v2_coco_no_postprocess.tflite"

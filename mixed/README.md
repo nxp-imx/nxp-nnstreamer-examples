@@ -18,8 +18,6 @@ Mixed examples goal is to demonstrate the possibility to make applications which
 |   i.MX 93    | :white_check_mark: | :white_check_mark: | :x: |
 |   i.MX 95    | :white_check_mark: | :white_check_mark: | :white_check_mark: |
 
-*NOTE: A warmup time for NPU inference on i.MX 95 can take up to 1 minute.*
-
 C++ example script needs to be generated with [cross compilation](../). [setup_environment.sh](../tools/setup_environment.sh) script needs to be executed in [nxp-nnstreamer-examples](../) folder to define data paths:
 ```bash
 . ./tools/setup_environment.sh
@@ -29,11 +27,17 @@ An example running image classification and object detection inferences in paral
  ```bash
 ./build/mixed/example_classification_and_detection_tflite -p ${MOBILENETV1_QUANT},${MOBILENETV2_QUANT} -l ${MOBILENETV1_LABELS},${COCO_LABELS} -x ${MOBILENETV2_BOXES} -f ${SAVE_VIDEO_PATH}
 ```
-For i.MX 93 use vela converted model:<br>
-NOTE: Video saving feature is not available on i.MX 93.
+For i.MX 93 use vela converted models:<br>
+*NOTE: Video saving feature is not available on i.MX 93.*
  ```bash
 ./build/mixed/example_classification_and_detection_tflite -p ${MOBILENETV1_QUANT_VELA},${MOBILENETV2_QUANT_VELA} -l ${MOBILENETV1_LABELS},${COCO_LABELS} -x ${MOBILENETV2_BOXES}
 ```
+
+For i.MX 95 NPU use neutron converted models:
+ ```bash
+./build/mixed/example_classification_and_detection_tflite -p ${MOBILENETV1_QUANT_NEUTRON},${MOBILENETV2_QUANT_NEUTRON} -l ${MOBILENETV1_LABELS},${COCO_LABELS} -x ${MOBILENETV2_BOXES} -f ${SAVE_VIDEO_PATH}
+```
+
 To use CPU or GPU backend, refers to the execution parameter ```--backend``` below.<br>
 To use the non-quantized (float32) model, input normalization needs to be set with the execution parameter ```--normalization``` (description below): For MobileNetV1 and MobiletNetV2 use ```centeredReduced``` argument. Use ```MOBILENETV1``` or ```MOBILENETV2``` environment variable for model path.<br>
 The following execution parameters are available (Run ``` ./example_classification_and_detection_tflite -h``` to see option details):
@@ -71,7 +75,7 @@ An example running face detection and pose detection inferences in parallel is a
 ```bash
 ./build/mixed/example_face_and_pose_detection_tflite -p ${ULTRAFACE_QUANT},${MOVENET_QUANT}
 ```
-For i.MX 93 use vela converted model:
+For i.MX 93 use vela converted models:
 ```bash
 ./build/mixed/example_face_and_pose_detection_tflite -p ${ULTRAFACE_QUANT_VELA},${MOVENET_QUANT_VELA}
 ```

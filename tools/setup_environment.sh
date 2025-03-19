@@ -24,6 +24,7 @@ export MOBILENETV1_LABELS="${CLASSIFICATION_DIR}/labels_mobilenet_quant_v1_224.t
 export MOBILENETV1="${CLASSIFICATION_DIR}/mobilenet_v1_1.0_224.tflite"
 export MOBILENETV1_QUANT="${CLASSIFICATION_DIR}/mobilenet_v1_1.0_224_quant_uint8_float32.tflite"
 export MOBILENETV1_QUANT_VELA="${CLASSIFICATION_DIR}/mobilenet_v1_1.0_224_quant_uint8_float32_vela.tflite"
+export MOBILENETV1_QUANT_NEUTRON="${CLASSIFICATION_DIR}/mobilenet_v1_1.0_224_quant_uint8_float32_neutron.tflite"
 
 # Define depth data path
 DEPTH_DIR="${MODELS_DIR}/depth"
@@ -37,6 +38,7 @@ export MOBILENETV2_BOXES="${DETECTION_DIR}/box_priors.txt"
 export MOBILENETV2="${DETECTION_DIR}/ssdlite_mobilenet_v2_coco_no_postprocess.tflite"
 export MOBILENETV2_QUANT="${DETECTION_DIR}/ssdlite_mobilenet_v2_coco_quant_uint8_float32_no_postprocess.tflite"
 export MOBILENETV2_QUANT_VELA="${DETECTION_DIR}/ssdlite_mobilenet_v2_coco_quant_uint8_float32_no_postprocess_vela.tflite"
+export MOBILENETV2_QUANT_NEUTRON="${DETECTION_DIR}/ssdlite_mobilenet_v2_coco_quant_uint8_float32_no_postprocess_neutron.tflite"
 
 # Define face data path
 FACE_DIR="${MODELS_DIR}/face"

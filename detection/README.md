@@ -30,8 +30,6 @@ BACKEND=CPU ./detection/example_detection_yolo_v4_tiny_tflite.sh
 |   i.MX 93    | :white_check_mark: | :white_check_mark: | :x: |
 |   i.MX 95    | :white_check_mark: | :white_check_mark: | :x: |
 
-*NOTE: A warmup time for NPU inference on i.MX 95 can take up to 1 minute.*
-
 The object detection demo in bash using SSD MobiletNetV2 supports multiple backend (refers to above table), default value can be overriden by explicitly defining BACKEND variable, for instance:
 ```bash
 BACKEND=CPU ./detection/example_detection_mobilenet_ssd_v2_tflite.sh
@@ -42,8 +40,6 @@ BACKEND=CPU ./detection/example_detection_mobilenet_ssd_v2_tflite.sh
 | i.MX 8M Plus | :white_check_mark: | :white_check_mark: | :white_check_mark: |
 |   i.MX 93    | :white_check_mark: | :white_check_mark: | :x: |
 |   i.MX 95    | :white_check_mark: | :white_check_mark: | :white_check_mark: |
-
-*NOTE: A warmup time for NPU inference on i.MX 95 can take up to 1 minute.*
 
 C++ example script needs to be generated with [cross compilation](../). [setup_environment.sh](../tools/setup_environment.sh) script needs to be executed in [nxp-nnstreamer-examples](../) folder to define data paths:
 ```bash
@@ -58,6 +54,11 @@ Inference on NPU with the following script:
 For i.MX 93 use vela converted model:
 ```bash
 ./build/detection/example_detection_mobilenet_ssd_v2_tflite -p  ${MOBILENETV2_QUANT_VELA} -l ${COCO_LABELS} -x ${MOBILENETV2_BOXES}
+```
+
+For i.MX 95 NPU use neutron converted model:
+```bash
+./build/detection/example_detection_mobilenet_ssd_v2_tflite -p  ${MOBILENETV2_QUANT_NEUTRON} -l ${COCO_LABELS} -x ${MOBILENETV2_BOXES}
 ```
 
 Inference on CPU with the following script:

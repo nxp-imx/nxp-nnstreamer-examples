@@ -14,8 +14,6 @@ Name | Implementation | Model | ML engine | Features
 |   i.MX 93    | :white_check_mark: | :white_check_mark: | :x: |
 |   i.MX 95    | :white_check_mark: | :white_check_mark: | :x: |
 
-*NOTE: A warmup time for NPU inference on i.MX 95 can take up to 1 minute.*
-
 The image classification demo in bash supports multiple backend (refers to above table), default value can be overriden by explicitly defining BACKEND variable, for instance:
 ```bash
 BACKEND=CPU ./classification/example_classification_mobilenet_v1_tflite.sh
@@ -27,8 +25,6 @@ BACKEND=CPU ./classification/example_classification_mobilenet_v1_tflite.sh
 | i.MX 8M Plus | :white_check_mark: | :white_check_mark: | :white_check_mark: |
 |   i.MX 93    | :white_check_mark: | :white_check_mark: | :x: |
 |   i.MX 95    | :white_check_mark: | :white_check_mark: | :white_check_mark: |
-
-*NOTE: A warmup time for NPU inference on i.MX 95 can take up to 1 minute.*
 
 C++ example script needs to be generated with [cross compilation](../). [setup_environment.sh](../tools/setup_environment.sh) script needs to be executed in [nxp-nnstreamer-examples](../) folder to define data paths:
 ```bash
@@ -44,6 +40,12 @@ For i.MX 93 use vela converted model:
 ```bash
 ./build/classification/example_classification_mobilenet_v1_tflite -p ${MOBILENETV1_QUANT_VELA} -l ${MOBILENETV1_LABELS}
 ```
+
+For i.MX 95 NPU use neutron converted model:
+```bash
+./build/detection/example_detection_mobilenet_ssd_v2_tflite -p  ${MOBILENETV1_QUANT_NEUTRON} -l ${COCO_LABELS} -x ${MOBILENETV2_BOXES}
+```
+
 Inference on CPU with the following script:
 ```bash
 ./build/classification/example_classification_mobilenet_v1_tflite -p ${MOBILENETV1_QUANT} -l ${MOBILENETV1_LABELS} -b CPU

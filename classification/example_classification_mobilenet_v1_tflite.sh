@@ -18,7 +18,7 @@ setup_env
 declare -A MODEL_BACKEND_NPU
 MODEL_BACKEND_NPU[IMX8MP]="${MODELS_DIR}/mobilenet_v1_1.0_224_quant_uint8_float32.tflite"
 MODEL_BACKEND_NPU[IMX93]="${MODELS_DIR}/mobilenet_v1_1.0_224_quant_uint8_float32_vela.tflite"
-MODEL_BACKEND_NPU[IMX95]="${MODELS_DIR}/mobilenet_v1_1.0_224_quant_uint8_float32.tflite"
+MODEL_BACKEND_NPU[IMX95]="${MODELS_DIR}/mobilenet_v1_1.0_224_quant_uint8_float32_neutron.tflite"
 
 declare -A MODEL_BACKEND
 MODEL_BACKEND[CPU]="${MODELS_DIR}/mobilenet_v1_1.0_224_quant_uint8_float32.tflite"
