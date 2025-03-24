@@ -128,10 +128,8 @@ void GstVideoPostProcess::saveToVideo(GstPipelineImx &pipeline,
     exit(-1);
   } else {
     std::string cmd;
-    if (imx.socId() == imx::IMX95)
-      cmd = "v4l2h265enc ! h265parse ! ";
-    else
-      cmd = "vpuenc_h264 ! h264parse ! ";
+    cmd = "v4l2h265enc ! h265parse ! ";
+
     if (format == "mkv") {
       cmd += "matroskamux ! filesink location=";
       cmd += path.string() + " ";
