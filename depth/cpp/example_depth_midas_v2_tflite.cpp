@@ -180,7 +180,7 @@ int main(int argc, char **argv)
   // Initialize command line parser with default values
   ParserOptions options;
   options.backend = "NPU";
-  options.norm = "reduced";
+  options.norm = "none";
   options.time = false;
   options.freq = false;
   options.graphPath = getenv("HOME");

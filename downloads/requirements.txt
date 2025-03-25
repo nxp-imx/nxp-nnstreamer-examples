@@ -1,5 +1,2 @@
-jupyter
-gitpython
-gdown
-tflite2tensorflow
-tensorflow==2.8.0
+jupyter==1.0.0
+tensorflow==2.16.2
