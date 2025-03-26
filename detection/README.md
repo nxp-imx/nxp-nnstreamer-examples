@@ -51,7 +51,7 @@ Inference on NPU with the following script:
 ```bash
 ./build/detection/example_detection_mobilenet_ssd_v2_tflite -p  ${MOBILENETV2_QUANT} -l ${COCO_LABELS} -x ${MOBILENETV2_BOXES}
 ```
-For i.MX 93 use vela converted model:
+For i.MX 93 NPU use vela converted model:
 ```bash
 ./build/detection/example_detection_mobilenet_ssd_v2_tflite -p  ${MOBILENETV2_QUANT_VELA} -l ${COCO_LABELS} -x ${MOBILENETV2_BOXES}
 ```

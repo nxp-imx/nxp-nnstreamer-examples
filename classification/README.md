@@ -36,7 +36,7 @@ Inference on NPU with the following script:
 ```bash
 ./build/classification/example_classification_mobilenet_v1_tflite -p ${MOBILENETV1_QUANT} -l ${MOBILENETV1_LABELS}
 ```
-For i.MX 93 use vela converted model:
+For i.MX 93 NPU use vela converted model:
 ```bash
 ./build/classification/example_classification_mobilenet_v1_tflite -p ${MOBILENETV1_QUANT_VELA} -l ${MOBILENETV1_LABELS}
 ```

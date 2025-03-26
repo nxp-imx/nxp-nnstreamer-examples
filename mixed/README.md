@@ -27,7 +27,7 @@ An example running image classification and object detection inferences in paral
  ```bash
 ./build/mixed/example_classification_and_detection_tflite -p ${MOBILENETV1_QUANT},${MOBILENETV2_QUANT} -l ${MOBILENETV1_LABELS},${COCO_LABELS} -x ${MOBILENETV2_BOXES} -f ${SAVE_VIDEO_PATH}
 ```
-For i.MX 93 use vela converted models:<br>
+For i.MX 93 NPU use vela converted models:<br>
 *NOTE: Video saving feature is not available on i.MX 93.*
  ```bash
 ./build/mixed/example_classification_and_detection_tflite -p ${MOBILENETV1_QUANT_VELA},${MOBILENETV2_QUANT_VELA} -l ${MOBILENETV1_LABELS},${COCO_LABELS} -x ${MOBILENETV2_BOXES}
@@ -75,7 +75,7 @@ An example running face detection and pose detection inferences in parallel is a
 ```bash
 ./build/mixed/example_face_and_pose_detection_tflite -p ${ULTRAFACE_QUANT},${MOVENET_QUANT}
 ```
-For i.MX 93 use vela converted models:
+For i.MX 93 NPU use vela converted models:
 ```bash
 ./build/mixed/example_face_and_pose_detection_tflite -p ${ULTRAFACE_QUANT_VELA},${MOVENET_QUANT_VELA}
 ```
@@ -153,7 +153,7 @@ An example running two image classification inferences in parallel, with each in
 ```bash
 ./build/mixed/example_double_classification_tflite -p ${MOBILENETV1_QUANT},${MOBILENETV1_QUANT} -l ${MOBILENETV1_LABELS} -c ${CAM1_PATH},${CAM2_PATH}
 ```
-For i.MX 93 use vela converted model:
+For i.MX 93 NPU use vela converted models:
 ```bash
 ./build/mixed/example_double_classification_tflite -p ${MOBILENETV1_QUANT_VELA},${MOBILENETV1_QUANT_VELA} -l ${MOBILENETV1_LABELS} -c ${CAM1_PATH},${CAM2_PATH}
 ```

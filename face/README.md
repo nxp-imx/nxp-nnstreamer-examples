@@ -57,7 +57,7 @@ It is possible to run the face detection demo inference on NPU with the followin
 ```bash
 ./build/face/example_face_detection_tflite -p ${ULTRAFACE_QUANT}
 ```
-For i.MX 93 use vela converted model:
+For i.MX 93 NPU use vela converted model:
 ```bash
 ./build/face/example_face_detection_tflite -p ${ULTRAFACE_QUANT_VELA}
 ```
@@ -114,7 +114,7 @@ C++ example script needs to be generated with [cross compilation](../). [setup_e
 ```bash
 ./build/face/example_emotion_detection_tflite -p ${ULTRAFACE_QUANT},${EMOTION_QUANT}
 ```
-For i.MX 93 use vela converted model:
+For i.MX 93 NPU use vela converted model:
 ```bash
 ./build/face/example_emotion_detection_tflite -p ${ULTRAFACE_QUANT_VELA},${EMOTION_QUANT_VELA}
 ```

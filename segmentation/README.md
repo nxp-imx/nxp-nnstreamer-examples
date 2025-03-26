@@ -36,7 +36,7 @@ Inference on NPU with the following script:
 ```bash
 ./build/segmentation/example_segmentation_deeplab_v3_tflite -p ${DEEPLABV3_QUANT} -f ${PASCAL_IMAGES}
 ```
-For i.MX 93 use vela converted model:
+For i.MX 93 NPU use vela converted model:
 ```bash
 ./build/segmentation/example_segmentation_deeplab_v3_tflite -p ${DEEPLABV3_QUANT_VELA} -f ${PASCAL_IMAGES}
 ```

@@ -27,7 +27,7 @@ Inference on NPU with the following script:
 ```bash
 ./build/depth/example_depth_midas_v2_tflite -p ${MIDASV2}
 ```
-For i.MX 93 use vela converted model:
+For i.MX 93 NPU use vela converted model:
 ```bash
 ./build/depth/example_depth_midas_v2_tflite -p ${MIDASV2_VELA}
 ```
