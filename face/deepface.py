@@ -24,10 +24,10 @@ class FNModel:
         self.MODEL_DEEPFACE_CLASSES = ['angry', 'disgust', 'fear', 'happy', 'sad', 'surprise', 'neutral']
 
         # model location
-        if not vela:
-            name = 'emotion_uint8_float32.tflite'
-        else:
+        if vela:
             name = 'emotion_uint8_float32_vela.tflite'
+        else:
+            name = 'emotion_uint8_float32.tflite'
         self.tflite_model = os.path.join(model_directory, name)
 
         if not os.path.exists(self.tflite_model):

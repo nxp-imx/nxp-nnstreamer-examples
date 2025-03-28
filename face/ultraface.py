@@ -11,7 +11,7 @@ class UFModel:
 
     def __init__(self, model_directory, max_faces=16, has_post_process=True,
                  classification_threshold=0.7, nms_iou_threshold=0.5,
-                 vela=False):
+                 vela=False, neutron=False):
         """Helper class for UltraFace model.
 
         model_directory: directory where tflite model is located
@@ -41,10 +41,12 @@ class UFModel:
         # model location
         self.has_post_process = has_post_process
         if has_post_process:
-            if not vela:
-                name = 'ultraface_slim_uint8_float32.tflite'
-            else:
+            if vela:
                 name = 'ultraface_slim_uint8_float32_vela.tflite'
+            elif neutron:
+                name = 'ultraface_slim_uint8_float32_neutron.tflite'
+            else:
+                name = 'ultraface_slim_uint8_float32.tflite'
         else:
             name = 'version-slim_input_uint8_output_float32.tflite'
         self.tflite_model = os.path.join(model_directory, name)

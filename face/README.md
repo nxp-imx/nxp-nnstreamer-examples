@@ -35,7 +35,7 @@ Display can be flipped using the --mirror option.<br>
 | ------------ | --- | --- | --- |
 | i.MX 8M Plus | :white_check_mark: | :x: | :x: |
 |   i.MX 93    | :white_check_mark: | :x: | :x: |
-|   i.MX 95    | :x: | :white_check_mark: | :x: |
+|   i.MX 95    | :white_check_mark: | :x: | :x: |
 
 Demo application is to be started from Linux. Camera device node may be configured via command line argument (default: `/dev/video3` on i.MX 8M Plus and `/dev/video0` on i.MX 93, `/dev/video13` on i.MX 95).
 It draws bounding boxes around the detected faces, and displays number of detections.
@@ -90,7 +90,7 @@ Press ```Esc or ctrl+C``` to stop the execution of the pipeline.
 | ------------ | --- | --- | --- |
 | i.MX 8M Plus | :white_check_mark: | :x: | :x: |
 |   i.MX 93    | :white_check_mark: | :x: | :x: |
-|   i.MX 95    | :x: | :white_check_mark: | :x: |
+|   i.MX 95    | :x: | :x: | :x: |
 
 Demo application is to be started from Linux. Camera device node may be configured via command line argument (default: `/dev/video3` on i.MX 8M Plus, `/dev/video0` on i.MX 93, `/dev/video13` on i.MX 95).
 It draws bounding boxes around the detected faces, and displays predicted emotion and confidence score on each face.
@@ -147,7 +147,7 @@ Press ```Esc or ctrl+C``` to stop the execution of the pipeline.
 | ------------ | --- | --- | --- |
 | i.MX 8M Plus | :white_check_mark: | :x: | :x: |
 |   i.MX 93    | :white_check_mark: | :x: | :x: |
-|   i.MX 95    | :x: | :white_check_mark: | :x: |
+|   i.MX 95    | :x: | :x: | :x: |
 
 Demo application is to be started from Linux. Camera device node may be configured via command line argument (default: `/dev/video3` on i.MX 8M Plus, `/dev/video0` on i.MX 93, `/dev/video13` on i.MX 95).
 It draws bounding boxes around the detected faces, and displays associated name and confidence score if face matches an embedding from the database. 

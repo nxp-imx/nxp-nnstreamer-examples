@@ -27,10 +27,10 @@ class FNModel:
         self.match_threshold = match_threshold
 
         # model location
-        if not vela:
-            name = 'facenet512_uint8.tflite'
-        else:
+        if vela:
             name = 'facenet512_uint8_vela.tflite'
+        else:
+            name = 'facenet512_uint8.tflite'
         self.tflite_model = os.path.join(model_directory, name)
 
         if not os.path.exists(self.tflite_model):

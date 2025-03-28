@@ -131,8 +131,9 @@ class Pipe:
         elif self.imx.has_npu_ethos():
             opts = ('custom=Delegate:External,'
                     'ExtDelegateLib:libethosu_delegate.so')
-        elif self.imx.has_npu_neutron(): #use CPU backend for i.MX95
-            opts = ('custom=Delegate:XNNPACK,NumThreads:3')
+        elif self.imx.has_npu_neutron():
+            opts = ('custom=Delegate:External,'
+                    'ExtDelegateLib:libneutron_delegate.so')
         else:
             opts = ''
         return opts
@@ -309,7 +310,8 @@ class FaceDetectPipe(Pipe):
             model_directory = os.path.join(pwd, '../downloads/models/face')
 
         has_ethosu = self.imx.has_npu_ethos()
-        self.ultraface = ultraface.UFModel(model_directory, vela=has_ethosu)
+        has_neutron = self.imx.has_npu_neutron()
+        self.ultraface = ultraface.UFModel(model_directory, vela=has_ethosu, neutron=has_neutron)
 
         # pipelines variables
         self.mainloop = None
