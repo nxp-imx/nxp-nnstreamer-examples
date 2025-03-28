@@ -47,7 +47,7 @@ It draws bounding boxes around the detected faces, and displays number of detect
 | ------------ | --- | --- | --- |
 | i.MX 8M Plus | :white_check_mark: | :white_check_mark: | :white_check_mark: |
 |   i.MX 93    | :white_check_mark: | :white_check_mark: | :x: |
-|   i.MX 95    | :x: | :white_check_mark: | :white_check_mark: |
+|   i.MX 95    | :white_check_mark: | :white_check_mark: | :white_check_mark: |
 
 C++ example script needs to be generated with [cross compilation](../). [setup_environment.sh](../tools/setup_environment.sh) script needs to be executed in [nxp-nnstreamer-examples](../) folder to define data paths:
 ```bash
@@ -60,6 +60,10 @@ It is possible to run the face detection demo inference on NPU with the followin
 For i.MX 93 NPU use vela converted model:
 ```bash
 ./build/face/example_face_detection_tflite -p ${ULTRAFACE_QUANT_VELA}
+```
+For i.MX 95 NPU use neutron converted model:
+```bash
+./build/face/example_face_detection_tflite -p ${ULTRAFACE_QUANT_NEUTRON}
 ```
 Inference on CPU with the following script:
 ```bash

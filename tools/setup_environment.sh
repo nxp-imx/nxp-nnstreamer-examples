@@ -44,6 +44,7 @@ export MOBILENETV2_QUANT_NEUTRON="${DETECTION_DIR}/ssdlite_mobilenet_v2_coco_qua
 FACE_DIR="${MODELS_DIR}/face"
 export ULTRAFACE_QUANT="${FACE_DIR}/ultraface_slim_uint8_float32.tflite"
 export ULTRAFACE_QUANT_VELA="${FACE_DIR}/ultraface_slim_uint8_float32_vela.tflite"
+export ULTRAFACE_QUANT_NEUTRON="${FACE_DIR}/ultraface_slim_uint8_float32_neutron.tflite"
 export EMOTION_QUANT="${FACE_DIR}/emotion_uint8_float32.tflite"
 export EMOTION_QUANT_VELA="${FACE_DIR}/emotion_uint8_float32_vela.tflite"
 
