@@ -6,11 +6,11 @@
 set -x
 
 REALPATH="$(readlink -e "$0")"
-BASEDIR="$(dirname "${REALPATH}")/.."
-MODELS_DIR="${BASEDIR}/downloads/models/detection"
+BASEDIR="$(dirname "${REALPATH}")/../.."
+MODELS_DIR="${BASEDIR}/downloads/models/object-detection"
 
 source "${BASEDIR}/common/common_utils.sh"
-source "${BASEDIR}/detection/detection_utils.sh"
+source "${BASEDIR}/tasks/object-detection/detection_utils.sh"
 
 setup_env
 

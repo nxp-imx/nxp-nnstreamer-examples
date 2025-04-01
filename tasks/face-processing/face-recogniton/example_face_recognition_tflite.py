@@ -5,10 +5,8 @@
 
 import argparse
 import cairo
-from facedetectpipe import FaceDetectPipe, SecondaryPipe
 import gi
 import logging
-import facenet
 import math
 import numpy as np
 import re
@@ -18,15 +16,18 @@ import sys
 gi.require_version('Gst', '1.0')
 gi.require_version('GstApp', '1.0')
 gi.require_version('GstVideo', '1.0')
-from gi.repository import Gst, GLib, GstApp, GstVideo  # noqa
+from gi.repository import Gst  # noqa
 
-python_path = os.path.join(
-    os.path.dirname(
-        os.path.abspath(__file__)),
-    '../common/python')
+python_path = os.path.join(os.path.dirname(os.path.abspath(__file__)),
+                           '../../../common/python')
 sys.path.append(python_path)
 from imxpy.imx_dev import Imx, SocId  # noqa
 
+python_path = os.path.join(os.path.dirname(os.path.abspath(__file__)),
+                           '../common')
+sys.path.append(python_path)
+import facenet # noqa
+from facedetectpipe import FaceDetectPipe, SecondaryPipe # noqa
 
 class FaceRecoPipe(FaceDetectPipe):
 
@@ -346,7 +347,7 @@ if __name__ == '__main__':
 
     # secondary pipeline uses FaceNet model
     pwd = os.path.dirname(os.path.abspath(__file__))
-    models_dir = os.path.join(pwd, '../downloads/models/face')
+    models_dir = os.path.join(pwd, '../../../downloads/models/face-processing')
     mface_db_dir = os.path.join(pwd, 'facenet_db')
 
     has_ethosu = imx.has_npu_ethos()

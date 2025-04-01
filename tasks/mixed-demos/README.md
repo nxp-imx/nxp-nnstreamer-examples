@@ -10,7 +10,7 @@ Name | Implementation | Model | ML engine | Features
 
 Mixed examples goal is to demonstrate the possibility to make applications which use multiple models running in parallel, while keeping good performances. Three examples are available:
 
-## Image classification and object detection (MobileNetV1/SSD MobileNetV2)
+## Classification and Object Detection (MobileNetV1/SSD MobileNetV2)
 ### C++
 |   Platforms  | NPU | CPU | GPU |
 | ------------ | --- | --- | --- |
@@ -23,19 +23,19 @@ C++ example script needs to be generated with [cross compilation](../). [setup_e
 . ./tools/setup_environment.sh
 ```
 
-An example running image classification and object detection inferences in parallel is provided, which use the video saving feature. This example can be run with both models on NPU, using the following command:
+An example running classification and object detection inferences in parallel is provided, which use the video saving feature. This example can be run with both models on NPU, using the following command:
  ```bash
-./build/mixed/example_classification_and_detection_tflite -p ${MOBILENETV1_QUANT},${MOBILENETV2_QUANT} -l ${MOBILENETV1_LABELS},${COCO_LABELS} -x ${MOBILENETV2_BOXES} -f ${SAVE_VIDEO_PATH}
+./build/mixed-demos/example_classification_and_detection_tflite -p ${MOBILENETV1_QUANT},${MOBILENETV2_QUANT} -l ${MOBILENETV1_LABELS},${COCO_LABELS} -x ${MOBILENETV2_BOXES} -f ${SAVE_VIDEO_PATH}
 ```
 For i.MX 93 NPU use vela converted models:<br>
 *NOTE: Video saving feature is not available on i.MX 93.*
  ```bash
-./build/mixed/example_classification_and_detection_tflite -p ${MOBILENETV1_QUANT_VELA},${MOBILENETV2_QUANT_VELA} -l ${MOBILENETV1_LABELS},${COCO_LABELS} -x ${MOBILENETV2_BOXES}
+./build/mixed-demos/example_classification_and_detection_tflite -p ${MOBILENETV1_QUANT_VELA},${MOBILENETV2_QUANT_VELA} -l ${MOBILENETV1_LABELS},${COCO_LABELS} -x ${MOBILENETV2_BOXES}
 ```
 
 For i.MX 95 NPU use neutron converted models:
  ```bash
-./build/mixed/example_classification_and_detection_tflite -p ${MOBILENETV1_QUANT_NEUTRON},${MOBILENETV2_QUANT_NEUTRON} -l ${MOBILENETV1_LABELS},${COCO_LABELS} -x ${MOBILENETV2_BOXES} -f ${SAVE_VIDEO_PATH}
+./build/mixed-demos/example_classification_and_detection_tflite -p ${MOBILENETV1_QUANT_NEUTRON},${MOBILENETV2_QUANT_NEUTRON} -l ${MOBILENETV1_LABELS},${COCO_LABELS} -x ${MOBILENETV2_BOXES} -f ${SAVE_VIDEO_PATH}
 ```
 
 To use CPU or GPU backend, refers to the execution parameter ```--backend``` below.<br>
@@ -58,7 +58,7 @@ Option | Description
 
 Press ```Esc or ctrl+C``` to stop the execution of the pipeline.
 
-## Pose detection and face detection (MoveNet/UltraFace)
+## Pose Estimation and Face Detection (MoveNet/UltraFace)
 ### C++
 |   Platforms  | NPU | CPU | GPU |
 | ------------ | --- | --- | --- |
@@ -71,13 +71,13 @@ C++ example script needs to be generated with [cross compilation](../). [setup_e
 . ./tools/setup_environment.sh
 ```
 
-An example running face detection and pose detection inferences in parallel is available. This example can be run with both models on NPU, using the following command:
+An example running face detection and pose estimation inferences in parallel is available. This example can be run with both models on NPU, using the following command:
 ```bash
-./build/mixed/example_face_and_pose_detection_tflite -p ${ULTRAFACE_QUANT},${MOVENET_QUANT}
+./build/mixed-demos/example_face_and_pose_detection_tflite -p ${ULTRAFACE_QUANT},${MOVENET_QUANT}
 ```
 For i.MX 93 NPU use vela converted models:
 ```bash
-./build/mixed/example_face_and_pose_detection_tflite -p ${ULTRAFACE_QUANT_VELA},${MOVENET_QUANT_VELA}
+./build/mixed-demos/example_face_and_pose_detection_tflite -p ${ULTRAFACE_QUANT_VELA},${MOVENET_QUANT_VELA}
 ```
 To use CPU or GPU backend, refers to the execution parameter ```--backend``` below.<br>
 To use the non-quantized (float32) MoveNet model, input normalization needs to be set with the execution parameter ```--normalization``` (description below) to ```castInt32``` and use ```MOVENET``` environment variable for model path.<br>
@@ -96,7 +96,7 @@ Option | Description
 
 Press ```Esc or ctrl+C``` to stop the execution of the pipeline.
 
-## Emotion detection and object detection (UltraFace/Deepface-emotion/SSD MobileNetV2)
+## Emotion Classification and Object Detection (UltraFace/Deepface-emotion/SSD MobileNetV2)
 ### C++
 |   Platforms  | NPU | CPU | GPU |
 | ------------ | --- | --- | --- |
@@ -109,9 +109,9 @@ C++ example script needs to be generated with [cross compilation](../). [setup_e
 . ./tools/setup_environment.sh
 ```
 
-An example running emotion detection and object detection inferences in parallel is available. This example can be run with both models on NPU, using the following command:
+An example running emotion classification and object detection inferences in parallel is available. This example can be run with both models on NPU, using the following command:
 ```bash
-./build/mixed/example_emotion_and_detection_tflite -p ${ULTRAFACE_QUANT},${EMOTION_QUANT},${MOBILENETV2_QUANT} -f ${POWER_JUMP_VIDEO} -l ${COCO_LABELS} -x ${MOBILENETV2_BOXES}
+./build/mixed-demos/example_emotion_and_detection_tflite -p ${ULTRAFACE_QUANT},${EMOTION_QUANT},${MOBILENETV2_QUANT} -f ${POWER_JUMP_VIDEO} -l ${COCO_LABELS} -x ${MOBILENETV2_BOXES}
 ```
 To use CPU or GPU backend, refers to the execution parameter ```--backend``` below.<br>
 To use the non-quantized (float32) MobileNetV2 model, input normalization needs to be set with the execution parameter ```--normalization``` (description below) to ```centeredReduced``` and use ```MOBILENETV2``` environment variable for model path.<br>
@@ -131,7 +131,7 @@ Option | Description
 
 Press ```Esc or ctrl+C``` to stop the execution of the pipeline.
 
-## Double MobileNetV1 image classification
+## Double MobileNetV1 Classification
 ### C++
 |   Platforms  | NPU | CPU | GPU |
 | ------------ | --- | --- | --- |
@@ -148,14 +148,14 @@ C++ example script needs to be generated with [cross compilation](../). [setup_e
 ```bash
 . ./tools/setup_environment.sh
 ```
-An example running two image classification inferences in parallel, with each inference using a different input camera data, is available. This example can be run with both models on NPU, using the following command:<br>
+An example running two classification inferences in parallel, with each inference using a different input camera data, is available. This example can be run with both models on NPU, using the following command:<br>
 
 ```bash
-./build/mixed/example_double_classification_tflite -p ${MOBILENETV1_QUANT},${MOBILENETV1_QUANT} -l ${MOBILENETV1_LABELS} -c ${CAM1_PATH},${CAM2_PATH}
+./build/mixed-demos/example_double_classification_tflite -p ${MOBILENETV1_QUANT},${MOBILENETV1_QUANT} -l ${MOBILENETV1_LABELS} -c ${CAM1_PATH},${CAM2_PATH}
 ```
 For i.MX 93 NPU use vela converted models:
 ```bash
-./build/mixed/example_double_classification_tflite -p ${MOBILENETV1_QUANT_VELA},${MOBILENETV1_QUANT_VELA} -l ${MOBILENETV1_LABELS} -c ${CAM1_PATH},${CAM2_PATH}
+./build/mixed-demos/example_double_classification_tflite -p ${MOBILENETV1_QUANT_VELA},${MOBILENETV1_QUANT_VELA} -l ${MOBILENETV1_LABELS} -c ${CAM1_PATH},${CAM2_PATH}
 ```
 To use CPU or GPU backend, refers to the execution parameter ```--backend``` below.<br>
 To use the non-quantized (float32) MobileNetV1 model, input normalization needs to be set with the execution parameter ```--normalization``` (description below) to ```centeredReduced``` and use ```MOBILENETV1``` environment variable for model path.<br>

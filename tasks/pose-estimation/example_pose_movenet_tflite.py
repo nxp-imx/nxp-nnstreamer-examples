@@ -16,7 +16,7 @@ import signal
 import sys
 
 python_path = os.path.join(os.path.dirname(os.path.abspath(__file__)),
-                           '../common/python')
+                           '../../common/python')
 sys.path.append(python_path)
 from imxpy.imx_dev import Imx, SocId  # noqa
 from imxpy.common_utils import GstVideoImx, store_vx_graph_compilation  # noqa
@@ -176,12 +176,12 @@ class PoseExample:
 
         current_folder = os.path.dirname(os.path.abspath(__file__))
 
-        model_dir = os.path.join(current_folder, '../downloads/models/pose')
+        model_dir = os.path.join(current_folder, '../../downloads/models/pose-estimation')
         self.tflite_path = os.path.join(model_dir, tflite_model)
         if not os.path.exists(self.tflite_path):
             raise FileExistsError(f'cannot find tflite model [{self.tflite_path}]')
 
-        video_dir = os.path.join(current_folder, '../downloads/media/movies')
+        video_dir = os.path.join(current_folder, '../../downloads/media/movies')
         self.video_path = os.path.join(video_dir, self.video_file)
         if not os.path.exists(self.video_path):
             raise FileExistsError(f'cannot find video [{self.video_path}]')

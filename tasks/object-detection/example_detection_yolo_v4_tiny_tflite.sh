@@ -6,11 +6,11 @@
 set -x
 
 REALPATH="$(readlink -e "$0")"
-BASEDIR="$(dirname "${REALPATH}")/.."
-MODELS_DIR="${BASEDIR}/downloads/models/detection"
+BASEDIR="$(dirname "${REALPATH}")/../.."
+MODELS_DIR="${BASEDIR}/downloads/models/object-detection"
 
 source "${BASEDIR}/common/common_utils.sh"
-source "${BASEDIR}/detection/detection_utils.sh"
+source "${BASEDIR}/tasks/object-detection/detection_utils.sh"
 
 setup_env
 
@@ -60,7 +60,7 @@ TENSOR_FILTER=${FILTER_BACKEND[${BACKEND}]}
 
 # python filter configuration
 FRAMEWORK="python3"
-POSTPROCESS="${BASEDIR}/detection/postprocess_yolov4_tiny.py"
+POSTPROCESS="${BASEDIR}/tasks/object-detection/postprocess_yolov4_tiny.py"
 MODEL_SIZE="Height:${MODEL_HEIGHT},Width:${MODEL_WIDTH}"
 THRESHOLD="Threshold:0.4" # optional argument between 0 and 1
 if [ -z "${THRESHOLD}" ];

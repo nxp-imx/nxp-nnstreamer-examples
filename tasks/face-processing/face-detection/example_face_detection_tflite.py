@@ -4,15 +4,19 @@
 # SPDX-License-Identifier: BSD-3-Clause
 
 import argparse
-from facedetectpipe import FaceDetectPipe
 import logging
 import os
+import sys
 
-python_path = os.path.join(
-    os.path.dirname(
-        os.path.abspath(__file__)),
-    '../common/python')
+python_path = os.path.join(os.path.dirname(os.path.abspath(__file__)),
+                           '../../../common/python')
+sys.path.append(python_path)
 from imxpy.imx_dev import Imx, SocId  # noqa
+
+python_path = os.path.join(os.path.dirname(os.path.abspath(__file__)),
+                           '../common')
+sys.path.append(python_path)
+from facedetectpipe import FaceDetectPipe # noqa
 
 if __name__ == '__main__':
 

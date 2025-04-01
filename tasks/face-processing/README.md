@@ -1,13 +1,13 @@
-# Faces demos
+# Face processing demos
 
 ## Overview
 Name | Implementation | Model | ML engine | Features
 --- | --- | --- | --- | ---
-[example_face_detection_tflite.py](./example_face_detection_tflite.py) | Python | UltraFace | TFLite | camera<br>gst-launch<br>
-[example_face_detection_tflite.cpp](./cpp/example_face_detection_tflite.cpp) | C++ | UltraFace | TFLite | camera<br>gst-launch<br>
-[example_face_recognition_tflite.py](./example_face_recognition_tflite.py) | Python | UltraFace <br> FaceNet512 <br> | TFLite | camera<br>gst-launch<br>
-[example_emotion_detection_tflite.py](./example_emotion_detection_tflite.py) | Python | UltraFace <br> Deepface-emotion <br> | TFLite | camera<br>gst-launch<br>
-[example_emotion_detection_tflite.cpp](./cpp/example_emotion_detection_tflite.cpp) | C++ | UltraFace <br> Deepface-emotion <br> | TFLite | camera<br>gst-launch<br>
+[example_face_detection_tflite.py](./face-detection/example_face_detection_tflite.py) | Python | UltraFace | TFLite | camera<br>gst-launch<br>
+[example_face_detection_tflite.cpp](./face-detection/cpp/example_face_detection_tflite.cpp) | C++ | UltraFace | TFLite | camera<br>gst-launch<br>
+[example_face_recognition_tflite.py](./face-recognition/example_face_recognition_tflite.py) | Python | UltraFace <br> FaceNet512 <br> | TFLite | camera<br>gst-launch<br>
+[example_emotion_classification_tflite.py](./emotion-classification/example_emotion_classification_tflite.py) | Python | UltraFace <br> Deepface-emotion <br> | TFLite | camera<br>gst-launch<br>
+[example_emotion_classification_tflite.cpp](./emotion-classification/cpp/example_emotion_classification_tflite.cpp) | C++ | UltraFace <br> Deepface-emotion <br> | TFLite | camera<br>gst-launch<br>
 
 Those examples use 2 GStreamer pipelines that are running concurrently.<br>
 Press ```Esc or ctrl+C``` to stop the execution of all the pipelines.<br>
@@ -29,7 +29,7 @@ Display can be flipped using the --mirror option.<br>
 
 ![secondary](./secondary.svg)
 
-## Face detection
+## Face Detection
 ### Python
 |   Platforms  | NPU | CPU | GPU |
 | ------------ | --- | --- | --- |
@@ -40,7 +40,7 @@ Display can be flipped using the --mirror option.<br>
 Demo application is to be started from Linux. Camera device node may be configured via command line argument (default: `/dev/video3` on i.MX 8M Plus and `/dev/video0` on i.MX 93, `/dev/video13` on i.MX 95).
 It draws bounding boxes around the detected faces, and displays number of detections.
 ```
-./face/example_face_detection_tflite.py [--camera_device=</dev/videoN>]
+./tasks/face-processing/face-detection/example_face_detection_tflite.py [--camera_device=</dev/videoN>]
 ```
 ### C++
 |   Platforms  | NPU | CPU | GPU |
@@ -55,23 +55,23 @@ C++ example script needs to be generated with [cross compilation](../). [setup_e
 ```
 It is possible to run the face detection demo inference on NPU with the following script:
 ```bash
-./build/face/example_face_detection_tflite -p ${ULTRAFACE_QUANT}
+./build/face-processing/example_face_detection_tflite -p ${ULTRAFACE_QUANT}
 ```
 For i.MX 93 NPU use vela converted model:
 ```bash
-./build/face/example_face_detection_tflite -p ${ULTRAFACE_QUANT_VELA}
+./build/face-processing/example_face_detection_tflite -p ${ULTRAFACE_QUANT_VELA}
 ```
 For i.MX 95 NPU use neutron converted model:
 ```bash
-./build/face/example_face_detection_tflite -p ${ULTRAFACE_QUANT_NEUTRON}
+./build/face-processing/example_face_detection_tflite -p ${ULTRAFACE_QUANT_NEUTRON}
 ```
 Inference on CPU with the following script:
 ```bash
-./build/face/example_face_detection_tflite -p ${ULTRAFACE_QUANT} -b CPU
+./build/face-processing/example_face_detection_tflite -p ${ULTRAFACE_QUANT} -b CPU
 ```
 NOTE: inferences on i.MX8MPlus GPU have low performances, but are possible with the following script:
 ```bash
-./build/face/example_face_detection_tflite -p ${ULTRAFACE_QUANT} -b GPU
+./build/face-processing/example_face_detection_tflite -p ${ULTRAFACE_QUANT} -b GPU
 ```
 The following execution parameters are available (Run ``` ./example_face_detection_tflite -h``` to see option details):
 
@@ -88,7 +88,7 @@ Option | Description
 
 Press ```Esc or ctrl+C``` to stop the execution of the pipeline.
 
-## Emotion detection
+## Emotion Classification
 ### Python
 |   Platforms  | NPU | CPU | GPU |
 | ------------ | --- | --- | --- |
@@ -99,7 +99,7 @@ Press ```Esc or ctrl+C``` to stop the execution of the pipeline.
 Demo application is to be started from Linux. Camera device node may be configured via command line argument (default: `/dev/video3` on i.MX 8M Plus, `/dev/video0` on i.MX 93, `/dev/video13` on i.MX 95).
 It draws bounding boxes around the detected faces, and displays predicted emotion and confidence score on each face.
 ```
-./face/example_emotion_detection_tflite.py [--camera_device=</dev/videoN>]
+./tasks/face-processing/emotion-classification/example_emotion_classification_tflite.py [--camera_device=</dev/videoN>]
 ```
 7 emotions can be recognised: angry, disgust, fear, happy, sad, surprise and neutral.
 
@@ -116,21 +116,21 @@ C++ example script needs to be generated with [cross compilation](../). [setup_e
 ```
  It is possible to run the emotion detection demo inference on NPU with the following script:<br>
 ```bash
-./build/face/example_emotion_detection_tflite -p ${ULTRAFACE_QUANT},${EMOTION_QUANT}
+./build/face-processing/example_emotion_classification_tflite -p ${ULTRAFACE_QUANT},${EMOTION_QUANT}
 ```
 For i.MX 93 NPU use vela converted model:
 ```bash
-./build/face/example_emotion_detection_tflite -p ${ULTRAFACE_QUANT_VELA},${EMOTION_QUANT_VELA}
+./build/face-processing/example_emotion_classification_tflite -p ${ULTRAFACE_QUANT_VELA},${EMOTION_QUANT_VELA}
 ```
 Inference on CPU with the following script:
 ```bash
-./build/face/example_emotion_detection_tflite -p ${ULTRAFACE_QUANT},${EMOTION_QUANT} -b CPU,CPU
+./build/face-processing/example_emotion_classification_tflite -p ${ULTRAFACE_QUANT},${EMOTION_QUANT} -b CPU,CPU
 ```
 NOTE: Inference on i.MX8MPlus GPU is possible but not recommended because of low performances:
 ```bash
-./build/face/example_emotion_detection_tflite -p ${ULTRAFACE_QUANT},${EMOTION_QUANT} -b GPU,GPU
+./build/face-processing/example_emotion_classification_tflite -p ${ULTRAFACE_QUANT},${EMOTION_QUANT} -b GPU,GPU
 ```
-The following execution parameters are available (Run ``` ./example_emotion_detection_tflite -h``` to see option details):
+The following execution parameters are available (Run ``` ./example_emotion_classification_tflite -h``` to see option details):
 
 Option | Description
 --- | ---
@@ -145,7 +145,7 @@ Option | Description
 
 Press ```Esc or ctrl+C``` to stop the execution of the pipeline.
 
-## Face recognition
+## Face Recognition
 ### Python
 |   Platforms  | NPU | CPU | GPU |
 | ------------ | --- | --- | --- |
@@ -156,7 +156,7 @@ Press ```Esc or ctrl+C``` to stop the execution of the pipeline.
 Demo application is to be started from Linux. Camera device node may be configured via command line argument (default: `/dev/video3` on i.MX 8M Plus, `/dev/video0` on i.MX 93, `/dev/video13` on i.MX 95).
 It draws bounding boxes around the detected faces, and displays associated name and confidence score if face matches an embedding from the database. 
 ```
-./face/example_face_recognition_tflite.py [--camera_device=</dev/videoN>]
+./tasks/face-processing/face-recognition/example_face_recognition_tflite.py [--camera_device=</dev/videoN>]
 ```
 Database of recognizable face signatures (embeddings) is located in [face/facenet_db](./facenet_db) directory. An entry in there simply associates the \<name\> from file `<name>.npy`, with its embedding for the face, saved as a numpy binary array.
 ```

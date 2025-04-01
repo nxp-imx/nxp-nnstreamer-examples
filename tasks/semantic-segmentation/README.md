@@ -1,4 +1,4 @@
-# Segmentation
+# Semantic Segmentation
 
 ## Overview
 Name | Implementation | Model | ML engine | Features
@@ -14,9 +14,9 @@ Name | Implementation | Model | ML engine | Features
 |   i.MX 93    | :white_check_mark: | :white_check_mark: | :x: |
 |   i.MX 95    | :x: | :white_check_mark: | :x: |
 
-The segmentation demo in bash supports multiple backend (refers to above table), default value can be overriden by explicitly defining BACKEND variable, for instance:
+The semantic segmentation demo in bash supports multiple backend (refers to above table), default value can be overriden by explicitly defining BACKEND variable, for instance:
 ```bash
-BACKEND=CPU ./segmentation/example_segmentation_deeplab_v3_tflite.sh
+BACKEND=CPU ./tasks/semantic-segmentation/example_segmentation_deeplab_v3_tflite.sh
 ```
 
 ### C++
@@ -31,23 +31,23 @@ C++ example script needs to be generated with [cross compilation](../). [setup_e
 . ./tools/setup_environment.sh
 ```
 
-It is possible to run the segmentation demo inference on three different hardwares:<br>
+It is possible to run the semantic segmentation demo inference on three different hardwares:<br>
 Inference on NPU with the following script:
 ```bash
-./build/segmentation/example_segmentation_deeplab_v3_tflite -p ${DEEPLABV3_QUANT} -f ${PASCAL_IMAGES}
+./build/semantic-segmentation/example_segmentation_deeplab_v3_tflite -p ${DEEPLABV3_QUANT} -f ${PASCAL_IMAGES}
 ```
 For i.MX 93 NPU use vela converted model:
 ```bash
-./build/segmentation/example_segmentation_deeplab_v3_tflite -p ${DEEPLABV3_QUANT_VELA} -f ${PASCAL_IMAGES}
+./build/semantic-segmentation/example_segmentation_deeplab_v3_tflite -p ${DEEPLABV3_QUANT_VELA} -f ${PASCAL_IMAGES}
 ```
 Inference on CPU with the following script:
 ```bash
-./build/segmentation/example_segmentation_deeplab_v3_tflite -p ${DEEPLABV3_QUANT} -f ${PASCAL_IMAGES} -b CPU
+./build/semantic-segmentation/example_segmentation_deeplab_v3_tflite -p ${DEEPLABV3_QUANT} -f ${PASCAL_IMAGES} -b CPU
 ```
 Quantized model is used for better inference performances on CPU.<br>
 NOTE: inferences on i.MX8MPlus GPU have low performances, but are possible with the following script:
 ```bash
-./build/segmentation/example_segmentation_deeplab_v3_tflite -p ${DEEPLABV3} -f ${PASCAL_IMAGES} -b GPU -n centeredReduced
+./build/semantic-segmentation/example_segmentation_deeplab_v3_tflite -p ${DEEPLABV3} -f ${PASCAL_IMAGES} -b GPU -n centeredReduced
 ```
 The following execution parameters are available (Run ``` ./example_segmentation_deeplab_v3_tflite -h``` to see option details):
 

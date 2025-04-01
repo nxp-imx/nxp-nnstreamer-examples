@@ -5,10 +5,9 @@
 
 import argparse
 import cairo
-from facedetectpipe import FaceDetectPipe, SecondaryPipe
+
 import gi
 import logging
-import deepface
 import math
 import numpy as np
 import os
@@ -19,12 +18,16 @@ gi.require_version('GstApp', '1.0')
 gi.require_version('GstVideo', '1.0')
 from gi.repository import Gst, GLib, GstApp, GstVideo  # noqa
 
-python_path = os.path.join(
-    os.path.dirname(
-        os.path.abspath(__file__)),
-    '../common/python')
+python_path = os.path.join(os.path.dirname(os.path.abspath(__file__)),
+                           '../../../common/python')
 sys.path.append(python_path)
 from imxpy.imx_dev import Imx, SocId  # noqa
+
+python_path = os.path.join(os.path.dirname(os.path.abspath(__file__)),
+                           '../common')
+sys.path.append(python_path)
+from facedetectpipe import FaceDetectPipe, SecondaryPipe # noqa
+import deepface # noqa
 
 
 class EmoDetectPipe(FaceDetectPipe):
@@ -255,7 +258,7 @@ if __name__ == '__main__':
 
     # secondary pipeline uses DeepFace model
     pwd = os.path.dirname(os.path.abspath(__file__))
-    models_dir = os.path.join(pwd, '../downloads/models/face')
+    models_dir = os.path.join(pwd, '../../../downloads/models/face-processing')
 
     has_ethosu = imx.has_npu_ethos()
     model = deepface.FNModel(models_dir, vela=has_ethosu)

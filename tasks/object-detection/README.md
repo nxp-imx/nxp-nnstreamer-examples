@@ -1,4 +1,4 @@
-# Object detection
+# Object Detection
 
 ## Overview
 Name | Implementation | Model | ML engine | Features
@@ -19,7 +19,7 @@ Name | Implementation | Model | ML engine | Features
 
 The object detection demo in bash using YOLOv4 Tiny supports multiple backend (refers to above table), default value can be overriden by explicitly defining BACKEND variable, for instance:
 ```bash
-BACKEND=CPU ./detection/example_detection_yolo_v4_tiny_tflite.sh
+BACKEND=CPU ./tasks/object-detection/example_detection_yolo_v4_tiny_tflite.sh
 ```
 
 ## SSD MobileNetV2 object detection
@@ -32,7 +32,7 @@ BACKEND=CPU ./detection/example_detection_yolo_v4_tiny_tflite.sh
 
 The object detection demo in bash using SSD MobiletNetV2 supports multiple backend (refers to above table), default value can be overriden by explicitly defining BACKEND variable, for instance:
 ```bash
-BACKEND=CPU ./detection/example_detection_mobilenet_ssd_v2_tflite.sh
+BACKEND=CPU ./tasks/object-detection/example_detection_mobilenet_ssd_v2_tflite.sh
 ```
 ### C++
 |   Platforms  | NPU | CPU | GPU |
@@ -49,26 +49,26 @@ C++ example script needs to be generated with [cross compilation](../). [setup_e
 It is possible to run the object detection demo inference on three different hardwares:<br>
 Inference on NPU with the following script:
 ```bash
-./build/detection/example_detection_mobilenet_ssd_v2_tflite -p  ${MOBILENETV2_QUANT} -l ${COCO_LABELS} -x ${MOBILENETV2_BOXES}
+./build/object-detection/example_detection_mobilenet_ssd_v2_tflite -p  ${MOBILENETV2_QUANT} -l ${COCO_LABELS} -x ${MOBILENETV2_BOXES}
 ```
 For i.MX 93 NPU use vela converted model:
 ```bash
-./build/detection/example_detection_mobilenet_ssd_v2_tflite -p  ${MOBILENETV2_QUANT_VELA} -l ${COCO_LABELS} -x ${MOBILENETV2_BOXES}
+./build/object-detection/example_detection_mobilenet_ssd_v2_tflite -p  ${MOBILENETV2_QUANT_VELA} -l ${COCO_LABELS} -x ${MOBILENETV2_BOXES}
 ```
 
 For i.MX 95 NPU use neutron converted model:
 ```bash
-./build/detection/example_detection_mobilenet_ssd_v2_tflite -p  ${MOBILENETV2_QUANT_NEUTRON} -l ${COCO_LABELS} -x ${MOBILENETV2_BOXES}
+./build/object-detection/example_detection_mobilenet_ssd_v2_tflite -p  ${MOBILENETV2_QUANT_NEUTRON} -l ${COCO_LABELS} -x ${MOBILENETV2_BOXES}
 ```
 
 Inference on CPU with the following script:
 ```bash
-./build/detection/example_detection_mobilenet_ssd_v2_tflite -p  ${MOBILENETV2_QUANT} -l ${COCO_LABELS} -x ${MOBILENETV2_BOXES} -b CPU
+./build/object-detection/example_detection_mobilenet_ssd_v2_tflite -p  ${MOBILENETV2_QUANT} -l ${COCO_LABELS} -x ${MOBILENETV2_BOXES} -b CPU
 ```
 Quantized model is used for better inference performances on CPU.<br>
 NOTE: inferences on i.MX8MPlus GPU have low performances, but are possible with the following script:
 ```bash
-./build/detection/example_detection_mobilenet_ssd_v2_tflite -p  ${MOBILENETV2} -l ${COCO_LABELS} -x ${MOBILENETV2_BOXES} -b GPU -n centeredReduced
+./build/object-detection/example_detection_mobilenet_ssd_v2_tflite -p  ${MOBILENETV2} -l ${COCO_LABELS} -x ${MOBILENETV2_BOXES} -b GPU -n centeredReduced
 ```
 The following execution parameters are available (Run ``` ./example_detection_mobilenet_ssd_v2_tflite -h``` to see option details):
 

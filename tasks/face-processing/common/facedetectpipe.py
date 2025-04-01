@@ -9,7 +9,7 @@ import logging
 import math
 import numpy as np
 import termios
-import ultraface
+import ultraface as ultraface
 import os
 import signal
 import sys
@@ -20,7 +20,7 @@ gi.require_version('GstVideo', '1.0')
 from gi.repository import Gst, GLib, GstApp, GstVideo  # noqa
 
 python_path = os.path.join(os.path.dirname(os.path.abspath(__file__)),
-                           '../common/python')
+                           '../../../common/python')
 sys.path.append(python_path)
 from imxpy.imx_dev import Imx  # noqa
 from imxpy.common_utils import GstVideoImx, store_vx_graph_compilation  # noqa
@@ -307,7 +307,7 @@ class FaceDetectPipe(Pipe):
         # models
         if model_directory is None:
             pwd = os.path.dirname(os.path.abspath(__file__))
-            model_directory = os.path.join(pwd, '../downloads/models/face')
+            model_directory = os.path.join(pwd, '../../../downloads/models/face-processing')
 
         has_ethosu = self.imx.has_npu_ethos()
         has_neutron = self.imx.has_npu_neutron()

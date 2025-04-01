@@ -3,7 +3,6 @@
 # Copyright 2023, 2025 NXP
 # SPDX-License-Identifier: BSD-3-Clause
 
-import math
 import numpy as np
 import os
 

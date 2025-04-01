@@ -1,4 +1,4 @@
-# Image classification
+# Image Classification
 
 ## Overview
 Name | Implementation | Model | ML engine | Features
@@ -16,7 +16,7 @@ Name | Implementation | Model | ML engine | Features
 
 The image classification demo in bash supports multiple backend (refers to above table), default value can be overriden by explicitly defining BACKEND variable, for instance:
 ```bash
-BACKEND=CPU ./classification/example_classification_mobilenet_v1_tflite.sh
+BACKEND=CPU ./tasks/classification/example_classification_mobilenet_v1_tflite.sh
 ```
 
 ### C++
@@ -43,7 +43,7 @@ For i.MX 93 NPU use vela converted model:
 
 For i.MX 95 NPU use neutron converted model:
 ```bash
-./build/detection/example_detection_mobilenet_ssd_v2_tflite -p  ${MOBILENETV1_QUANT_NEUTRON} -l ${COCO_LABELS} -x ${MOBILENETV2_BOXES}
+./build/classification/example_classification_mobilenet_v1_tflite -p  ${MOBILENETV1_QUANT_NEUTRON} -l ${COCO_LABELS} -x ${MOBILENETV2_BOXES}
 ```
 
 Inference on CPU with the following script:

@@ -1,4 +1,4 @@
-# Pose detection
+# Pose Estimation
 
 ## Overview
 Name | Implementation | Model | ML engine |Features
@@ -6,7 +6,7 @@ Name | Implementation | Model | ML engine |Features
 [example_pose_movenet_tflite.py](./example_pose_movenet_tflite.py) | Python | MoveNet Lightning | TFLite | video file decoding (i.MX 8M Plus only)<br>camera<br>gst-launch<br>
 [example_pose_movenet_tflite.cpp](./cpp/example_pose_movenet_tflite.cpp) | C++ | MoveNet Lightning | TFLite | video file decoding (i.MX 8M Plus only)<br>camera<br>gst-launch<br>
 
-## MoveNet Lightning pose detection
+## MoveNet Lightning pose estimation
 ### Python
 |   Platforms  | NPU | CPU | GPU |
 | ------------ | --- | --- | --- |
@@ -17,7 +17,7 @@ Name | Implementation | Model | ML engine |Features
 Default backend can be overriden by explicitly defining BACKEND variable, and source can be selected as VIDEO or CAMERA, for instance:
 
 ```bash
-BACKEND=NPU SOURCE=CAMERA ./pose/example_pose_movenet_tflite.py
+BACKEND=NPU SOURCE=CAMERA ./tasks/pose-estimation/example_pose_movenet_tflite.py
 ```
 
 The following execution parameters are available (Run ``` ./example_pose_movenet_tflite.py -h``` to see option details):
@@ -40,22 +40,22 @@ C++ example script needs to be generated with [cross compilation](../). [setup_e
 . ./tools/setup_environment.sh
 ```
 
-It is possible to run the pose detection demo inference on three different hardwares:<br>
+It is possible to run the pose estimation demo inference on three different hardwares:<br>
 Inference on NPU with the following script:
 ```bash
-./build/pose/example_pose_movenet_tflite -p ${MOVENET_QUANT} -f ${POWER_JUMP_VIDEO}
+./build/pose-estimation/example_pose_movenet_tflite -p ${MOVENET_QUANT} -f ${POWER_JUMP_VIDEO}
 ```
 For i.MX 93 NPU use vela converted model:
 ```bash
-./build/pose/example_pose_movenet_tflite -p ${MOVENET_QUANT_VELA} -f ${POWER_JUMP_VIDEO}
+./build/pose-estimation/example_pose_movenet_tflite -p ${MOVENET_QUANT_VELA} -f ${POWER_JUMP_VIDEO}
 ```
 Inference on CPU with the following script:
 ```bash
-./build/pose/example_pose_movenet_tflite -p ${MOVENET_QUANT} -f ${POWER_JUMP_VIDEO} -b CPU
+./build/pose-estimation/example_pose_movenet_tflite -p ${MOVENET_QUANT} -f ${POWER_JUMP_VIDEO} -b CPU
 ```
 NOTE: inferences on i.MX8MPlus GPU have low performances, but are possible with the following script:
 ```bash
-./build/pose/example_pose_movenet_tflite -p ${MOVENET} -f ${POWER_JUMP_VIDEO} -b GPU -n castInt32
+./build/pose-estimation/example_pose_movenet_tflite -p ${MOVENET} -f ${POWER_JUMP_VIDEO} -b GPU -n castInt32
 ```
 The following execution parameters are available (Run ``` ./example_pose_movenet_tflite -h``` to see option details):
 

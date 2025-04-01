@@ -1,34 +1,50 @@
 #!/bin/bash
-
+#
 # Copyright 2022-2025 NXP
 # SPDX-License-Identifier: BSD-3-Clause
 
 set -x
 
 REALPATH="$(readlink -e "$0")"
-BASEDIR="$(dirname "${REALPATH}")/.."
-MODELS_DIR="${BASEDIR}/downloads/models/classification"
+BASEDIR="$(dirname "${REALPATH}")/../.."
+MODELS_DIR="${BASEDIR}/downloads/models/semantic-segmentation"
+MEDIA_DIR="${BASEDIR}/downloads/media"
+IMAGES_DIR="${MEDIA_DIR}/pascal_voc_2012_images"
+REQUIRED_CAMERA=0
 
 source "${BASEDIR}/common/common_utils.sh"
-source "${BASEDIR}/classification/classification_utils.sh"
+source "${BASEDIR}/tasks/semantic-segmentation/segmentation_utils.sh"
 
 setup_env
 
-# model and framework dependant variables
-declare -A MODEL_BACKEND_NPU
-MODEL_BACKEND_NPU[IMX8MP]="${MODELS_DIR}/mobilenet_v1_1.0_224_quant_uint8_float32.tflite"
-MODEL_BACKEND_NPU[IMX93]="${MODELS_DIR}/mobilenet_v1_1.0_224_quant_uint8_float32_vela.tflite"
-MODEL_BACKEND_NPU[IMX95]="${MODELS_DIR}/mobilenet_v1_1.0_224_quant_uint8_float32_neutron.tflite"
+case "${GPU2D_API}" in
+  G2D)
+    # g2d-based
+    SCALE_FORMAT="RGBA"
+    ;;
+  PXP)
+    # pxp-based
+    SCALE_FORMAT="BGR"
+    ;;  
+  *)
+    # cpu-based
+    SCALE_FORMAT=""
+    ;;
+esac
 
+# model and framework dependant variables
 declare -A MODEL_BACKEND
-MODEL_BACKEND[CPU]="${MODELS_DIR}/mobilenet_v1_1.0_224_quant_uint8_float32.tflite"
-MODEL_BACKEND[GPU]="${MODELS_DIR}/mobilenet_v1_1.0_224.tflite"
+declare -A MODEL_BACKEND_NPU
+MODEL_BACKEND_NPU[IMX8MP]="${MODELS_DIR}/deeplabv3_mnv2_dm05_pascal_quant_uint8_float32.tflite"
+MODEL_BACKEND_NPU[IMX93]="${MODELS_DIR}/deeplabv3_mnv2_dm05_pascal_quant_uint8_float32_vela.tflite"
+
+MODEL_BACKEND[CPU]="${MODELS_DIR}/deeplabv3_mnv2_dm05_pascal_quant_uint8_float32.tflite"
+MODEL_BACKEND[GPU]="${MODELS_DIR}/deeplabv3_mnv2_dm05_pascal.tflite"
 MODEL_BACKEND[NPU]=${MODEL_BACKEND_NPU[${IMX}]}
 MODEL=${MODEL_BACKEND[${BACKEND}]}
 
-MODEL_WIDTH=224
-MODEL_HEIGHT=224
-MODEL_LABELS="${MODELS_DIR}/labels_mobilenet_quant_v1_224.txt"
+MODEL_WIDTH=513
+MODEL_HEIGHT=513
 
 FRAMEWORK="tensorflow-lite"
 
@@ -38,7 +54,6 @@ FILTER_COMMON="tensor_filter framework=${FRAMEWORK} model=${MODEL}"
 declare -A FILTER_BACKEND_NPU
 FILTER_BACKEND_NPU[IMX8MP]=" custom=Delegate:External,ExtDelegateLib:libvx_delegate.so ! "
 FILTER_BACKEND_NPU[IMX93]=" custom=Delegate:External,ExtDelegateLib:libethosu_delegate.so ! "
-FILTER_BACKEND_NPU[IMX95]=" custom=Delegate:External,ExtDelegateLib:libneutron_delegate.so ! "
 
 declare -A FILTER_BACKEND
 FILTER_BACKEND[CPU]="${FILTER_COMMON}"
@@ -56,8 +71,8 @@ PREPROCESS_BACKEND[GPU]="tensor_transform mode=arithmetic option=typecast:float3
 PREPROCESS_BACKEND[NPU]=""
 TENSOR_PREPROCESS=${PREPROCESS_BACKEND[${BACKEND}]}
 
-# tensor decoder configuration: image labeling
-TENSOR_DECODER="tensor_decoder mode=image_labeling option1=${MODEL_LABELS} ! "
+# tensor decoder configuration: tflite-deeplab (no maxargs on classes)
+TENSOR_DECODER="tensor_decoder mode=image_segment option1=tflite-deeplab ! "
 
-gst_exec_classification
+gst_exec_segmentation
 

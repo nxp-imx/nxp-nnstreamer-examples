@@ -46,7 +46,7 @@ if __name__ == "__main__":
     pwd = os.path.dirname(os.path.abspath(__file__))
 
     model_path = os.path.join(
-        pwd, '../downloads/models/face/facenet512_uint8.tflite')
+        pwd, '../../../downloads/models/face-processing/facenet512_uint8.tflite')
     model_wh = (160, 160)
 
     # Default crop parameters correspond to thispersondoesnotexist.jpeg

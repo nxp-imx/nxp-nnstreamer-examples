@@ -54,17 +54,17 @@ cd /path/to/nxp-nnstreamer-examples
 ```
 Examples can then be run directly on the target. More information on individual examples execution is available in relevant sections.
 
-# Categories
+# Tasks
 Note that examples may not run on all platforms - check table below for platform compatibility.
 
 Snapshot | Name | Platforms | Features
 --- | --- | --- | ---
-[![object detection demo](./detection/detection_demo.webp)](./detection/) | [Object detection](./detection/) | i.MX 8M Plus <br> i.MX 93 <br> i.MX 95| MobileNet SSD <br> YOLOv4 Tiny <br> TFLite <br> v4l2 camera <br> gst-launch <br> [custom python tensor_filter](./detection/postprocess_yolov4_tiny.py)
-[![image classification demo](./classification/classification_demo.webp)](./classification/) | [Image classification](./classification/) | i.MX 8M Plus <br> i.MX 93 <br> i.MX 95| MobileNet <br> TFLite <br> v4l2 camera <br> gst-launch
-[![image segmentation demo](./segmentation/segmentation_demo.webp)](./segmentation/) | [Image segmentation](./segmentation/) | i.MX 8M Plus <br> i.MX 93 <br> i.MX 95| DeepLabV3<br> TFLite<br> jpeg files slideshow<br> gst-launch
-[![pose detection demo](./pose/pose_demo.webp)](./pose/) | [Pose detection](./pose/) |i.MX 8M Plus <br> i.MX 93<br> i.MX 95| MoveNet<br> TFLite <br> video file decoding (i.MX 8M Plus only)<br> v4l2 camera <br> gst-launch <br> python
-[![faces demo](./face/face_demo.webp)](./face/) | [Face](./face/) | i.MX 8M Plus <br> i.MX 93<br> i.MX 95| UltraFace <br> FaceNet512 <br> Deepface-emotion <br> TFLite <br> v4l2 camera <br> python
-[![mixed demo](./mixed/mixed_demo.webp)](./mixed/) | [Mixed](./mixed/) | i.MX 8M Plus <br> i.MX 93<br> i.MX 95| MobileNet SSD <br> MobileNet <br> MoveNet <br> UltraFace <br> Deepface-emotion <br> TFLite <br> v4l2 camera <br> C++ <br> custom C++ decoding
-[![depth demo](./depth/depth_demo.webp)](./depth/) | [Depth](./depth/) | i.MX 8M Plus <br> i.MX 93<br> i.MX 95| MiDaS v2 <br> TFLite <br> v4l2 camera <br> C++ <br> custom C++ decoding
+[![object detection demo](./tasks/object-detection/detection_demo.webp)](./tasks/object-detection/) | [Object Detection](./tasks/object-detection/) | i.MX 8M Plus <br> i.MX 93 <br> i.MX 95| MobileNet SSD <br> YOLOv4 Tiny <br> TFLite <br> v4l2 camera <br> gst-launch <br> [custom python tensor_filter](./tasks/object-detection/postprocess_yolov4_tiny.py)
+[![classification demo](./tasks/classification/classification_demo.webp)](./tasks/classification/) | [Classification](./tasks/classification/) | i.MX 8M Plus <br> i.MX 93 <br> i.MX 95| MobileNet <br> TFLite <br> v4l2 camera <br> gst-launch
+[![semantic segmentation demo](./tasks/semantic-segmentation/segmentation_demo.webp)](./tasks/semantic-segmentation/) | [Semantic Segmentation](./tasks/semantic-segmentation/) | i.MX 8M Plus <br> i.MX 93 <br> i.MX 95| DeepLabV3<br> TFLite<br> jpeg files slideshow<br> gst-launch
+[![pose estmation demo](./tasks/pose-estimation/pose_demo.webp)](./tasks/pose-estimation/) | [Pose Estimation](./tasks/pose-estimation/) |i.MX 8M Plus <br> i.MX 93<br> i.MX 95| MoveNet<br> TFLite <br> video file decoding (i.MX 8M Plus only)<br> v4l2 camera <br> gst-launch <br> python
+[![face processing demo](./tasks/face-processing/face_demo.webp)](./tasks/face-processing/) | [Face Processing](./tasks/face-processing/) | i.MX 8M Plus <br> i.MX 93<br> i.MX 95| UltraFace <br> FaceNet512 <br> Deepface-emotion <br> TFLite <br> v4l2 camera <br> python
+[![monocular depth estimation demo](./tasks/monocular-depth-estimation/depth_demo.webp)](./tasks/monocular-depth-estimation/) | [Monocular Depth Estimation](./tasks/monocular-depth-estimation/) | i.MX 8M Plus <br> i.MX 93<br> i.MX 95| MiDaS v2 <br> TFLite <br> v4l2 camera <br> C++ <br> custom C++ decoding
+[![mixed demo](./tasks/mixed-demos/mixed_demo.webp)](./tasks/mixed-demos/) | [Mixed Demos](./tasks/mixed-demos/) | i.MX 8M Plus <br> i.MX 93<br> i.MX 95| MobileNet SSD <br> MobileNet <br> MoveNet <br> UltraFace <br> Deepface-emotion <br> TFLite <br> v4l2 camera <br> C++ <br> custom C++ decoding
 
 *Images and video used have been released under Creative Commons CC0 1.0 license or belong to Public Domain*
