@@ -56,7 +56,7 @@ function setup_env {
     CAMERA_FPS="${CAMERA_FPS:-30}"
   fi
  
-  # backend default configuration
+  # backend default configuration for ML inferences
   BACKEND="${BACKEND:-NPU}"
   case "${BACKEND}" in
   CPU|NPU)
@@ -67,6 +67,8 @@ function setup_env {
     error "invalid backend ${BACKEND}" ;;
   esac
 
+  # GPU configuration for image processing
+  GPU=${GPU:-GPU2D}
   # GPU2D API
   case "${IMX}" in
   IMX8MP)
@@ -78,6 +80,16 @@ function setup_env {
   *)
     GPU2D_API="NONE" ;;
   esac
+  # GPU3D API
+  case "${IMX}" in
+  IMX8MP)
+    GPU3D_API="OCL" ;;
+  IMX95)
+    GPU3D_API="OCL" ;;
+  *)
+    GPU3D_API="NONE" ;;
+  esac
+
 
   # XXX: i.MX93: mute noisy ethos-u kernel driver
   if [ "${IMX}" = "IMX93" ]; then
@@ -102,21 +114,40 @@ function accelerated_video_scale_str {
     FORMAT=",format=${OUTPUT_FORMAT}"
   fi
 
-  case "${GPU2D_API}" in
-  G2D)
-    # g2d-based
-    VIDEO_SCALE="imxvideoconvert_g2d ! "
-    
+  case "${GPU}" in
+  GPU2D)
+    case "${GPU2D_API}" in
+    G2D)
+      # g2d-based
+      VIDEO_SCALE="imxvideoconvert_g2d ! "
+      ;;
+    PXP)
+      # pxp-based
+      VIDEO_SCALE="imxvideoconvert_pxp ! "
+      ;;
+    *)
+      # cpu-based
+      VIDEO_SCALE="videoscale ! videoconvert ! "
+      ;;
+    esac
     ;;
-  PXP)
-    # pxp-based
-    VIDEO_SCALE="imxvideoconvert_pxp ! "
+  GPU3D)
+    case "${GPU3D_API}" in
+    OCL)
+      # ocl-based
+      VIDEO_SCALE="imxvideoconvert_ocl ! "
+      ;;
+    *)
+      # cpu-based
+      VIDEO_SCALE="videoscale ! videoconvert ! "
+      ;;
+    esac
     ;;
   *)
-    # cpu-based
-    VIDEO_SCALE="videoscale ! videoconvert ! "
-    ;;
+    error "invalid GPU ${BACKEND}" ;;
   esac
+
+
   VIDEO_SCALE+="video/x-raw,width=${OUTPUT_WIDTH},height=${OUTPUT_HEIGHT}${FORMAT} ! "
 
   echo "${VIDEO_SCALE}"
@@ -131,21 +162,40 @@ function accelerated_video_scale_rgb_str {
   local OUTPUT_WIDTH=$1
   local OUTPUT_HEIGHT=$2
 
-  case "${GPU2D_API}" in
-  G2D)
-    # g2d-based
-    VIDEO_SCALE_RGB=$(accelerated_video_scale_str ${MODEL_WIDTH} ${MODEL_HEIGHT} "RGBA")
-    VIDEO_SCALE_RGB+="videoconvert ! video/x-raw,format=RGB ! "
+
+case "${GPU}" in
+  GPU2D)
+    case "${GPU2D_API}" in
+    G2D)
+      # g2d-based
+      VIDEO_SCALE_RGB=$(accelerated_video_scale_str ${MODEL_WIDTH} ${MODEL_HEIGHT} "RGBA")
+      VIDEO_SCALE_RGB+="videoconvert ! video/x-raw,format=RGB ! "
+      ;;
+    PXP)
+      # pxp-based
+      VIDEO_SCALE_RGB=$(accelerated_video_scale_str ${MODEL_WIDTH} ${MODEL_HEIGHT} "BGR")
+      VIDEO_SCALE_RGB+="videoconvert ! video/x-raw,format=RGB ! "
+      ;;
+    *)
+      # cpu-based
+      VIDEO_SCALE_RGB=$(accelerated_video_scale_str ${MODEL_WIDTH} ${MODEL_HEIGHT} "RGB")
+      ;;
+    esac
     ;;
-  PXP)
-    # pxp-based
-    VIDEO_SCALE_RGB=$(accelerated_video_scale_str ${MODEL_WIDTH} ${MODEL_HEIGHT} "BGR")
-    VIDEO_SCALE_RGB+="videoconvert ! video/x-raw,format=RGB ! "
+  GPU3D)
+    case "${GPU3D_API}" in
+    OCL)
+      # ocl-based
+       VIDEO_SCALE_RGB=$(accelerated_video_scale_str ${MODEL_WIDTH} ${MODEL_HEIGHT} "RGB")
+      ;;
+    *)
+      # cpu-based
+      VIDEO_SCALE_RGB=$(accelerated_video_scale_str ${MODEL_WIDTH} ${MODEL_HEIGHT} "RGB")
+      ;;
+  esac
     ;;
   *)
-    # cpu-based
-    VIDEO_SCALE_RGB=$(accelerated_video_scale_str ${MODEL_WIDTH} ${MODEL_HEIGHT} "RGB")
-    ;;
+    error "invalid GPU ${BACKEND}" ;;
   esac
 
   echo "${VIDEO_SCALE_RGB}"

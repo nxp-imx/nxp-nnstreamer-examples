@@ -127,6 +127,8 @@ class PoseExample:
         assert len(self.keypoints_def) == self.MODEL_KEYPOINT_SIZE
 
         self.backend = os.getenv('BACKEND', 'CPU')
+        self.gpu = os.getenv('GPU', 'GPU2D')
+        self.use_gpu3d = self.gpu == 'GPU3D'
         self.imx = Imx()
         vela = self.imx.has_npu_ethos()
         store_vx_graph_compilation(self.imx)
@@ -213,14 +215,10 @@ class PoseExample:
             print('extension', extension)
             if extension == '.webm' or extension == '.mkv':
                 if self.imx.id() == SocId.IMX8MP:
-                    cmdline += 'matroskademux ! vpudec !'
+                    cmdline += ' matroskademux ! vpudec !'
             else:
                 print('only .mkv or .webm video format can be decoded by this pipeline')
                 return
-            # crop for square video format
-            cmdline += ' videocrop left=-1 right=-1 top=-1 bottom=-1 !'
-            cmdline += ' video/x-raw,width={:d},height={:d} !' \
-                .format(self.VIDEO_INPUT_RESIZED_WIDTH, self.VIDEO_INPUT_RESIZED_HEIGHT)
 
         elif self.source == 'CAMERA':
             cmdline = 'v4l2src name=cam_src device={:s} num-buffers=-1 ! '.format(self.camera_device)
@@ -228,12 +226,16 @@ class PoseExample:
         else:
             raise ValueError('Wrong source, must be VIDEO or CAMERA')
 
-        cmdline += gstvideoimx.accelerated_videoscale(
-            self.VIDEO_INPUT_HEIGHT, self.VIDEO_INPUT_HEIGHT, flip=self.flip)
+        # crop for square video format
+        cmdline += ' videocrop left=-1 right=-1 top=-1 bottom=-1 !'
+        cmdline += ' video/x-raw,width={:d},height={:d} ! ' \
+            .format(self.VIDEO_INPUT_RESIZED_WIDTH, self.VIDEO_INPUT_RESIZED_HEIGHT)
+        if self.flip:
+            cmdline += gstvideoimx.accelerated_videoscale(flip=True, use_gpu3d=self.use_gpu3d)
         cmdline += ' tee name=t'
-        cmdline += ' t. ! queue name=thread-nn max-size-buffers=2 leaky=2 !'
+        cmdline += ' t. ! queue name=thread-nn max-size-buffers=2 leaky=2 ! '
         cmdline += gstvideoimx.accelerated_videoscale(
-            self.MODEL_INPUT_WIDTH, self.MODEL_INPUT_HEIGHT, 'RGB')
+            self.MODEL_INPUT_WIDTH, self.MODEL_INPUT_HEIGHT, 'RGB', use_gpu3d=self.use_gpu3d)
         cmdline += ' tensor_converter !'
         cmdline += self.tensor_transform
         cmdline += ' tensor_filter framework=tensorflow-lite model={:s} {:s} !' \

@@ -17,6 +17,21 @@ class GstVideoImx:
         assert (isinstance(imx, imx_dev.Imx))
         self.imx = imx
 
+    def video_flip(self, hardware=None):
+        """Create pipeline segment for accelerated video flip.
+
+        hardware: corresponding hardware to accelerate video composition
+        return: GStreamer pipeline segment string
+        """
+        if hardware is not None:
+            cmd = f'imxvideoconvert_{hardware} '
+            cmd += 'rotation=4 ! '
+        else:
+            # no acceleration
+            cmd = 'videoflip video-direction=4 ! '
+
+        return cmd
+
     def videoscale_to_format(self, format=None, width=None, height=None, hardware=None, flip=False):
         """Create pipeline segment for accelerated video formatting and csc.
 
@@ -28,66 +43,86 @@ class GstVideoImx:
         """
         valid_dimensions = width is not None and height is not None
         required_format = format is not None
+        cmd = ''
 
         if hardware is not None:
-            cmd = f'imxvideoconvert_{hardware} '
             if flip:
-                cmd += 'rotation=4 ! '
+                cmd = self.video_flip(hardware=hardware)
             else:
-                cmd += '! '
+                cmd = f'imxvideoconvert_{hardware} ! '
         else:
             # no acceleration
             if valid_dimensions:
-                cmd = 'videoscale ! '
+                cmd += 'videoscale ! '
             if flip:
-                cmd += 'videoflip video-direction=4 ! '
+                cmd += self.video_flip(hardware=None)
             if required_format:
                 cmd += 'videoconvert ! '
 
-        cmd += f'video/x-raw'
-        if valid_dimensions:
-            cmd += f',width={width},height={height}'
-        if required_format:
-            cmd += f',format={format}'
-        cmd += ' ! '
+        # Add a caps if any change in resolution or format is expected
+        if valid_dimensions or required_format:
+            cmd += f'video/x-raw'
+            if valid_dimensions:
+                cmd += f',width={width},height={height}'
+            if required_format:
+                cmd += f',format={format}'
+            cmd += ' ! '
 
         return cmd
 
-    def accelerated_videoscale(self, width=None, height=None, format=None, flip=False):
+    def accelerated_videoscale(self, width=None, height=None, format=None, flip=False, use_gpu3d=False):
         """Create pipeline segment for accelerated video scaling and conversion
         to a given GStreamer video format.
 
         width: output video width after rescale
         height: output video height after rescale
         format: GStreamer video format
+        flip: mirror mode, flip the image (not available on 3D GPU)
+        use_gpu3d: use the GPU3D instead of GPU2D if available
         return: GStreamer pipeline segment string
         """
-        valid_dim_g2d = valid_dim_pxp = True
+        
         valid_dimensions = width is not None and height is not None
-        if valid_dimensions:
-            # g2d and pxp can't resize under 64 pixels
-            valid_dim_g2d = valid_dim_pxp = width >= 64 and height >= 64
+        required_format = format is not None
+        cmd = ''
 
-        if self.imx.has_g2d() and valid_dim_g2d:
-            # imxvideoconvert_g2d does not support RGB nor GRAY8 sink
-            # use acceleration to RGBA
-            if format == 'RGB' or format == 'GRAY8':
-                cmd = self.videoscale_to_format('RGBA', width, height, 'g2d', flip)
-                cmd += f'videoconvert ! video/x-raw,format={format} ! '
+        if use_gpu3d:
+            if self.imx.has_gpu3d():
+                #flip is not supported on 3D GPU, do flip first on other HW without resizing
+                if flip:
+                    cmd += self.accelerated_videoscale(flip=True, use_gpu3d=False)
+                # imxvideoconvert_ocl does not support GRAY8 sink
+                # use acceleration to RGB
+                if valid_dimensions or required_format:
+                    if format == 'GRAY8':
+                        cmd += self.videoscale_to_format('RGB', width, height, 'ocl')
+                        cmd += f'videoconvert ! video/x-raw,format={format} ! '
+                    else:
+                        cmd = self.videoscale_to_format(format, width, height, 'ocl')
+                else:
+                    # no hardware acceleration
+                    cmd = self.videoscale_to_format(format, width, height, flip=flip)
+        else: #Use GPU2D or CPU
+            if self.imx.has_g2d():
+                # imxvideoconvert_g2d does not support RGB nor GRAY8 sink
+                # use acceleration to RGBA
+                if format == 'RGB' or format == 'GRAY8':
+                    cmd = self.videoscale_to_format('RGBA', width, height, 'g2d', flip)
+                    cmd += f'videoconvert ! video/x-raw,format={format} ! '
+                else:
+                    cmd = self.videoscale_to_format(format, width, height, 'g2d', flip)
+            elif self.imx.has_pxp():
+                if format == 'RGB':
+                    # imxvideoconvert_pxp does not support RGB sink
+                    # use acceleration to BGR
+                    cmd = self.videoscale_to_format('BGR', width, height, 'pxp', flip)
+                    cmd += f'videoconvert ! video/x-raw,format={format} ! '
+                else:
+                    cmd = self.videoscale_to_format(format, width, height, 'pxp', flip)
             else:
-                cmd = self.videoscale_to_format(format, width, height, 'g2d', flip)
-        elif self.imx.has_pxp() and valid_dim_pxp:
-            if format == 'RGB':
-                # imxvideoconvert_pxp does not support RGB sink
-                # use acceleration to BGR
-                cmd = self.videoscale_to_format('BGR', width, height, 'pxp', flip)
-                cmd += f'videoconvert ! video/x-raw,format={format} ! '
-            else:
-                cmd = self.videoscale_to_format(format, width, height, 'pxp', flip)
+                # no hardware acceleration
+                cmd = self.videoscale_to_format(format, width, height, flip=flip)
 
-        else:
-            # no hardware acceleration
-            cmd = self.videoscale_to_format(format, width, height, flip=flip)
         return cmd
 
     def videocrop_to_format(self, videocrop_name, width, height, top=None, bottom=None,

@@ -300,6 +300,8 @@ class FaceDetectPipe(Pipe):
         self.video_input_height = video_resolution[1]
         self.video_rate = video_fps
         self.flip = flip
+        self.gpu = os.getenv('GPU', 'GPU2D')
+        self.use_gpu3d = self.gpu == 'GPU3D'
 
         if not os.path.exists(self.camera_device):
             raise FileExistsError(f'cannot find camera [{self.camera_device}]')
@@ -344,13 +346,12 @@ class FaceDetectPipe(Pipe):
 
         cmdline = 'v4l2src device={:s} ! '.format(self.camera_device)
         if self.flip:
-            cmdline += gstvideoimx.accelerated_videoscale(vw, vh, flip=True)
-            cmdline += ' videoconvert !'
+            cmdline += gstvideoimx.accelerated_videoscale(flip=True, use_gpu3d=self.use_gpu3d)
         cmdline += '  {:s} ! '.format(video_caps)
         cmdline += '  tee name=tvideo '
         cmdline += 'tvideo. ! queue max-size-buffers=1 leaky=2 ! '
 
-        cmdline += gstvideoimx.accelerated_videoscale(ufw, ufh, 'RGB')
+        cmdline += gstvideoimx.accelerated_videoscale(ufw, ufh, 'RGB', use_gpu3d=self.use_gpu3d)
 
         cmdline += '  tensor_converter ! '
 
