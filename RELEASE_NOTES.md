@@ -1,6 +1,6 @@
 # Release Notes
 
-## [Release v1.5](https://github.com/nxp-imx/nxp-nnstreamer-examples/tree/v1.5)
+## [Release v1.5.1](https://github.com/nxp-imx/nxp-nnstreamer-examples/tree/v1.5.1)
 
 ### Updates
 
@@ -13,7 +13,7 @@
 | all existing examples | **i.MX 95** |             | C++           | **CPU** |
 
 ### Other Changes
-- Update download procedure to compile models with latest eIQ Toolkit version for i.MX 95 Neutron NPU 
+- Update download procedure to compile models with latest eIQ Toolkit version (1.15) for i.MX 95 Neutron NPU
 - Add video saving for i.MX 95
 - C++ examples: options for camera resolution and framerate, documentations and pipelines updates
 
