@@ -22,6 +22,10 @@ void storeVxGraphCompilation(imx::Imx imx, char *graphPath)
   }
 }
 
+/**
+ * @brief Counter used to avoid duplicate names into pipeline.
+ */
+int GstPipelineImx::elemNameCount = 0;
 
 /**
  * @brief Callback function to retrieve tensor_filter latency.

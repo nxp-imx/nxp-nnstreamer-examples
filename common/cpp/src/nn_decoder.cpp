@@ -35,7 +35,12 @@ void NNDecoder::addImageSegment(GstPipelineImx &pipeline,
                                 const ImageSegmentOptions &options)
 {
   std::string cmd;
-  cmd = "tensor_decoder mode=image_segment option1=";
+  std::string name;
+  name = "name=tensor_decode_segmentation_" + std::to_string(pipeline.elemNameCount) + " ";
+  pipeline.elemNameCount += 1;
+  cmd = "tensor_decoder ";
+  cmd += name;
+  cmd += "mode=image_segment option1=";
   cmd += mapModeImageSegment[options.modelName];
   if (options.numClass != -1) {
     cmd += " option2=" + std::to_string(options.numClass) + "! ";
@@ -56,7 +61,14 @@ void NNDecoder::addImageLabeling(GstPipelineImx &pipeline,
                                  const std::filesystem::path &labelsPath)
 {
   std::string cmd;
-  cmd = "tensor_decoder mode=image_labeling option1=" + labelsPath.string() + " ! ";
+  std::string name;
+  name = "name=tensor_decode_labeling_" + std::to_string(pipeline.elemNameCount) + " ";
+  pipeline.elemNameCount += 1;
+  cmd = "tensor_decoder ";
+  cmd += name;
+  cmd += "mode=image_labeling option1=";
+  cmd += labelsPath.string();
+  cmd += " ! ";
   pipeline.addToPipeline(cmd);
 }
 
@@ -72,7 +84,12 @@ void NNDecoder::addBoundingBoxes(GstPipelineImx &pipeline,
 {
   imx::Imx imx{};
   std::string cmd;
-  cmd = "tensor_decoder mode=bounding_boxes option1=";
+  std::string name;
+  name = "name=tensor_decode_bounding_boxes_" + std::to_string(pipeline.elemNameCount) + " ";
+  pipeline.elemNameCount += 1;
+  cmd = "tensor_decoder ";
+  cmd += name;
+  cmd += "mode=bounding_boxes option1=";
   cmd += mapModeBoundingBoxes[options.modelName];
   cmd += " option2=" + options.labelsPath.string();
   cmd += " option3=" + options.option3;

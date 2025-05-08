@@ -84,6 +84,8 @@ class GstPipelineImx {
     static inline std::string perfColor = "";
 
   public:
+    static int elemNameCount;
+
     static gboolean pipePerfCallback(gpointer user_data);
 
     static gboolean infPerfCallback(gpointer user_data);

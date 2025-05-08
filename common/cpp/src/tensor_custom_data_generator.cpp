@@ -90,9 +90,10 @@ std::string TensorCustomGenerator::GPU()
 /**
  * @brief Add element for normalization to pipeline.
  */
-std::string TensorCustomGenerator::setTensorTransformConfig(const std::string &norm)
+std::string TensorCustomGenerator::setTensorTransformConfig(const std::string &norm, GstPipelineImx &pipeline)
 {
   std::string tensorTransformCustom;
+  std::string name;
   switch (selectFromDictionary(norm, normDictionary))
   {
     case Normalization::none:
@@ -100,29 +101,44 @@ std::string TensorCustomGenerator::setTensorTransformConfig(const std::string &n
       break;
 
     case Normalization::centered:
+      name = "name=tensor_preprocess_centered_normalization_" + std::to_string(pipeline.elemNameCount) + " ";
+      pipeline.elemNameCount += 1;
       tensorTransformCustom = "tensor_transform mode=arithmetic ";
+      tensorTransformCustom += name;
       tensorTransformCustom += "option=typecast:int16,add:-128 ! ";
       tensorTransformCustom += "tensor_transform mode=typecast ";
       tensorTransformCustom += "option=int8 ! ";
       break;
 
     case Normalization::scaled:
+      name = "name=tensor_preprocess_scaled_normalization_" + std::to_string(pipeline.elemNameCount) + " ";
+      pipeline.elemNameCount += 1;
       tensorTransformCustom = "tensor_transform mode=arithmetic ";
+      tensorTransformCustom += name;
       tensorTransformCustom += "option=typecast:float32,div:255 ! ";
       break;
 
     case Normalization::centeredScaled:
+      name = "name=tensor_preprocess_centered_scaled_normalization_" + std::to_string(pipeline.elemNameCount) + " ";
+      pipeline.elemNameCount += 1;
       tensorTransformCustom = "tensor_transform mode=arithmetic ";
+      tensorTransformCustom += name;
       tensorTransformCustom += "option=typecast:float32,add:-127.5,div:127.5 ! ";
       break;
 
     case Normalization::castInt32:
+      name = "name=int32_cast_" + std::to_string(pipeline.elemNameCount) + " ";
+      pipeline.elemNameCount += 1;
       tensorTransformCustom = "tensor_transform mode=typecast ";
+      tensorTransformCustom += name;
       tensorTransformCustom += "option=int32 ! ";
       break;
 
     case Normalization::castuInt8:
+      name = "name=uint8_cast_" + std::to_string(pipeline.elemNameCount) + " ";
+      pipeline.elemNameCount += 1;
       tensorTransformCustom = "tensor_transform mode=typecast ";
+      tensorTransformCustom += name;
       tensorTransformCustom += "option=uint8 ! ";
       break;
 

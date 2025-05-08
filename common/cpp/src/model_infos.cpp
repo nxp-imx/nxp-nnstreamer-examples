@@ -35,7 +35,7 @@ ModelInfos::ModelInfos(const std::filesystem::path &path,
     : modelPath(path), backend(backend)
 {
   setTensorFilterConfig(imx, numThreads);
-  tensorData.tensorTransform = tensorCustomData.setTensorTransformConfig(norm);
+  tensorData.tensorNormalization = norm;
 }
 
 
@@ -56,6 +56,7 @@ void ModelInfos::addInferenceToPipeline(GstPipelineImx &pipeline,
   } else {
     videoscale.videoTransform(pipeline, format, modelWidth, modelHeight, false, false, true);
   }
+  tensorData.tensorTransform = tensorCustomData.setTensorTransformConfig(tensorData.tensorNormalization, pipeline);
   cmd += "tensor_converter ! ";
   cmd += tensorData.tensorTransform;
   cmd += "tensor_filter latency=1 framework=" + framework + "  model=";

@@ -46,10 +46,12 @@ MODEL=${MODEL_BACKEND[${BACKEND}]}
 MODEL_WIDTH=513
 MODEL_HEIGHT=513
 
+INFERENCE_NAME="model_inference"
+
 FRAMEWORK="tensorflow-lite"
 
 # tensor filter configuration
-FILTER_COMMON="tensor_filter framework=${FRAMEWORK} model=${MODEL}"
+FILTER_COMMON="tensor_filter name=${INFERENCE_NAME} framework=${FRAMEWORK} model=${MODEL}"
 
 declare -A FILTER_BACKEND_NPU
 FILTER_BACKEND_NPU[IMX8MP]=" custom=Delegate:External,ExtDelegateLib:libvx_delegate.so ! "
@@ -67,7 +69,7 @@ TENSOR_FILTER=${FILTER_BACKEND[${BACKEND}]}
 # tensor preprocessing configuration: normalize video for float input models
 declare -A PREPROCESS_BACKEND
 PREPROCESS_BACKEND[CPU]=""
-PREPROCESS_BACKEND[GPU]="tensor_transform mode=arithmetic option=typecast:float32,add:-127.5,div:127.5 ! "
+PREPROCESS_BACKEND[GPU]="tensor_transform name=tensor_preprocess mode=arithmetic option=typecast:float32,add:-127.5,div:127.5 ! "
 PREPROCESS_BACKEND[NPU]=""
 TENSOR_PREPROCESS=${PREPROCESS_BACKEND[${BACKEND}]}
 

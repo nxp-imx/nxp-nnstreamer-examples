@@ -10,6 +10,7 @@
 #include <string>
 #include <filesystem>
 #include "imx_devices.hpp"
+#include "gst_pipeline_imx.hpp"
 
 
 /**
@@ -18,6 +19,7 @@
 typedef struct {
   std::string tensorFilterCustom;
   std::string tensorTransform;
+  std::string tensorNormalization;
 } TensorData;
 
 
@@ -94,6 +96,6 @@ class TensorCustomGenerator {
 
     std::string GPU();
 
-    std::string setTensorTransformConfig(const std::string &norm);
+    std::string setTensorTransformConfig(const std::string &norm, GstPipelineImx &pipeline);
 };
 #endif

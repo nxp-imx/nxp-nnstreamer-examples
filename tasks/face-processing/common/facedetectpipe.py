@@ -190,7 +190,7 @@ class SecondaryPipe(Pipe):
         cmdline += '  tensor_converter ! '
 
         custom_ops = self.nns_tfliter_custom_options()
-        cmdline += ('  tensor_filter '
+        cmdline += ('  tensor_filter name=secondary_model_inference '
                     'framework=tensorflow-lite model={:s} {:s} ! ') \
             .format(secondary_model.get_model_path(), custom_ops)
         cmdline += ('  tensor_sink '
@@ -356,7 +356,7 @@ class FaceDetectPipe(Pipe):
         cmdline += '  tensor_converter ! '
 
         custom_ops = self.nns_tfliter_custom_options()
-        cmdline += ('  tensor_filter '
+        cmdline += ('  tensor_filter name=model_inference '
                     'framework=tensorflow-lite model={:s} {:s} ! ') \
             .format(self.ultraface.get_model_path(), custom_ops)
         cmdline += '  tensor_sink name=tsink_fd '

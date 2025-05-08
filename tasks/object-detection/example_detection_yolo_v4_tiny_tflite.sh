@@ -42,11 +42,12 @@ MODEL_WIDTH=416
 MODEL_HEIGHT=416
 MODEL_LABELS="${MODELS_DIR}/coco-labels-2014_2017.txt"
 
+INFERENCE_NAME="model_inference"
 
 FRAMEWORK="tensorflow-lite"
 
 # tensor filter configuration
-FILTER_COMMON="tensor_filter framework=${FRAMEWORK} model=${MODEL}"
+FILTER_COMMON="tensor_filter name=${INFERENCE_NAME} framework=${FRAMEWORK} model=${MODEL}"
 
 declare -A FILTER_BACKEND_NPU
 FILTER_BACKEND_NPU[IMX8MP]=" custom=Delegate:External,ExtDelegateLib:libvx_delegate.so ! "
@@ -61,19 +62,20 @@ TENSOR_FILTER=${FILTER_BACKEND[${BACKEND}]}
 # python filter configuration
 FRAMEWORK="python3"
 POSTPROCESS="${BASEDIR}/tasks/object-detection/postprocess_yolov4_tiny.py"
+INFERENCE_POSTPROCESS_NAME="inference_postprocess"
 MODEL_SIZE="Height:${MODEL_HEIGHT},Width:${MODEL_WIDTH}"
 THRESHOLD="Threshold:0.4" # optional argument between 0 and 1
 if [ -z "${THRESHOLD}" ];
 then
-    TENSOR_FILTER+=" tensor_filter framework=${FRAMEWORK} model=${POSTPROCESS} custom=${MODEL_SIZE} ! ";
+    TENSOR_FILTER+=" tensor_filter name=${INFERENCE_POSTPROCESS_NAME} framework=${FRAMEWORK} model=${POSTPROCESS} custom=${MODEL_SIZE} ! ";
 else
-    TENSOR_FILTER+=" tensor_filter framework=${FRAMEWORK} model=${POSTPROCESS} custom=${MODEL_SIZE},${THRESHOLD} ! ";
+    TENSOR_FILTER+=" tensor_filter name=${INFERENCE_POSTPROCESS_NAME} framework=${FRAMEWORK} model=${POSTPROCESS} custom=${MODEL_SIZE},${THRESHOLD} ! ";
 fi
 
 # tensor preprocessing configuration: normalize video for float input models
 declare -A PREPROCESS_BACKEND
-PREPROCESS_BACKEND[CPU]="tensor_transform mode=arithmetic option=typecast:int16,add:-128 ! tensor_transform mode=typecast option=int8 !"
-PREPROCESS_BACKEND[NPU]="tensor_transform mode=arithmetic option=typecast:int16,add:-128 ! tensor_transform mode=typecast option=int8 !"
+PREPROCESS_BACKEND[CPU]="tensor_transform name=tensor_preprocess0 mode=arithmetic option=typecast:int16,add:-128 ! tensor_transform name=tensor_preprocess1 mode=typecast option=int8 !"
+PREPROCESS_BACKEND[NPU]="tensor_transform name=tensor_preprocess0 mode=arithmetic option=typecast:int16,add:-128 ! tensor_transform name=tensor_preprocess1 mode=typecast option=int8 !"
 TENSOR_PREPROCESS=${PREPROCESS_BACKEND[${BACKEND}]}
 
 

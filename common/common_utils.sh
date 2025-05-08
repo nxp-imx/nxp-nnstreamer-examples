@@ -106,12 +106,15 @@ function accelerated_video_scale_str {
   local OUTPUT_WIDTH=$1
   local OUTPUT_HEIGHT=$2
   local OUTPUT_FORMAT=$3
+  local ELEMENT_NAME
 
   if [[ -z "${OUTPUT_FORMAT}" ]]
   then
     FORMAT=""
+    ELEMENT_NAME="scale"
   else
     FORMAT=",format=${OUTPUT_FORMAT}"
+    ELEMENT_NAME="scale_csc"
   fi
 
   case "${GPU}" in
@@ -119,15 +122,15 @@ function accelerated_video_scale_str {
     case "${GPU2D_API}" in
     G2D)
       # g2d-based
-      VIDEO_SCALE="imxvideoconvert_g2d ! "
+      VIDEO_SCALE="imxvideoconvert_g2d name=${ELEMENT_NAME}_g2d ! "
       ;;
     PXP)
       # pxp-based
-      VIDEO_SCALE="imxvideoconvert_pxp ! "
+      VIDEO_SCALE="imxvideoconvert_pxp name=${ELEMENT_NAME}_pxp ! "
       ;;
     *)
       # cpu-based
-      VIDEO_SCALE="videoscale ! videoconvert ! "
+      VIDEO_SCALE="videoscale name=scale_cpu ! videoconvert name=csc_cpu ! "
       ;;
     esac
     ;;
@@ -135,11 +138,11 @@ function accelerated_video_scale_str {
     case "${GPU3D_API}" in
     OCL)
       # ocl-based
-      VIDEO_SCALE="imxvideoconvert_ocl ! "
+      VIDEO_SCALE="imxvideoconvert_ocl name=${ELEMENT_NAME}_ocl ! "
       ;;
     *)
       # cpu-based
-      VIDEO_SCALE="videoscale ! videoconvert ! "
+      VIDEO_SCALE="videoscale name=scale_cpu ! videoconvert name=csc_cpu ! "
       ;;
     esac
     ;;
@@ -161,7 +164,7 @@ function accelerated_video_scale_rgb_str {
   local VIDEO_SCALE_RGB
   local OUTPUT_WIDTH=$1
   local OUTPUT_HEIGHT=$2
-
+  local FORMAT_ELEMENT_NAME="rgb_convert_cpu"
 
 case "${GPU}" in
   GPU2D)
@@ -169,12 +172,12 @@ case "${GPU}" in
     G2D)
       # g2d-based
       VIDEO_SCALE_RGB=$(accelerated_video_scale_str ${MODEL_WIDTH} ${MODEL_HEIGHT} "RGBA")
-      VIDEO_SCALE_RGB+="videoconvert ! video/x-raw,format=RGB ! "
+      VIDEO_SCALE_RGB+="videoconvert name=${FORMAT_ELEMENT_NAME} ! video/x-raw,format=RGB ! "
       ;;
     PXP)
       # pxp-based
       VIDEO_SCALE_RGB=$(accelerated_video_scale_str ${MODEL_WIDTH} ${MODEL_HEIGHT} "BGR")
-      VIDEO_SCALE_RGB+="videoconvert ! video/x-raw,format=RGB ! "
+      VIDEO_SCALE_RGB+="videoconvert name=${FORMAT_ELEMENT_NAME} ! video/x-raw,format=RGB ! "
       ;;
     *)
       # cpu-based

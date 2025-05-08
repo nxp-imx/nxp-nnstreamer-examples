@@ -30,6 +30,7 @@ void GstVideoImx::videoTransform(GstPipelineImx &pipeline,
    */
   std::string cmd;
   std::string cmdFormat;
+  std::string name;
   int dimLimit = 16;
   bool validFormatG2D = true;
   bool validFormatPXP = true;
@@ -64,20 +65,37 @@ void GstVideoImx::videoTransform(GstPipelineImx &pipeline,
       && (height > dimLimit || height == -1)
       && (useCPU == false)
       && (validFormatG2D == true)) {
+    name = (flip == true) ? "name=scale_csc_flip_g2d_" : "name=scale_csc_g2d_";
+    name += std::to_string(pipeline.elemNameCount);
+    name += " ";
     cmd = "imxvideoconvert_g2d ";
+    cmd += name;
     cmd += (flip == true) ? "rotation=4 ! " : "! ";
   } else if (this->imx.hasPxP()
            && (width > dimLimit || width == -1)
            && (height > dimLimit|| height == -1)
            && (useCPU == false)
            && (validFormatPXP == true)) {
+    name = (flip == true) ? "name=scale_csc_flip_pxp_" : "name=scale_csc_pxp_";
+    name += std::to_string(pipeline.elemNameCount);
+    name += " ";
     cmd = "imxvideoconvert_pxp ";
+    cmd += name;
     cmd += (flip == true) ? "rotation=4 ! " : "! ";
   } else {
     /* no acceleration */
-    cmd = "videoscale ! videoconvert ";
+    name = "name=scale_cpu_" + std::to_string(pipeline.elemNameCount);
+    cmd = "videoscale ";
+    cmd += name;
+    cmd += " ! ";
+
+    name = "name=csc_cpu_" + std::to_string(pipeline.elemNameCount);
+    cmd += "videoconvert ";
+    cmd += name;
+    cmd += " ";
     cmd += (flip == true) ? "! videoflip video-direction=4 ! " : "! ";
   }
+  pipeline.elemNameCount += 1;
 
   if (width > 0 && height > 0) {
     cmd += "video/x-raw,width=" + std::to_string(width) + ",";
@@ -105,13 +123,18 @@ void GstVideoImx::videoscaleToRGB(GstPipelineImx &pipeline,
                                   const int &height)
 {
   std::string cmd;
+  std::string name;
   if (this->imx.hasGPU2d()) {
     /**
      * imxvideoconvert_g2d does not support RGB sink
      * and use CPU to convert RGBA to RGB
      */ 
     videoTransform(pipeline, "RGBA", width, height, false);
-    cmd = "videoconvert ! video/x-raw,format=RGB ! ";
+    name = "name=rgb_convert_cpu_" + std::to_string(pipeline.elemNameCount);
+    pipeline.elemNameCount += 1;
+    cmd = "videoconvert ";
+    cmd += name;
+    cmd += " ! video/x-raw,format=RGB ! ";
     pipeline.addToPipeline(cmd);
   } else if (this->imx.hasPxP()) {
     /** 
@@ -119,7 +142,11 @@ void GstVideoImx::videoscaleToRGB(GstPipelineImx &pipeline,
      * and use CPU to convert BGR to RGB
      */
     videoTransform(pipeline, "BGR", width, height, false);
-    cmd = "videoconvert ! video/x-raw,format=RGB ! ";
+    name = "name=rgb_convert_cpu_" + std::to_string(pipeline.elemNameCount);
+    pipeline.elemNameCount += 1;
+    cmd = "videoconvert ";
+    cmd += name;
+    cmd += " ! video/x-raw,format=RGB ! ";
     pipeline.addToPipeline(cmd);
   } else {
     /* no acceleration */

@@ -238,7 +238,7 @@ class PoseExample:
             self.MODEL_INPUT_WIDTH, self.MODEL_INPUT_HEIGHT, 'RGB', use_gpu3d=self.use_gpu3d)
         cmdline += ' tensor_converter !'
         cmdline += self.tensor_transform
-        cmdline += ' tensor_filter framework=tensorflow-lite model={:s} {:s} !' \
+        cmdline += ' tensor_filter name=model_inference framework=tensorflow-lite model={:s} {:s} !' \
             .format(self.tflite_path, self.tensor_filter_custom)
         cmdline += ' tensor_sink name=tensor_sink'
         cmdline += ' t. ! queue name=thread-img max-size-buffers=2 !'

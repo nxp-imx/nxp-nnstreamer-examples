@@ -16,19 +16,26 @@ class GstVideoImx:
     def __init__(self, imx):
         assert (isinstance(imx, imx_dev.Imx))
         self.imx = imx
+        # counter used to avoid duplicated names in the pipeline 
+        self.cnt_element_names = 0
 
-    def video_flip(self, hardware=None):
+    def video_flip(self, hardware=None, flip_only=None):
         """Create pipeline segment for accelerated video flip.
 
         hardware: corresponding hardware to accelerate video composition
         return: GStreamer pipeline segment string
         """
         if hardware is not None:
-            cmd = f'imxvideoconvert_{hardware} '
+            if flip_only:
+                operation_name = f"flip_{hardware}_{self.cnt_element_names}"
+            else:
+                operation_name = f"scale_csc_flip_{hardware}_{self.cnt_element_names}"
+            cmd = f'imxvideoconvert_{hardware} name={operation_name} '
             cmd += 'rotation=4 ! '
         else:
             # no acceleration
-            cmd = 'videoflip video-direction=4 ! '
+            cmd = f'videoflip video-direction=4 name=flip_cpu_{self.cnt_element_names} ! '
+        self.cnt_element_names += 1
 
         return cmd
 
@@ -45,19 +52,25 @@ class GstVideoImx:
         required_format = format is not None
         cmd = ''
 
+        # In case function is called only for flipping
+        flip_only = valid_dimensions is False and required_format is False
+
         if hardware is not None:
             if flip:
-                cmd = self.video_flip(hardware=hardware)
+                cmd = self.video_flip(hardware=hardware, flip_only=flip_only)
             else:
-                cmd = f'imxvideoconvert_{hardware} ! '
+                cmd = f'imxvideoconvert_{hardware} name=scale_csc_{hardware}_{self.cnt_element_names} ! '
+                self.cnt_element_names += 1
         else:
             # no acceleration
             if valid_dimensions:
-                cmd += 'videoscale ! '
+                cmd += f'videoscale name=scale_cpu_{self.cnt_element_names} ! '
+                self.cnt_element_names += 1
             if flip:
-                cmd += self.video_flip(hardware=None)
+                cmd += self.video_flip(hardware=None, flip_only=flip_only)
             if required_format:
-                cmd += 'videoconvert ! '
+                cmd += f'videoconvert name=csc_cpu_{self.cnt_element_names} ! '
+                self.cnt_element_names += 1
 
         # Add a caps if any change in resolution or format is expected
         if valid_dimensions or required_format:
@@ -96,7 +109,8 @@ class GstVideoImx:
                 if valid_dimensions or required_format:
                     if format == 'GRAY8':
                         cmd += self.videoscale_to_format('RGB', width, height, 'ocl')
-                        cmd += f'videoconvert ! video/x-raw,format={format} ! '
+                        cmd += f'videoconvert name=rgb_convert_cpu_{self.cnt_element_names} ! video/x-raw,format={format} ! '
+                        self.cnt_element_names += 1
                     else:
                         cmd = self.videoscale_to_format(format, width, height, 'ocl')
                 else:
@@ -108,7 +122,8 @@ class GstVideoImx:
                 # use acceleration to RGBA
                 if format == 'RGB' or format == 'GRAY8':
                     cmd = self.videoscale_to_format('RGBA', width, height, 'g2d', flip)
-                    cmd += f'videoconvert ! video/x-raw,format={format} ! '
+                    cmd += f'videoconvert name=rgb_convert_cpu_{self.cnt_element_names} ! video/x-raw,format={format} ! '
+                    self.cnt_element_names += 1
                 else:
                     cmd = self.videoscale_to_format(format, width, height, 'g2d', flip)
             elif self.imx.has_pxp():
@@ -116,7 +131,8 @@ class GstVideoImx:
                     # imxvideoconvert_pxp does not support RGB sink
                     # use acceleration to BGR
                     cmd = self.videoscale_to_format('BGR', width, height, 'pxp', flip)
-                    cmd += f'videoconvert ! video/x-raw,format={format} ! '
+                    cmd += f'videoconvert name=rgb_convert_cpu_{self.cnt_element_names} ! video/x-raw,format={format} ! '
+                    self.cnt_element_names += 1
                 else:
                     cmd = self.videoscale_to_format(format, width, height, 'pxp', flip)
             else:
