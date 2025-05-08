@@ -36,8 +36,8 @@ typedef struct {
 enum class Normalization {
   none,
   centered,
-  reduced,
-  centeredReduced,
+  scaled,
+  centeredScaled,
   castInt32,
   castuInt8,
 };

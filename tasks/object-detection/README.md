@@ -68,14 +68,14 @@ Inference on CPU with the following script:
 Quantized model is used for better inference performances on CPU.<br>
 NOTE: inferences on i.MX8MPlus GPU have low performances, but are possible with the following script:
 ```bash
-./build/object-detection/example_detection_mobilenet_ssd_v2_tflite -p  ${MOBILENETV2} -l ${COCO_LABELS} -x ${MOBILENETV2_BOXES} -b GPU -n centeredReduced
+./build/object-detection/example_detection_mobilenet_ssd_v2_tflite -p  ${MOBILENETV2} -l ${COCO_LABELS} -x ${MOBILENETV2_BOXES} -b GPU -n centeredScaled
 ```
 The following execution parameters are available (Run ``` ./example_detection_mobilenet_ssd_v2_tflite -h``` to see option details):
 
 Option | Description
 --- | ---
 -b, --backend | Use the selected backend (CPU, GPU, NPU)<br> default: NPU
--n, --normalization | Use the selected normalization (none, centered, reduced, centeredReduced, castInt32, castuInt8)<br> default: none
+-n, --normalization | Use the selected normalization (none, centered, scaled, centeredScaled, castInt32, castuInt8)<br> default: none
 -c, --camera_device | Use the selected camera device (/dev/video{number})<br>default: /dev/video0 for i.MX 93 and /dev/video3 for i.MX 8MP
 -p, --model_path | Use the selected model path
 -l, --labels_path | Use the selected labels path

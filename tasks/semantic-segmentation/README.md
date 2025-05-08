@@ -47,14 +47,14 @@ Inference on CPU with the following script:
 Quantized model is used for better inference performances on CPU.<br>
 NOTE: inferences on i.MX8MPlus GPU have low performances, but are possible with the following script:
 ```bash
-./build/semantic-segmentation/example_segmentation_deeplab_v3_tflite -p ${DEEPLABV3} -f ${PASCAL_IMAGES} -b GPU -n centeredReduced
+./build/semantic-segmentation/example_segmentation_deeplab_v3_tflite -p ${DEEPLABV3} -f ${PASCAL_IMAGES} -b GPU -n centeredScaled
 ```
 The following execution parameters are available (Run ``` ./example_segmentation_deeplab_v3_tflite -h``` to see option details):
 
 Option | Description
 --- | ---
 -b, --backend | Use the selected backend (CPU, GPU, NPU)<br> default: NPU
--n, --normalization | Use the selected normalization (none, centered, reduced, centeredReduced, castInt32, castuInt8)<br> default: none
+-n, --normalization | Use the selected normalization (none, centered, scaled, centeredScaled, castInt32, castuInt8)<br> default: none
 -p, --model_path | Use the selected model path
 -f, --images_file | Use the selected images file
 -d, --display_perf |Display performances, can specify time or freq

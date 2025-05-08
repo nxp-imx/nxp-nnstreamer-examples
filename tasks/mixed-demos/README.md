@@ -39,13 +39,13 @@ For i.MX 95 NPU use neutron converted models:
 ```
 
 To use CPU or GPU backend, refers to the execution parameter ```--backend``` below.<br>
-To use the non-quantized (float32) model, input normalization needs to be set with the execution parameter ```--normalization``` (description below): For MobileNetV1 and MobiletNetV2 use ```centeredReduced``` argument. Use ```MOBILENETV1``` or ```MOBILENETV2``` environment variable for model path.<br>
+To use the non-quantized (float32) model, input normalization needs to be set with the execution parameter ```--normalization``` (description below): For MobileNetV1 and MobiletNetV2 use ```centeredScaled``` argument. Use ```MOBILENETV1``` or ```MOBILENETV2``` environment variable for model path.<br>
 The following execution parameters are available (Run ``` ./example_classification_and_detection_tflite -h``` to see option details):
 
 Option | Description
 --- | ---
 -b, --backend CLASS_BACKEND,DET_BACKEND | Use the selected backend (CPU, GPU, NPU)<br> default: NPU,NPU
--n, --normalization CLASS_NORM,DET_NORM | Use the selected normalization (none, centered, reduced, centeredReduced, castInt32, castuInt8)<br> default: none,none
+-n, --normalization CLASS_NORM,DET_NORM | Use the selected normalization (none, centered, scaled, centeredScaled, castInt32, castuInt8)<br> default: none,none
 -c, --camera_device | Use the selected camera device (/dev/video{number})<br>default: /dev/video0 for i.MX 93 and /dev/video3 for i.MX 8M Plus
 -p, --model_path CLASS_MODEL,DET_MODEL | Use the selected model path
 -l, --labels_path CLASS_LABELS,DET_LABELS | Use the selected labels path
@@ -86,7 +86,7 @@ The following execution parameters are available (Run ``` ./example_face_and_pos
 Option | Description
 --- | ---
 -b, --backend FACE_BACKEND,POSE_BACKEND | Use the selected backend (CPU, GPU, NPU)<br> default: NPU,NPU
--n, --normalization FACE_NORM,POSE_NORM | Use the selected normalization (none, centered, reduced, centeredReduced, castInt32, castuInt8)<br> default: none,castuInt8
+-n, --normalization FACE_NORM,POSE_NORM | Use the selected normalization (none, centered, scaled, centeredScaled, castInt32, castuInt8)<br> default: none,castuInt8
 -c, --camera_device | Use the selected camera device (/dev/video{number})<br>default: /dev/video0 for i.MX 93 and /dev/video3 for i.MX 8MP
 -p, --model_path FACE_MODEL,POSE_MODEL | Use the selected model path
 -d, --display_perf |Display performances, can specify time or freq
@@ -114,13 +114,13 @@ An example running emotion classification and object detection inferences in par
 ./build/mixed-demos/example_emotion_and_detection_tflite -p ${ULTRAFACE_QUANT},${EMOTION_QUANT},${MOBILENETV2_QUANT} -f ${POWER_JUMP_VIDEO} -l ${COCO_LABELS} -x ${MOBILENETV2_BOXES}
 ```
 To use CPU or GPU backend, refers to the execution parameter ```--backend``` below.<br>
-To use the non-quantized (float32) MobileNetV2 model, input normalization needs to be set with the execution parameter ```--normalization``` (description below) to ```centeredReduced``` and use ```MOBILENETV2``` environment variable for model path.<br>
+To use the non-quantized (float32) MobileNetV2 model, input normalization needs to be set with the execution parameter ```--normalization``` (description below) to ```centeredScaled``` and use ```MOBILENETV2``` environment variable for model path.<br>
 The following execution parameters are available (Run ``` ./example_emotion_and_detection_tflite -h``` to see option details):
 
 Option | Description
 --- | ---
 -b, --backend FACE_BACKEND,EMOTION_BACKEND,DETECTION_BACKEND | Use the selected backend (CPU, GPU, NPU)<br> default: NPU,CPU
--n, --normalization FACE_NORM,EMOTION_NORM,DETECTION_NORM | Use the selected normalization (none, centered, reduced, centeredReduced, castInt32, castuInt8)<br> default: none,castInt32
+-n, --normalization FACE_NORM,EMOTION_NORM,DETECTION_NORM | Use the selected normalization (none, centered, scaled, centeredScaled, castInt32, castuInt8)<br> default: none,castInt32
 -c, --camera_device | Use the selected camera device (/dev/video{number})<br>default: /dev/video0 for i.MX 93 and /dev/video3 for i.MX 8MP
 -p, --model_path FACE_MODEL,EMOTION_MODEL,DETECTION_MODEL | Use the selected model path
 -f, --video_file | Use the selected video file
@@ -158,13 +158,13 @@ For i.MX 93 NPU use vela converted models:
 ./build/mixed-demos/example_double_classification_tflite -p ${MOBILENETV1_QUANT_VELA},${MOBILENETV1_QUANT_VELA} -l ${MOBILENETV1_LABELS} -c ${CAM1_PATH},${CAM2_PATH}
 ```
 To use CPU or GPU backend, refers to the execution parameter ```--backend``` below.<br>
-To use the non-quantized (float32) MobileNetV1 model, input normalization needs to be set with the execution parameter ```--normalization``` (description below) to ```centeredReduced``` and use ```MOBILENETV1``` environment variable for model path.<br>
+To use the non-quantized (float32) MobileNetV1 model, input normalization needs to be set with the execution parameter ```--normalization``` (description below) to ```centeredScaled``` and use ```MOBILENETV1``` environment variable for model path.<br>
 The following execution parameters are available (Run ``` ./example_double_classification_tflite -h``` to see option details):
 
 Option | Description
 --- | ---
 -b, --backend CAM1_BACKEND,CAM2_BACKEND | Use the selected backend (CPU, GPU, NPU)<br> default: NPU
--n, --normalization CAM1_NORM,CAM2_NORM | Use the selected normalization (none, centered, reduced, centeredReduced, castInt32, castuInt8)<br> default: none
+-n, --normalization CAM1_NORM,CAM2_NORM | Use the selected normalization (none, centered, scaled, centeredScaled, castInt32, castuInt8)<br> default: none
 -c, --camera_device CAMERA1,CAMERA2 | Use the selected camera device (/dev/video{number})<br>default: /dev/video0 for i.MX 93 and /dev/video3 for i.MX 8MP
 -p, --model_path CAM1_MODEL,CAM2_MODEL | Use the selected model path
 -l, --labels_path CAM1_LABELS,CAM2_LABELS | Use the selected labels path
