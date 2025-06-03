@@ -43,7 +43,7 @@ For i.MX 93 NPU use vela converted model:
 
 For i.MX 95 NPU use neutron converted model:
 ```bash
-./build/classification/example_classification_mobilenet_v1_tflite -p  ${MOBILENETV1_QUANT_NEUTRON} -l ${COCO_LABELS} -x ${MOBILENETV2_BOXES}
+./build/classification/example_classification_mobilenet_v1_tflite -p  ${MOBILENETV1_QUANT_NEUTRON} -l ${MOBILENETV1_LABELS}
 ```
 
 Inference on CPU with the following script:
