@@ -112,17 +112,6 @@ target_include_directories(example_emotion_classification_tflite PRIVATE ${CMAKE
 target_link_libraries(example_emotion_classification_tflite ${GSTREAMER_LIBRARIES} ${CAIRO_LIBRARIES} tensorflow-lite)
 set_target_properties(example_emotion_classification_tflite PROPERTIES RUNTIME_OUTPUT_DIRECTORY ./face-processing)
 
-# Example of multiple pipelines (a pipeline with emotion classification, and a pipeline with object detection)
-add_executable(
-  example_emotion_and_detection_tflite
-  ${all_SRCS}
-  ${CMAKE_CURRENT_SOURCE_DIR}/tasks/mixed-demos/cpp/example_emotion_and_detection_tflite.cpp
-  ${CMAKE_CURRENT_SOURCE_DIR}/tasks/face-processing/emotion-classification/cpp/custom_emotion_decoder.cpp
-)
-target_include_directories(example_emotion_and_detection_tflite PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/tasks/face-processing/emotion-classification/cpp/)
-target_link_libraries(example_emotion_and_detection_tflite ${GSTREAMER_LIBRARIES} ${CAIRO_LIBRARIES} tensorflow-lite)
-set_target_properties(example_emotion_and_detection_tflite PROPERTIES RUNTIME_OUTPUT_DIRECTORY ./mixed-demos)
-
 # Example of depth estimation (midas_v2)
 add_executable(
   example_depth_midas_v2_tflite
