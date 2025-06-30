@@ -244,7 +244,7 @@ int main(int argc, char **argv)
   postProcess.display(pipeline, false);
 
   // Parse pipeline to GStreamer pipeline
-  pipeline.parse(argc, argv, options.graphPath);
+  pipeline.parse(options.graphPath);
   
   // Connect callback functions to tensor sink and cairo overlay,
   // to process inference output

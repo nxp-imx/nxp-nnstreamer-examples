@@ -3,7 +3,34 @@
  * SPDX-License-Identifier: BSD-3-Clause
  */
 
+#include <unordered_map>
 #include "gst_video_imx.hpp"
+
+
+using FormatMap = std::unordered_map<std::string, bool>;
+
+
+/** 
+ * @brief Array of SoC features.
+ */
+std::unordered_map<std::string, FormatMap> isFormatSupported = {
+    {"i.MX 8M Plus", {
+        {"RGB16", true}, {"RGBx", true}, {"RGBA", true}, {"BGRA", true}, {"BGRx", true},
+        {"BGR16", true}, {"ARGB", true}, {"ABGR", true}, {"xRGB", true}, {"xBGR", true},
+        {"UYVY", false}, {"YUY2", false}, {"NV12", false}, {"GRAY8", false}, {"BGR", false}
+    }},
+    {"i.MX 93", {
+        {"RGB16", true}, {"RGBx", false}, {"RGBA", false}, {"BGRA", true}, {"BGRx", true},
+        {"BGR16", false}, {"ARGB", false}, {"ABGR", false}, {"xRGB", false}, {"xBGR", false},
+        {"UYVY", true}, {"YUY2", false}, {"NV12", false}, {"GRAY8", true}, {"BGR", true}
+    }},
+    {"i.MX 95", {
+        {"RGB16", true}, {"RGBx", true}, {"RGBA", true}, {"BGRA", true}, {"BGRx", true},
+        {"BGR16", true}, {"ARGB", true}, {"ABGR", true}, {"xRGB", true}, {"xBGR", true},
+        {"UYVY", true}, {"YUY2", true}, {"NV12", true}, {"GRAY8", true}, {"BGR", false}
+    }}
+};
+
 
 /**
  * @brief Create pipeline segment for accelerated video formatting and csc.
@@ -32,39 +59,18 @@ void GstVideoImx::videoTransform(GstPipelineImx &pipeline,
   std::string cmdFormat;
   std::string name;
   int dimLimit = 16;
-  bool validFormatG2D = true;
-  bool validFormatPXP = true;
+  bool validFormat;
 
   if (format.length() != 0) {
     cmdFormat = ",format=" + format;
-    /* accelerators only accept the following format*/
-    if ((format != "RGB16")
-        && (format != "RGBx")
-        && (format != "RGBA")
-        && (format != "BGRA")
-        && (format != "BGRx")
-        && (format != "BGR16")
-        && (format != "ARGB")
-        && (format != "ABGR")
-        && (format != "xRGB")
-        && (format != "xBGR")) {
-      validFormatG2D = false;
-    }
-    if ((format != "BGRx")
-        && (format != "BGRA")
-        && (format != "BGR")
-        && (format != "RGB16")
-        && (format != "GRAY8")
-        && (format != "UYVY")) {
-      validFormatPXP = false;
-    }
+    validFormat = isFormatSupported[imx.socName()][format];
   }
 
   if (this->imx.hasGPU2d()
       && (width > dimLimit || width == -1)
       && (height > dimLimit || height == -1)
       && (useCPU == false)
-      && (validFormatG2D == true)) {
+      && validFormat) {
     name = (flip == true) ? "name=scale_csc_flip_g2d_" : "name=scale_csc_g2d_";
     name += std::to_string(pipeline.elemNameCount);
     name += " ";
@@ -75,7 +81,7 @@ void GstVideoImx::videoTransform(GstPipelineImx &pipeline,
            && (width > dimLimit || width == -1)
            && (height > dimLimit|| height == -1)
            && (useCPU == false)
-           && (validFormatPXP == true)) {
+           && validFormat) {
     name = (flip == true) ? "name=scale_csc_flip_pxp_" : "name=scale_csc_pxp_";
     name += std::to_string(pipeline.elemNameCount);
     name += " ";

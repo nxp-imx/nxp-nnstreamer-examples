@@ -86,11 +86,16 @@ class GstPipelineImx {
   public:
     static int elemNameCount;
 
+    GstPipelineImx()
+    {
+      gst_init(nullptr, nullptr);
+    };
+
     static gboolean pipePerfCallback(gpointer user_data);
 
     static gboolean infPerfCallback(gpointer user_data);
 
-    void parse(int argc, char **argv, char *graphPath);
+    void parse(char *graphPath);
 
     void run();
 

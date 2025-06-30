@@ -85,10 +85,9 @@ gboolean GstPipelineImx::pipePerfCallback(gpointer user_data)
  * @brief Parse gst pipeline, and add bus signal watcher.
  * @param graphPath: store .nb files in provided path.
  */
-void GstPipelineImx::parse(int argc, char **argv, char *graphPath)
+void GstPipelineImx::parse(char *graphPath)
 {
   imx::Imx imx{};
-  gst_init(&argc, &argv);
   log_info("Start app...\n");
   storeVxGraphCompilation(imx, graphPath);
 

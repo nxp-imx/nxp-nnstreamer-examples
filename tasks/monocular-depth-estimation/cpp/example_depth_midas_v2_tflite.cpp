@@ -250,8 +250,8 @@ int main(int argc, char **argv)
   postProcess.display(displayPipeline, false);
 
   // Parse pipeline to GStreamer pipeline
-  displayPipeline.parse(argc, argv, options.graphPath);
-  pipeline.parse(argc, argv, options.graphPath);
+  displayPipeline.parse(options.graphPath);
+  pipeline.parse(options.graphPath);
 
   // Connect callback functions
   DecoderData boxesData;

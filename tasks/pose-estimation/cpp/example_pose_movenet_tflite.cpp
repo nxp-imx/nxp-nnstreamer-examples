@@ -36,7 +36,6 @@ typedef struct {
   std::filesystem::path videoPath;
   std::string backend;
   std::string norm;
-  std::string useCamera;
   bool time;
   bool freq;
   std::string textColor;
@@ -62,7 +61,6 @@ int cmdParser(int argc, char **argv, ParserOptions& options)
     {"camera_device", required_argument, 0, 'c'},
     {"model_path",    required_argument, 0, 'p'},
     {"video_file",    required_argument, 0, 'f'},
-    {"use_camera",    required_argument, 0, 'u'},
     {"display_perf",  optional_argument, 0, 'd'},
     {"text_color",    required_argument, 0, 't'},
     {"graph_path",    required_argument, 0, 'g'},
@@ -72,7 +70,7 @@ int cmdParser(int argc, char **argv, ParserOptions& options)
 
   while ((c = getopt_long(argc,
                           argv,
-                          "hb:n:c:p:f:u:d::t:g:r:",
+                          "hb:n:c:p:f:d::t:g:r:",
                           longOptions,
                           &optionIndex)) != -1) {
     switch (c)
@@ -105,10 +103,6 @@ int cmdParser(int argc, char **argv, ParserOptions& options)
                   << std::setw(25) << std::left << "  -f, --video_file"
                   << std::setw(25) << std::left
                   << "Use the selected video file" << std::endl
-
-                  << std::setw(25) << std::left << "  -u, --use_camera"
-                  << std::setw(25) << std::left
-                  << "If we use camera or video input" << std::endl
                   
                   << std::setw(25) << std::left << "  -d, --display_perf"
                   << std::setw(25) << std::left
@@ -146,10 +140,6 @@ int cmdParser(int argc, char **argv, ParserOptions& options)
 
       case 'f':
         options.videoPath.assign(optarg);
-        break;
-
-      case 'u':
-        options.useCamera.assign(optarg);
         break;
 
       case 'd':
@@ -204,7 +194,6 @@ int main(int argc, char **argv)
   ParserOptions options;
   options.backend = "NPU";
   options.norm = "castuInt8";
-  options.useCamera = "0";
   options.time = false;
   options.freq = false;
   options.graphPath = getenv("HOME");
@@ -225,7 +214,8 @@ int main(int argc, char **argv)
   // Initialize pipeline object
   GstPipelineImx pipeline;
 
-  if ((options.useCamera == "1") || imx.isIMX93() || imx.isIMX95()) {
+  int cropDim;
+  if (options.videoPath.empty()) {
     // Add camera to pipeline
     CameraOptions camOpt = {
       .cameraDevice   = options.camDevice,
@@ -238,19 +228,20 @@ int main(int argc, char **argv)
     };
     GstCameraImx camera(camOpt);
     camera.addCameraToPipeline(pipeline);
+    cropDim = std::min(camera.getWidth(), camera.getHeight());
   } else {
     // Add video to pipeline
-    GstVideoFileImx PowerJumpVideo(options.videoPath);
-    PowerJumpVideo.addVideoToPipeline(pipeline);
+    GstVideoFileImx video(options.videoPath);
+    video.addVideoToPipeline(pipeline);
+    cropDim = std::min(video.getWidth(), video.getHeight());
   }
 
   // Video pre processing
   GstVideoImx gstvideoimx;
-  int inputDim = std::min(options.camWidth, options.camHeight);
   gstvideoimx.videocrop(pipeline,
                         "crop",
-                        inputDim,
-                        inputDim,
+                        cropDim,
+                        cropDim,
                         -1,
                         -1,
                         -1,
@@ -264,7 +255,7 @@ int main(int argc, char **argv)
   GstQueueOptions nnQueue = {
     .queueName     = "thread-nn",
     .maxSizeBuffer = 2,
-    .leakType      = GstQueueLeaky::downstream,
+    .leakType      = GstQueueLeaky::no,
   };
   pipeline.addBranch(teeName, nnQueue);
 
@@ -293,12 +284,12 @@ int main(int argc, char **argv)
   postProcess.display(pipeline, true);
 
   // Parse pipeline to GStreamer pipeline
-  pipeline.parse(argc, argv, options.graphPath);
+  pipeline.parse(options.graphPath);
   
   // Connect callback functions to tensor sink and cairo overlay,
   // to process inference output
   DecoderData kptsData;
-  kptsData.inputDim = inputDim;
+  kptsData.inputDim = cropDim;
   pipeline.connectToElementSignal(tensorSinkName, newDataCallback, "new-data", &kptsData);
   pipeline.connectToElementSignal(overlayName, drawCallback, "draw", &kptsData);
 

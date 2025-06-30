@@ -8,6 +8,7 @@
 
 #include <string>
 #include <filesystem>
+#include <gst/pbutils/pbutils.h>
 
 #include "gst_video_imx.hpp"
 #include "gst_pipeline_imx.hpp"
@@ -67,6 +68,9 @@ class GstCameraImx : public GstSourceImx {
 class GstVideoFileImx : public GstSourceImx {
   private:
     std::filesystem::path videoPath;
+    int videoWidth;
+    int videoHeight;
+    bool newDim;
     std::string cmdDecoder;
     imx::Imx imx{};
     GstVideoImx videoscale{};

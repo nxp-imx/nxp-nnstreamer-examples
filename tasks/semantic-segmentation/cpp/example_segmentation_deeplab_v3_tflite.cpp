@@ -239,7 +239,7 @@ int main(int argc, char **argv)
   postProcess.display(pipeline, true);
 
   // Parse pipeline to GStreamer pipeline
-  pipeline.parse(argc, argv, options.graphPath);
+  pipeline.parse(options.graphPath);
 
   // Run GStreamer pipeline
   pipeline.run();

@@ -323,8 +323,8 @@ int main(int argc, char **argv)
   postProcess.addAppSink(pipeline, asOptions);
 
   // Parse pipelines to GStreamer pipelines
-  emotionPipeline.parse(argc, argv, options.graphPath);
-  pipeline.parse(argc, argv, options.graphPath);
+  emotionPipeline.parse(options.graphPath);
+  pipeline.parse(options.graphPath);
 
   // Connect callback functions to tensor sink of each pipeline, cairo overlay,
   // appsink, and appsrc to process inference output

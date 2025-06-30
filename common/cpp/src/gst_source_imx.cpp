@@ -71,26 +71,111 @@ void GstCameraImx::addCameraToPipeline(GstPipelineImx &pipeline)
 GstVideoFileImx::GstVideoFileImx(const std::filesystem::path &path,
                                  const int &width,
                                  const int &height)
-    : GstSourceImx(width, height, "")
+    : GstSourceImx(width, height, ""), videoPath(path)
 {
-  if ((imx.isIMX93()) || (imx.isIMX95())) {
-    log_error("video file can't be decoded with %s\n", imx.socName().c_str());
+  if (imx.isIMX93()) {
+    log_error("Video file decoding is not available on i.MX 93 \n");
     exit(-1);
-  } else {
-    videoPath = path;
   }
 
-  if (videoPath.extension() == ".mkv" or 
-      videoPath.extension() == ".webm") {
+  // Determine format
+  std::string extension = path.extension().string();
+  if (extension == ".mkv" || extension == ".webm") {
     cmdDecoder = "matroskademux ! ";
-  } else if (videoPath.extension() == ".mp4") {
+  } else if (extension == ".mp4"
+            || extension == ".mov"
+            || extension == ".m4a"
+            || extension == ".3gp"
+            || extension == ".3g2"
+            || extension == ".mj2") {
     cmdDecoder = "qtdemux ! ";
   } else {
-    log_error("Add a .mkv, .webm or .mp4 video format\n");
+    log_error("Unsupported format. Only matroska/webm/mp4/mov are supported.\n");
     exit(-1);
   }
 
-  cmdDecoder += "vpudec ! ";
+  GError *err = nullptr;
+  GstDiscoverer *discoverer = gst_discoverer_new(5 * GST_SECOND, &err);
+  if (!discoverer) {
+    log_error("Failed to create GstDiscoverer: %s\n", err->message);
+    g_clear_error(&err);
+    exit(-1);
+  }
+
+  std::string uri = "file://" + path.string();
+  GstDiscovererInfo *info = gst_discoverer_discover_uri(discoverer, uri.c_str(), &err);
+  if (!info) {
+    log_error("Failed to discover URI: %s\n", err->message);
+    g_clear_error(&err);
+    g_object_unref(discoverer);
+    exit(-1);
+  }
+
+  GList *video_streams = gst_discoverer_info_get_video_streams(info);
+  if (!video_streams) {
+    log_error("No video stream found in file: %s\n", path.c_str());
+    g_list_free(video_streams);
+    g_object_unref(info);
+    g_object_unref(discoverer);
+    exit(-1);
+  }
+
+  GstDiscovererStreamInfo *stream_info = static_cast<GstDiscovererStreamInfo *>(video_streams->data);
+  GstCaps *caps = gst_discoverer_stream_info_get_caps(stream_info);
+  if (!caps) {
+    log_error("Failed to get caps from video stream\n");
+    g_list_free(video_streams);
+    g_object_unref(info);
+    g_object_unref(discoverer);
+    exit(-1);
+  }
+
+  const GstStructure *structure = gst_caps_get_structure(caps, 0);
+  const gchar *media_type = gst_structure_get_name(structure);
+
+  // Determine decoder
+  if (g_strcmp0(media_type, "video/x-vp9") == 0) {
+    cmdDecoder += "vp9parse ! ";
+    if (imx.isIMX8())
+      cmdDecoder += "v4l2vp9dec ! ";
+    else if (imx.isIMX95()) // v4l2 vp9 decoder not available on IMX95
+      cmdDecoder += "avdec_vp9 ! ";
+  } else if (g_strcmp0(media_type, "video/x-h264") == 0) {
+     cmdDecoder += "h264parse ! v4l2h264dec ! ";
+  } else if (g_strcmp0(media_type, "video/x-h265") == 0) {
+    cmdDecoder += "h265parse ! v4l2h265dec ! ";
+  } else {
+    log_error("Unsupported codec. Only VP9, H265, and H264 are supported.\n");
+    gst_caps_unref(caps);
+    g_list_free(video_streams);
+    g_object_unref(info);
+    g_object_unref(discoverer);
+    exit(-1);
+  }
+
+  if (!gst_structure_get_int(structure, "width", &this->videoWidth)
+      || !gst_structure_get_int(structure, "height", &this->videoHeight)) {
+    log_error("Failed to extract video resolution from caps\n");
+    gst_caps_unref(caps);
+    g_object_unref(info);
+    g_object_unref(discoverer);
+    exit(-1);
+  }
+
+  log_debug("Detected resolution: %dx%d\n", this->videoWidth, this->videoHeight);
+
+  if ((width == -1) || (height == -1) || ((width == this->videoWidth) && (height == this->videoHeight))) {
+    this->width = this->videoWidth;
+    this->height = this->videoHeight;
+    this->newDim = false;
+  } else {
+    this->newDim = true;
+  }
+
+  gst_caps_unref(caps);
+  g_list_free(video_streams);
+  g_object_unref(info);
+  g_object_unref(discoverer);
 }
 
 
@@ -102,11 +187,13 @@ GstVideoFileImx::GstVideoFileImx(const std::filesystem::path &path,
 void GstVideoFileImx::addVideoToPipeline(GstPipelineImx &pipeline)
 {
   std::string cmd;   
-  cmd += "filesrc location=" + videoPath.string() + " ! " + cmdDecoder;
+  cmd += "filesrc location=" + videoPath.string() + " ! " + this->cmdDecoder;
+  cmd += "video/x-raw,width=" + std::to_string(this->videoWidth)
+         + ",height=" + std::to_string(this->videoHeight) + " ! ";
   pipeline.addToPipeline(cmd);
 
-  if ((width > 0) && (height > 0))
-    videoscale.videoTransform(pipeline, "", width, height, false, true);
+  if (this->newDim == true)
+    videoscale.videoTransform(pipeline, "", this->width, this->height, false, true);
 }
 
 

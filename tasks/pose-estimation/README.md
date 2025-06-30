@@ -64,8 +64,7 @@ Option | Description
 -b, --backend | Use the selected backend (CPU, GPU, NPU)<br> default: CPU
 -n, --normalization | Use the selected normalization (none, centered, scaled, centeredScaled, castInt32, castuInt8)<br> default: castuInt8
 -p, --model_path | Use the selected model path
--f, --video_file | Use the selected video file
--u, --use_camera | If we use camera or video input (true,false)<br> default: false (true for i.MX 93)
+-f, --video_file | Use the selected video file instead of camera source
 -d, --display_perf |Display performances, can specify time or freq
 -t, --text_color | Color of performances displayed, can choose between red, green, blue, and black<br> default: white
 -g, --graph_path | Path to store the result of the OpenVX graph compilation (only for i.MX8MPlus)<br> default: home directory

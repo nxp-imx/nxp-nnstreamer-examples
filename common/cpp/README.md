@@ -221,7 +221,7 @@ postProcess.addCairoOverlay(pipeline, overlayName);
 postProcess.display(pipeline);
 
 // Parse pipeline to GStreamer pipeline
-pipeline.parse(argc, argv);
+pipeline.parse(graphPath);
 
 // Connect callback functions to tensor sink and cairo overlay,
 // to process inference output
@@ -332,7 +332,7 @@ NOTES:
 To run the pipeline, `GstPipelineImx` class method `parse` is first used to parse the pipeline to a GStreamer pipeline, and then, use `run` method:
 ```cpp
 // Parse pipeline to GStreamer pipeline
-pipeline.parse(argc, argv);
+pipeline.parse(graphPath);
 
 // Run GStreamer pipeline
 pipeline.run();
