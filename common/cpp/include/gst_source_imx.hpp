@@ -74,9 +74,11 @@ class GstVideoFileImx : public GstSourceImx {
     std::string cmdDecoder;
     imx::Imx imx{};
     GstVideoImx videoscale{};
+    bool loop;
 
   public:
     GstVideoFileImx(const std::filesystem::path &path,
+                    const bool &loop=false,
                     const int &width=-1,
                     const int &height=-1);
 

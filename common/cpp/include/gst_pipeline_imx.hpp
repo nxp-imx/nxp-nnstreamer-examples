@@ -24,6 +24,7 @@ typedef struct {
   bool playing;
   float FPS;
   std::vector<std::string> filterNames;
+  bool videoLoop;
 } AppData;
 
 
@@ -167,5 +168,7 @@ class GstPipelineImx {
     int getDisplayWidth() { return this->displayWidth; };
 
     int getDisplayHeight() { return this->displayHeight; };
+
+    void loopPipeline();
 };
 #endif

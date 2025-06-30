@@ -228,7 +228,7 @@ int main(int argc, char **argv)
     cropDim = std::min(camera.getWidth(), camera.getHeight());
   } else {
     // Add video to pipeline
-    GstVideoFileImx video(options.videoPath);
+    GstVideoFileImx video(options.videoPath, false);
     video.addVideoToPipeline(pipeline);
     cropDim = std::min(video.getWidth(), video.getHeight());
   }

@@ -230,9 +230,19 @@ void GstPipelineImx::busCallback(GstBus* bus,
       break;
     }
     case GST_MESSAGE_EOS: {
-      log_debug("End-Of-Stream reached.\n");
-      log_debug("Closing the main loop.\n");
-      g_main_loop_quit(loop);
+      if (gApp->videoLoop) {
+        if (!gst_element_seek(gApp->gstPipeline,
+          1.0, GST_FORMAT_TIME, GST_SEEK_FLAG_FLUSH,
+          GST_SEEK_TYPE_SET, 0,
+          GST_SEEK_TYPE_NONE, GST_CLOCK_TIME_NONE)) {
+          log_error("Seek failed!\n");
+          exit(-1);
+        }
+      } else {
+        log_debug("End-Of-Stream reached.\n");
+        log_debug("Closing the main loop.\n");
+        g_main_loop_quit(loop);
+      }
       break;
     }
     case GST_MESSAGE_STATE_CHANGED: {
@@ -485,4 +495,13 @@ void GstPipelineImx::setDisplayResolution(const int &width, const int &height)
 {
   this->displayWidth = width;
   this->displayHeight = height;
+}
+
+
+/**
+ * @brief Loop the pipeline when EOS is sent to the bus.
+ */
+void GstPipelineImx::loopPipeline()
+{
+  this->gApp.videoLoop = true;
 }

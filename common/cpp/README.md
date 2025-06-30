@@ -40,6 +40,7 @@ Video is handled by `GstVideo` class. Like `GstCamera` class, video is first ini
 ```cpp
 // Add video to pipeline
 GstVideo PowerJump("/path/to/video/",   // Video file path
+                   true,                // (optional) video in loop mode
                    480,                 // (optional) new video width
                    480);                // (optional) new video height
 PowerJump.addVideoToPipeline(pipeline); // pipeline: GstPipelineImx object

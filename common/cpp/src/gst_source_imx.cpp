@@ -67,13 +67,15 @@ void GstCameraImx::addCameraToPipeline(GstPipelineImx &pipeline)
  * @brief  Parameterized constructor.
  * 
  * @param path: video path.
+ * @param loop: loop video.
  * @param width: video width.
  * @param height: video height.
  */
 GstVideoFileImx::GstVideoFileImx(const std::filesystem::path &path,
+                                 const bool &loop,
                                  const int &width,
                                  const int &height)
-    : GstSourceImx(width, height, ""), videoPath(path)
+    : GstSourceImx(width, height, ""), videoPath(path), loop(loop)
 {
   if (imx.isIMX93()) {
     log_error("Video file decoding is not available on i.MX 93 \n");
@@ -198,6 +200,9 @@ void GstVideoFileImx::addVideoToPipeline(GstPipelineImx &pipeline)
 
   if (this->newDim == true)
     videoscale.videoTransform(pipeline, "", this->width, this->height, false, true);
+
+    if (this->loop)
+      pipeline.loopPipeline();
 }
 
 
