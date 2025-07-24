@@ -51,7 +51,7 @@ class StdInHelper:
         except termios.error as e:
             background_related_error_msg = "(25, 'Inappropriate ioctl for device')"
             assert str(e) == background_related_error_msg, (
-                    "termios error " + str(e) + " not related to background execution")
+                "termios error " + str(e) + " not related to background execution")
             self.background_execution = True
 
     def set_attr_restore(self):
@@ -74,7 +74,7 @@ class PoseExample:
         self.VIDEO_INPUT_RESIZED_HEIGHT = cropped_wh
         self.flip = flip
 
-        #camera definition
+        # camera definition
         self.camera_device = camera_device
 
         # model constants
@@ -125,7 +125,7 @@ class PoseExample:
         ]
 
         assert len(self.keypoints_def) == self.MODEL_KEYPOINT_SIZE
-
+        self.source = os.getenv('SOURCE', 'VIDEO')
         self.backend = os.getenv('BACKEND', 'CPU')
         self.gpu = os.getenv('GPU', 'GPU2D')
         self.use_gpu3d = self.gpu == 'GPU3D'
@@ -157,17 +157,17 @@ class PoseExample:
 
             if self.imx.has_npu_vsi():
                 custom_ops = ('custom=Delegate:External,'
-                        'ExtDelegateLib:libvx_delegate.so')
+                              'ExtDelegateLib:libvx_delegate.so')
             elif vela:
                 custom_ops = ('custom=Delegate:External,'
-                        'ExtDelegateLib:libethosu_delegate.so')
+                              'ExtDelegateLib:libethosu_delegate.so')
             else:
                 custom_ops = ''
 
             custom = {
                 'NPU': custom_ops,
                 'GPU': 'custom=Delegate:External,ExtDelegateLib:libvx_delegate.so',
-                'CPU': f'custom=Delegate:XNNPACK,NumThreads:{os.cpu_count()}'
+                'CPU': f'custom=Delegate:XNNPACK,NumThreads:{os.cpu_count()//2}'
             }
             self.tensor_filter_custom = custom[self.backend]
 
@@ -178,12 +178,15 @@ class PoseExample:
 
         current_folder = os.path.dirname(os.path.abspath(__file__))
 
-        model_dir = os.path.join(current_folder, '../../downloads/models/pose-estimation')
+        model_dir = os.path.join(
+            current_folder, '../../downloads/models/pose-estimation')
         self.tflite_path = os.path.join(model_dir, tflite_model)
         if not os.path.exists(self.tflite_path):
-            raise FileExistsError(f'cannot find tflite model [{self.tflite_path}]')
+            raise FileExistsError(
+                f'cannot find tflite model [{self.tflite_path}]')
 
-        video_dir = os.path.join(current_folder, '../../downloads/media/movies')
+        video_dir = os.path.join(
+            current_folder, '../../downloads/media/movies')
         self.video_path = os.path.join(video_dir, self.video_file)
         if not os.path.exists(self.video_path):
             raise FileExistsError(f'cannot find video [{self.video_path}]')
@@ -200,12 +203,10 @@ class PoseExample:
 
         self.mainloop = GLib.MainLoop()
 
-        # Default source: VIDEO
-        self.source = os.getenv('SOURCE', 'VIDEO')
         gstvideoimx = GstVideoImx(self.imx)
 
-        # i.MX93 and  i.MX95 does not support video file decoding
-        if self.imx.is_imx93() or self.imx.is_imx95():
+        # i.MX93 and i.MX95 does not support video file decoding
+        if self.imx.is_imx93() and self.source == 'VIDEO':
             print('video file cannot be decoded, use camera source instead')
             self.source = 'CAMERA'
 
@@ -215,23 +216,39 @@ class PoseExample:
             print('extension', extension)
             if extension == '.webm' or extension == '.mkv':
                 if self.imx.id() == SocId.IMX8MP:
-                    cmdline += ' matroskademux ! vpudec !'
+                    cmdline += ' matroskademux ! v4l2vp9dec name=video-decode !'
+                elif self.imx.is_imx95():
+                    cmdline += ' matroskademux ! avdec_vp9 name=video-decode !'
             else:
                 print('only .mkv or .webm video format can be decoded by this pipeline')
                 return
+            cmdline += ' video/x-raw,width={:d},height={:d} !'.format(
+                self.VIDEO_INPUT_WIDTH, self.VIDEO_INPUT_HEIGHT)
 
         elif self.source == 'CAMERA':
-            cmdline = 'v4l2src name=cam_src device={:s} num-buffers=-1 ! '.format(self.camera_device)
-
+            cmdline = 'v4l2src name=cam_src device={:s} num-buffers=-1 ! '.format(
+                self.camera_device)
+            cmdline += 'video/x-raw, width={:d},height={:d} !'.format(
+                self.VIDEO_INPUT_WIDTH, self.VIDEO_INPUT_HEIGHT)
         else:
             raise ValueError('Wrong source, must be VIDEO or CAMERA')
 
         # crop for square video format
-        cmdline += ' videocrop left=-1 right=-1 top=-1 bottom=-1 !'
-        cmdline += ' video/x-raw,width={:d},height={:d} ! ' \
-            .format(self.VIDEO_INPUT_RESIZED_WIDTH, self.VIDEO_INPUT_RESIZED_HEIGHT)
+        crop_left = crop_right = (
+            self.VIDEO_INPUT_WIDTH - self.VIDEO_INPUT_RESIZED_WIDTH) // 2
+        if ((crop_left * 2 + self.VIDEO_INPUT_RESIZED_WIDTH) != self.VIDEO_INPUT_WIDTH):
+            crop_right += 1
+        crop_top = crop_bottom = (
+            self.VIDEO_INPUT_HEIGHT - self.VIDEO_INPUT_RESIZED_HEIGHT) // 2
+        if ((crop_top * 2 + self.VIDEO_INPUT_RESIZED_HEIGHT) != self.VIDEO_INPUT_HEIGHT):
+            crop_bottom += 1
+
+        cmdline += gstvideoimx.accelerated_videocrop_to_format('video_crop', top=crop_top, bottom=crop_bottom,
+                                                               left=crop_left, right=crop_right, use_gpu3d=self.use_gpu3d)
         if self.flip:
-            cmdline += gstvideoimx.accelerated_videoscale(flip=True, use_gpu3d=self.use_gpu3d)
+            cmdline += gstvideoimx.accelerated_videoscale(
+                flip=True, use_gpu3d=self.use_gpu3d)
+
         cmdline += ' tee name=t'
         cmdline += ' t. ! queue name=thread-nn max-size-buffers=2 leaky=2 ! '
         cmdline += gstvideoimx.accelerated_videoscale(
@@ -299,7 +316,7 @@ class PoseExample:
 
             if result:
                 assert info.size == self.MODEL_KEYPOINT_SIZE * \
-                       3 * np.dtype(np.float32).itemsize
+                    3 * np.dtype(np.float32).itemsize
 
                 # convert buffer to [1:1:17:3] numpy array
                 np_kpts = np.frombuffer(info.data, dtype=np.float32) \
@@ -466,5 +483,6 @@ if __name__ == '__main__':
     camera_device = args.camera_device
     video_dims = tuple(args.video_dims)
     flip = args.mirror
-    example = PoseExample(video_file, video_dims, camera_device, flip, sys.argv[2:])
+    example = PoseExample(video_file, video_dims,
+                          camera_device, flip, sys.argv[2:])
     example.run()

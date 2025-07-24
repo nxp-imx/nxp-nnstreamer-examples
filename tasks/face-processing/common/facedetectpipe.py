@@ -52,7 +52,7 @@ class StdInHelper:
         except termios.error as e:
             background_related_error_msg = "(25, 'Inappropriate ioctl for device')"
             assert str(e) == background_related_error_msg, (
-                    "termios error " + str(e) + " not related to background execution")
+                "termios error " + str(e) + " not related to background execution")
             self.background_execution = True
 
     def set_attr_restore(self):
@@ -83,6 +83,9 @@ class Pipe:
 
         self.imx = Imx()
         store_vx_graph_compilation(self.imx)
+
+        self.gpu = os.getenv('GPU', 'GPU2D')
+        self.use_gpu3d = self.gpu == 'GPU3D'
 
     def dump_gst_dot_file(self, name=None):
         """Dump GStreamer .dot file.
@@ -122,20 +125,21 @@ class Pipe:
             logging.info('[%s] bus start', name)
             self.dump_gst_dot_file()
 
-    def nns_tfliter_custom_options(self):
+    def nns_tfliter_custom_options(self, backend='NPU'):
         """Report custom options to use for nnstreamer tensor filter.
         """
-        if self.imx.has_npu_vsi():
-            opts = ('custom=Delegate:External,'
-                    'ExtDelegateLib:libvx_delegate.so')
-        elif self.imx.has_npu_ethos():
-            opts = ('custom=Delegate:External,'
-                    'ExtDelegateLib:libethosu_delegate.so')
-        elif self.imx.has_npu_neutron():
-            opts = ('custom=Delegate:External,'
-                    'ExtDelegateLib:libneutron_delegate.so')
-        else:
-            opts = ''
+        if backend == 'NPU':
+            if self.imx.has_npu_vsi():
+                opts = ('custom=Delegate:External,'
+                        'ExtDelegateLib:libvx_delegate.so')
+            elif self.imx.has_npu_ethos():
+                opts = ('custom=Delegate:External,'
+                        'ExtDelegateLib:libethosu_delegate.so')
+            elif self.imx.has_npu_neutron():
+                print('Models not enabled yet on Neutron NPU, running on CPU instead')
+                opts = f'custom=Delegate:XNNPACK,NumThreads:{os.cpu_count()//2}'
+        else:  # backend = CPU
+            opts = f'custom=Delegate:XNNPACK,NumThreads:{os.cpu_count()//2}'
         return opts
 
 
@@ -166,6 +170,12 @@ class SecondaryPipe(Pipe):
         vh = self.video_input_height
         vr = self.video_rate
 
+        # 3D GPU does not currently support upscale resize
+        # cropped video could require un upscale resize
+        # therefore, we keep using the 2D GPU for secondary pipeline
+        self.use_gpu3d_secondary = False
+        # self.use_gpu3d_secondary = (self.gpu == 'GPU3D')
+
         self.processing_complete_cb = None
 
         gstvideoimx = GstVideoImx(self.imx)
@@ -185,7 +195,8 @@ class SecondaryPipe(Pipe):
             format = 'RGB'
         elif num_channels == 1:
             format = 'GRAY8'
-        cmdline += gstvideoimx.videocrop_to_format('video_crop', w, h, format=format)
+        cmdline += gstvideoimx.accelerated_videocrop_to_format(
+            'video_crop', w, h, format=format, use_gpu3d=self.use_gpu3d_secondary)
 
         cmdline += '  tensor_converter ! '
 
@@ -300,8 +311,6 @@ class FaceDetectPipe(Pipe):
         self.video_input_height = video_resolution[1]
         self.video_rate = video_fps
         self.flip = flip
-        self.gpu = os.getenv('GPU', 'GPU2D')
-        self.use_gpu3d = self.gpu == 'GPU3D'
 
         if not os.path.exists(self.camera_device):
             raise FileExistsError(f'cannot find camera [{self.camera_device}]')
@@ -309,11 +318,13 @@ class FaceDetectPipe(Pipe):
         # models
         if model_directory is None:
             pwd = os.path.dirname(os.path.abspath(__file__))
-            model_directory = os.path.join(pwd, '../../../downloads/models/face-processing')
+            model_directory = os.path.join(
+                pwd, '../../../downloads/models/face-processing')
 
         has_ethosu = self.imx.has_npu_ethos()
         has_neutron = self.imx.has_npu_neutron()
-        self.ultraface = ultraface.UFModel(model_directory, vela=has_ethosu, neutron=has_neutron)
+        self.ultraface = ultraface.UFModel(
+            model_directory, vela=has_ethosu, neutron=has_neutron)
 
         # pipelines variables
         self.mainloop = None
@@ -345,13 +356,15 @@ class FaceDetectPipe(Pipe):
             .format(vw, vh, vr)
 
         cmdline = 'v4l2src device={:s} ! '.format(self.camera_device)
-        if self.flip:
-            cmdline += gstvideoimx.accelerated_videoscale(flip=True, use_gpu3d=self.use_gpu3d)
         cmdline += '  {:s} ! '.format(video_caps)
+        if self.flip:
+            cmdline += gstvideoimx.accelerated_videoscale(
+                flip=True, use_gpu3d=self.use_gpu3d)
         cmdline += '  tee name=tvideo '
         cmdline += 'tvideo. ! queue max-size-buffers=1 leaky=2 ! '
 
-        cmdline += gstvideoimx.accelerated_videoscale(ufw, ufh, 'RGB', use_gpu3d=self.use_gpu3d)
+        cmdline += gstvideoimx.accelerated_videoscale(
+            ufw, ufh, 'RGB', use_gpu3d=self.use_gpu3d)
 
         cmdline += '  tensor_converter ! '
 

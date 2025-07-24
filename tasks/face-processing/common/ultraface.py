@@ -44,7 +44,8 @@ class UFModel:
             if vela:
                 name = 'ultraface_slim_uint8_float32_vela.tflite'
             elif neutron:
-                name = 'ultraface_slim_uint8_float32_neutron.tflite'
+                #name = 'ultraface_slim_uint8_float32_neutron.tflite'
+                name = 'ultraface_slim_uint8_float32.tflite'
             else:
                 name = 'ultraface_slim_uint8_float32.tflite'
         else:
