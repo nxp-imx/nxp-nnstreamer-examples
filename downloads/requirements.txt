@@ -1,2 +1,1 @@
 jupyter==1.0.0
-tensorflow==2.16.2
