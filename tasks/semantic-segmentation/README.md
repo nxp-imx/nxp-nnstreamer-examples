@@ -14,7 +14,7 @@ Name | Implementation | Model | ML engine | Features
 |   i.MX 93    | :white_check_mark: | :white_check_mark: | :x: |
 |   i.MX 95    | :x: | :white_check_mark: | :x: |
 
-The semantic segmentation demo in bash supports multiple backend (refers to above table), default value can be overriden by explicitly defining BACKEND variable, for instance:
+The semantic segmentation demo in bash supports multiple backend for model inferences (refers to above table), default value can be overridden by explicitly defining BACKEND variable, for instance:
 ```bash
 BACKEND=CPU ./tasks/semantic-segmentation/example_segmentation_deeplab_v3_tflite.sh
 ```
@@ -54,7 +54,7 @@ The following execution parameters are available (Run ``` ./example_segmentation
 Option | Description
 --- | ---
 -b, --backend | Use the selected backend (CPU, GPU, NPU)<br> default: NPU
--n, --normalization | Use the selected normalization (none, centered, scaled, centeredScaled, castInt32, castuInt8)<br> default: none
+-n, --normalization | Use the selected normalization (none, centered, scaled, centeredScaled)<br> default: none
 -p, --model_path | Use the selected model path
 -f, --images_file | Use the selected images file
 -d, --display_perf |Display performances, can specify time or freq

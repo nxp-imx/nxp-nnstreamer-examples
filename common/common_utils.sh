@@ -40,7 +40,7 @@ function setup_env {
 
   REQUIRED_CAMERA=${REQUIRED_CAMERA:-1}
   if [ "${REQUIRED_CAMERA}" -gt 0 ] ; then
-    # default camera configuration (can also be overriden by user)
+    # default camera configuration (can also be overridden by user)
     declare -A CAMERA_DEVICE_DEFAULT
     CAMERA_DEVICE_DEFAULT[IMX8MP]="/dev/video3"
     CAMERA_DEVICE_DEFAULT[IMX93]="/dev/video0"

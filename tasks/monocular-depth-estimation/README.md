@@ -44,7 +44,7 @@ The following execution parameters are available (Run ``` ./example_depth_midas_
 Option | Description
 --- | ---
 -b, --backend | Use the selected backend (CPU, GPU, NPU)<br> default: NPU
--n, --normalization | Use the selected normalization (none, centered, scaled, centeredScaled, castInt32, castuInt8)<br> default: none
+-n, --normalization | Use the selected normalization (none, centered, scaled, centeredScaled)<br> default: none
 -c, --camera_device | Use the selected camera device (/dev/video{number})<br>default: /dev/video0 for i.MX 93 and /dev/video3 for i.MX 8MP
 -p, --model_path | Use the selected model path
 -d, --display_perf |Display performances, can specify time or freq

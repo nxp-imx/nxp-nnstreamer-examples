@@ -3,19 +3,19 @@
 ## Overview
 Name | Implementation | Model | ML engine | Features
 --- | --- | --- | --- | ---
-[example_face_detection_tflite.py](./face-detection/example_face_detection_tflite.py) | Python | UltraFace | TFLite | camera<br>gst-launch<br>
-[example_face_detection_tflite.cpp](./face-detection/cpp/example_face_detection_tflite.cpp) | C++ | UltraFace | TFLite | camera<br>gst-launch<br>
-[example_face_recognition_tflite.py](./face-recognition/example_face_recognition_tflite.py) | Python | UltraFace <br> FaceNet512 <br> | TFLite | camera<br>gst-launch<br>
-[example_emotion_classification_tflite.py](./emotion-classification/example_emotion_classification_tflite.py) | Python | UltraFace <br> Deepface-emotion <br> | TFLite | camera<br>gst-launch<br>
-[example_emotion_classification_tflite.cpp](./emotion-classification/cpp/example_emotion_classification_tflite.cpp) | C++ | UltraFace <br> Deepface-emotion <br> | TFLite | camera<br>gst-launch<br>
+[example_face_detection_tflite.py](./face-detection/example_face_detection_tflite.py) | Python | UltraFace-slim | TFLite | camera<br>gst-launch<br>
+[example_face_detection_tflite.cpp](./face-detection/cpp/example_face_detection_tflite.cpp) | C++ | UltraFace-slim | TFLite | camera<br>gst-launch<br>
+[example_face_recognition_tflite.py](./face-recognition/example_face_recognition_tflite.py) | Python | UltraFace-slim <br> FaceNet512 <br> | TFLite | camera<br>gst-launch<br>
+[example_emotion_classification_tflite.py](./emotion-classification/example_emotion_classification_tflite.py) | Python | UltraFace-slim <br> Deepface-emotion <br> | TFLite | camera<br>gst-launch<br>
+[example_emotion_classification_tflite.cpp](./emotion-classification/cpp/example_emotion_classification_tflite.cpp) | C++ | UltraFace-slim <br> Deepface-emotion <br> | TFLite | camera<br>gst-launch<br>
 
 Those examples use 2 GStreamer pipelines that are running concurrently.<br>
 Press ```Esc or ctrl+C``` to stop the execution of all the pipelines.<br>
-Display can be flipped using the --mirror option.<br>
+For face detection demo, display can be flipped using the --mirror option.<br>
 
 ### Main pipeline
 - Captures video from camera
-- Run face detection (UltraFace) model and decode results
+- Run face detection (UltraFace-slim) model and decode results
 - Overlays detection on top of video before display
 - Schedules second pipeline execution
 
@@ -38,9 +38,10 @@ Display can be flipped using the --mirror option.<br>
 |   i.MX 95    | :white_check_mark: | :x: | :x: |
 
 Demo application is to be started from Linux. Camera device node may be configured via command line argument (default: `/dev/video3` on i.MX 8M Plus and `/dev/video0` on i.MX 93, `/dev/video13` on i.MX 95).
+GPU environment variable allows to choose between 2D GPU (GPU2D) or 3D GPU (GPU3D) if available for scaling and color space conversion operations.
 It draws bounding boxes around the detected faces, and displays number of detections.
 ```
-./tasks/face-processing/face-detection/example_face_detection_tflite.py [--camera_device=</dev/videoN>]
+GPU=GPU2D ./tasks/face-processing/face-detection/example_face_detection_tflite.py [--camera_device=</dev/videoN>]
 ```
 ### C++
 |   Platforms  | NPU | CPU | GPU |
@@ -78,7 +79,7 @@ The following execution parameters are available (Run ``` ./example_face_detecti
 Option | Description
 --- | ---
 -b, --backend | Use the selected backend (CPU, GPU, NPU)<br> default: NPU
--n, --normalization | Use the selected normalization (none, centered, scaled, centeredScaled, castInt32, castuInt8)<br> default: none
+-n, --normalization | Use the selected normalization (none, centered, scaled, centeredScaled)<br> default: none
 -c, --camera_device | Use the selected camera device (/dev/video{number})<br>default: /dev/video0 for i.MX 93 and /dev/video3 for i.MX 8MP
 -p, --model_path | Use the selected model path
 -d, --display_perf |Display performances, can specify time or freq
@@ -97,9 +98,10 @@ Press ```Esc or ctrl+C``` to stop the execution of the pipeline.
 |   i.MX 95    | :x: | :x: | :x: |
 
 Demo application is to be started from Linux. Camera device node may be configured via command line argument (default: `/dev/video3` on i.MX 8M Plus, `/dev/video0` on i.MX 93, `/dev/video13` on i.MX 95).
+GPU environment variable allows to choose between 2D GPU (GPU2D) or 3D GPU (GPU3D) if available for scaling and color space conversion operations on main pipeline.
 It draws bounding boxes around the detected faces, and displays predicted emotion and confidence score on each face.
 ```
-./tasks/face-processing/emotion-classification/example_emotion_classification_tflite.py [--camera_device=</dev/videoN>]
+GPU=GPU2D ./tasks/face-processing/emotion-classification/example_emotion_classification_tflite.py [--camera_device=</dev/videoN>]
 ```
 7 emotions can be recognised: angry, disgust, fear, happy, sad, surprise and neutral.
 
@@ -135,7 +137,7 @@ The following execution parameters are available (Run ``` ./example_emotion_clas
 Option | Description
 --- | ---
 -b, --backend | Use the selected backend (CPU, GPU, NPU)<br> default: NPU
--n, --normalization | Use the selected normalization (none, centered, scaled, centeredScaled, castInt32, castuInt8)<br> default: none
+-n, --normalization | Use the selected normalization (none, centered, scaled, centeredScaled)<br> default: none
 -c, --camera_device | Use the selected camera device (/dev/video{number})<br>default: /dev/video0 for i.MX 93 and /dev/video3 for i.MX 8MP
 -p, --model_path FACE_MODEL,EMOTION_MODEL | Use the selected model path
 -d, --display_perf |Display performances, can specify time or freq
@@ -154,9 +156,10 @@ Press ```Esc or ctrl+C``` to stop the execution of the pipeline.
 |   i.MX 95    | :x: | :x: | :x: |
 
 Demo application is to be started from Linux. Camera device node may be configured via command line argument (default: `/dev/video3` on i.MX 8M Plus, `/dev/video0` on i.MX 93, `/dev/video13` on i.MX 95).
+GPU environment variable allows to choose between 2D GPU (GPU2D) or 3D GPU (GPU3D) if available for scaling and color space conversion operations on main pipeline.
 It draws bounding boxes around the detected faces, and displays associated name and confidence score if face matches an embedding from the database. 
 ```
-./tasks/face-processing/face-recognition/example_face_recognition_tflite.py [--camera_device=</dev/videoN>]
+GPU=GPU2D ./tasks/face-processing/face-recognition/example_face_recognition_tflite.py [--camera_device=</dev/videoN>]
 ```
 Database of recognizable face signatures (embeddings) is located in [face/facenet_db](./facenet_db) directory. An entry in there simply associates the \<name\> from file `<name>.npy`, with its embedding for the face, saved as a numpy binary array.
 ```

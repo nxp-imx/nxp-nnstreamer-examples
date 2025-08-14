@@ -14,10 +14,12 @@ Name | Implementation | Model | ML engine | Features
 |   i.MX 93    | :white_check_mark: | :white_check_mark: | :x: |
 |   i.MX 95    | :white_check_mark: | :white_check_mark: | :x: |
 
-The image classification demo in bash supports multiple backend (refers to above table), default value can be overriden by explicitly defining BACKEND variable, for instance:
+The image classification demo in bash supports multiple backend for model inferences (refers to above table), default value can be overridden by explicitly defining BACKEND variable. Similarly, the GPU variable allows to choose between 2D GPU (GPU2D) or 3D GPU (GPU3D) if available for scaling and color space conversion operations.
+For instance:
 ```bash
-BACKEND=CPU ./tasks/classification/example_classification_mobilenet_v1_tflite.sh
+BACKEND=CPU GPU=GPU2D ./tasks/classification/example_classification_mobilenet_v1_tflite.sh
 ```
+
 
 ### C++
 |   Platforms  | NPU | CPU | GPU |
@@ -62,7 +64,7 @@ The following execution parameters are available (Run ``` ./example_classificati
 Option | Description
 --- | ---
 -b, --backend | Use the selected backend (CPU, GPU, NPU)<br> default: NPU
--n, --normalization | Use the selected normalization (none, centered, scaled, centeredScaled, castInt32, castuInt8)<br> default: none
+-n, --normalization | Use the selected normalization (none, centered, scaled, centeredScaled)<br> default: none
 -c, --camera_device | Use the selected camera device (/dev/video{number})<br>default: /dev/video0 for i.MX 93 and /dev/video3 for i.MX 8MP
 -p, --model_path | Use the selected model path
 -l, --labels_path | Use the selected labels path

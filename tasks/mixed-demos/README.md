@@ -44,7 +44,7 @@ The following execution parameters are available (Run ``` ./example_classificati
 Option | Description
 --- | ---
 -b, --backend CLASS_BACKEND,DET_BACKEND | Use the selected backend (CPU, GPU, NPU)<br> default: NPU,NPU
--n, --normalization CLASS_NORM,DET_NORM | Use the selected normalization (none, centered, scaled, centeredScaled, castInt32, castuInt8)<br> default: none,none
+-n, --normalization CLASS_NORM,DET_NORM | Use the selected normalization (none, centered, scaled, centeredScaled)<br> default: none,none
 -c, --camera_device | Use the selected camera device (/dev/video{number})<br>default: /dev/video0 for i.MX 93 and /dev/video3 for i.MX 8M Plus
 -p, --model_path CLASS_MODEL,DET_MODEL | Use the selected model path
 -l, --labels_path CLASS_LABELS,DET_LABELS | Use the selected labels path
@@ -57,7 +57,7 @@ Option | Description
 
 Press ```Esc or ctrl+C``` to stop the execution of the pipeline.
 
-## Pose Estimation and Face Detection (MoveNet/UltraFace)
+## Pose Estimation and Face Detection (MoveNet/UltraFace-slim)
 ### C++
 |   Platforms  | NPU | CPU | GPU |
 | ------------ | --- | --- | --- |
@@ -74,18 +74,17 @@ An example running face detection and pose estimation inferences in parallel is 
 ```bash
 ./build/mixed-demos/example_face_and_pose_detection_tflite -p ${ULTRAFACE_QUANT},${MOVENET_QUANT}
 ```
-For i.MX 93 NPU use vela converted models:
+For i.MX 93 NPU use vela converted model for face detection:
 ```bash
-./build/mixed-demos/example_face_and_pose_detection_tflite -p ${ULTRAFACE_QUANT_VELA},${MOVENET_QUANT_VELA}
+./build/mixed-demos/example_face_and_pose_detection_tflite -p ${ULTRAFACE_QUANT_VELA},${MOVENET_QUANT} -b NPU,CPU
 ```
 To use CPU or GPU backend, refers to the execution parameter ```--backend``` below.<br>
-To use the non-quantized (float32) MoveNet model, input normalization needs to be set with the execution parameter ```--normalization``` (description below) to ```castInt32``` and use ```MOVENET``` environment variable for model path.<br>
 The following execution parameters are available (Run ``` ./example_face_and_pose_detection_tflite -h``` to see option details):
 
 Option | Description
 --- | ---
 -b, --backend FACE_BACKEND,POSE_BACKEND | Use the selected backend (CPU, GPU, NPU)<br> default: NPU,NPU
--n, --normalization FACE_NORM,POSE_NORM | Use the selected normalization (none, centered, scaled, centeredScaled, castInt32, castuInt8)<br> default: none,castuInt8
+-n, --normalization FACE_NORM,POSE_NORM | Use the selected normalization (none, centered, scaled, centeredScaled)<br> default: none,none
 -c, --camera_device | Use the selected camera device (/dev/video{number})<br>default: /dev/video0 for i.MX 93 and /dev/video3 for i.MX 8MP
 -p, --model_path FACE_MODEL,POSE_MODEL | Use the selected model path
 -d, --display_perf |Display performances, can specify time or freq
@@ -128,7 +127,7 @@ The following execution parameters are available (Run ``` ./example_double_class
 Option | Description
 --- | ---
 -b, --backend CAM1_BACKEND,CAM2_BACKEND | Use the selected backend (CPU, GPU, NPU)<br> default: NPU
--n, --normalization CAM1_NORM,CAM2_NORM | Use the selected normalization (none, centered, scaled, centeredScaled, castInt32, castuInt8)<br> default: none
+-n, --normalization CAM1_NORM,CAM2_NORM | Use the selected normalization (none, centered, scaled, centeredScaled)<br> default: none
 -c, --camera_device CAMERA1,CAMERA2 | Use the selected camera device (/dev/video{number})<br>default: /dev/video0 for i.MX 93 and /dev/video3 for i.MX 8MP
 -p, --model_path CAM1_MODEL,CAM2_MODEL | Use the selected model path
 -l, --labels_path CAM1_LABELS,CAM2_LABELS | Use the selected labels path

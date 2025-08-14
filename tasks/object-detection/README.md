@@ -17,9 +17,10 @@ Name | Implementation | Model | ML engine | Features
 
 *NOTE: YOLOv4 Tiny output does not directly work with the YOLOv5 mode of tensor_decoder element, so a python filter is used to post-process and reshape this output as required.*
 
-The object detection demo in bash using YOLOv4 Tiny supports multiple backend (refers to above table), default value can be overriden by explicitly defining BACKEND variable, for instance:
+The object detection demo in bash using YOLOv4 Tiny supports multiple backend for model inferences (refers to above table), default value can be overridden by explicitly defining BACKEND variable. Similarly, the GPU variable allows to choose between 2D GPU (GPU2D) or 3D GPU (GPU3D) if available for scaling and color space conversion operations.
+For instance:
 ```bash
-BACKEND=CPU ./tasks/object-detection/example_detection_yolo_v4_tiny_tflite.sh
+BACKEND=CPU GPU=GPU2D ./tasks/object-detection/example_detection_yolo_v4_tiny_tflite.sh
 ```
 
 ## SSD MobileNetV2 object detection
@@ -30,9 +31,10 @@ BACKEND=CPU ./tasks/object-detection/example_detection_yolo_v4_tiny_tflite.sh
 |   i.MX 93    | :white_check_mark: | :white_check_mark: | :x: |
 |   i.MX 95    | :white_check_mark: | :white_check_mark: | :x: |
 
-The object detection demo in bash using SSD MobiletNetV2 supports multiple backend (refers to above table), default value can be overriden by explicitly defining BACKEND variable, for instance:
+The object detection demo in bash using SSD MobiletNetV2 supports multiple backend for model inferences (refers to above table), default value can be overridden by explicitly defining BACKEND variable. Similarly, the GPU variable allows to choose between 2D GPU (GPU2D) or 3D GPU (GPU3D) if available for scaling and color space conversion operations.
+For instance:
 ```bash
-BACKEND=CPU ./tasks/object-detection/example_detection_mobilenet_ssd_v2_tflite.sh
+BACKEND=CPU GPU=GPU2D ./tasks/object-detection/example_detection_mobilenet_ssd_v2_tflite.sh
 ```
 ### C++
 |   Platforms  | NPU | CPU | GPU |
@@ -75,7 +77,7 @@ The following execution parameters are available (Run ``` ./example_detection_mo
 Option | Description
 --- | ---
 -b, --backend | Use the selected backend (CPU, GPU, NPU)<br> default: NPU
--n, --normalization | Use the selected normalization (none, centered, scaled, centeredScaled, castInt32, castuInt8)<br> default: none
+-n, --normalization | Use the selected normalization (none, centered, scaled, centeredScaled)<br> default: none
 -c, --camera_device | Use the selected camera device (/dev/video{number})<br>default: /dev/video0 for i.MX 93 and /dev/video3 for i.MX 8MP
 -p, --model_path | Use the selected model path
 -l, --labels_path | Use the selected labels path
