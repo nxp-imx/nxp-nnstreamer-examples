@@ -76,7 +76,7 @@ int cmdParser(int argc, char **argv, ParserOptions& options)
                   << std::setw(25) << std::left << "  -n, --normalization"
                   << std::setw(25) << std::left
                   << "Use the selected normalization"
-                  << " (none,centered,scaled,centeredScaled,castInt32,castuInt8)" << std::endl
+                  << " (none,centered,scaled,centeredScaled)" << std::endl
 
                   << std::setw(25) << std::left << "  -p, --model_path"
                   << std::setw(25) << std::left

@@ -13,8 +13,6 @@ std::map<std::string, Normalization> normDictionary = {
   {"centered", Normalization::centered},
   {"scaled", Normalization::scaled},
   {"centeredScaled", Normalization::centeredScaled},
-  {"castInt32", Normalization::castInt32},
-  {"castuInt8", Normalization::castuInt8},
 };
 
 
@@ -124,22 +122,6 @@ std::string TensorCustomGenerator::setTensorTransformConfig(const std::string &n
       tensorTransformCustom = "tensor_transform mode=arithmetic ";
       tensorTransformCustom += name;
       tensorTransformCustom += "option=typecast:float32,add:-127.5,div:127.5 ! ";
-      break;
-
-    case Normalization::castInt32:
-      name = "name=int32_cast_" + std::to_string(pipeline.elemNameCount) + " ";
-      pipeline.elemNameCount += 1;
-      tensorTransformCustom = "tensor_transform mode=typecast ";
-      tensorTransformCustom += name;
-      tensorTransformCustom += "option=int32 ! ";
-      break;
-
-    case Normalization::castuInt8:
-      name = "name=uint8_cast_" + std::to_string(pipeline.elemNameCount) + " ";
-      pipeline.elemNameCount += 1;
-      tensorTransformCustom = "tensor_transform mode=typecast ";
-      tensorTransformCustom += name;
-      tensorTransformCustom += "option=uint8 ! ";
       break;
 
     default:

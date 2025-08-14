@@ -19,7 +19,7 @@ python_path = os.path.join(os.path.dirname(os.path.abspath(__file__)),
                            '../../common/python')
 sys.path.append(python_path)
 from imxpy.imx_dev import Imx, SocId  # noqa
-from imxpy.common_utils import GstVideoImx, store_vx_graph_compilation  # noqa
+from imxpy.common_utils import GstVideoImx, store_vx_graph_compilation, disable_zero_copy_neutron  # noqa
 
 gi.require_version('Gst', '1.0')
 from gi.repository import Gst, GLib
@@ -132,6 +132,7 @@ class PoseExample:
         self.imx = Imx()
         vela = self.imx.has_npu_ethos()
         store_vx_graph_compilation(self.imx)
+        disable_zero_copy_neutron(self.imx)
 
         if self.backend == 'NPU':
             if self.imx.is_imx93() or self.imx.is_imx95():
@@ -139,12 +140,6 @@ class PoseExample:
                 raise NotImplementedError(f"Example can't run on {name} NPU")
 
         try:
-            transform = {
-                'CPU': ' tensor_transform mode=typecast option=uint8 ! ',
-                'NPU': ' tensor_transform mode=typecast option=uint8 ! ',
-            }
-            self.tensor_transform = transform[self.backend]
-
             if vela:
                 quantized_model = 'movenet_quant_vela.tflite'
             else:
@@ -254,7 +249,6 @@ class PoseExample:
         cmdline += gstvideoimx.accelerated_videoscale(
             self.MODEL_INPUT_WIDTH, self.MODEL_INPUT_HEIGHT, 'RGB', use_gpu3d=self.use_gpu3d)
         cmdline += ' tensor_converter !'
-        cmdline += self.tensor_transform
         cmdline += ' tensor_filter name=model_inference framework=tensorflow-lite model={:s} {:s} !' \
             .format(self.tflite_path, self.tensor_filter_custom)
         cmdline += ' tensor_sink name=tensor_sink'

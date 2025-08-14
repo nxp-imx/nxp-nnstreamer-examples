@@ -27,6 +27,9 @@ function setup_env {
   fi
   if [[ "${UNAME}" =~ "imx95" ]]; then
     IMX="IMX95"
+    # Disable input tensor zero-copy feature not yet supported by NNStreamer
+    # This feature was enabled by default for Neutron NPUs
+    export NEUTRON_ENABLE_ZERO_COPY='0'
   fi
   if [ -z ${IMX} ]; then
     error "platform not supported"

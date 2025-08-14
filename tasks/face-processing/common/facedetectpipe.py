@@ -23,7 +23,7 @@ python_path = os.path.join(os.path.dirname(os.path.abspath(__file__)),
                            '../../../common/python')
 sys.path.append(python_path)
 from imxpy.imx_dev import Imx  # noqa
-from imxpy.common_utils import GstVideoImx, store_vx_graph_compilation  # noqa
+from imxpy.common_utils import GstVideoImx, store_vx_graph_compilation, disable_zero_copy_neutron  # noqa
 
 
 class StdInHelper:
@@ -83,6 +83,7 @@ class Pipe:
 
         self.imx = Imx()
         store_vx_graph_compilation(self.imx)
+        disable_zero_copy_neutron(self.imx)
 
         self.gpu = os.getenv('GPU', 'GPU2D')
         self.use_gpu3d = self.gpu == 'GPU3D'
@@ -358,8 +359,11 @@ class FaceDetectPipe(Pipe):
         cmdline = 'v4l2src device={:s} ! '.format(self.camera_device)
         cmdline += '  {:s} ! '.format(video_caps)
         if self.flip:
-            cmdline += gstvideoimx.accelerated_videoscale(
-                flip=True, use_gpu3d=self.use_gpu3d)
+            if self.secondary_pipe:
+                print('video flip is currently enabled for face detection demo only')
+            else:
+                cmdline += gstvideoimx.accelerated_videoscale(
+                    flip=True, use_gpu3d=self.use_gpu3d)
         cmdline += '  tee name=tvideo '
         cmdline += 'tvideo. ! queue max-size-buffers=1 leaky=2 ! '
 

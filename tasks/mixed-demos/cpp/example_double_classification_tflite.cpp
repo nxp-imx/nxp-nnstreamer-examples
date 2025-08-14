@@ -108,7 +108,7 @@ int cmdParser(int argc, char **argv, ParserOptions& options)
                   << std::setw(25) << std::left << "  -n, --normalization"
                   << std::setw(25) << std::left
                   << "Use the selected normalization"
-                  << " (none,centered,scaled,centeredScaled,castInt32,castuInt8)" << std::endl
+                  << " (none,centered,scaled,centeredScaled)" << std::endl
 
                   << std::setw(25) << std::left << "  -c, --camera_device"
                   << std::setw(25) << std::left
@@ -378,7 +378,7 @@ int main(int argc, char **argv)
   // Set latency of model for video compositor
   int latency;
   imx::Imx imx{};
-  if ((options.backendCam1 == "NPU") || (options.backendCam2 == "NPU")) {
+  if ((options.backendCam1 == "NPU") && (options.backendCam2 == "NPU")) {
     if (imx.isIMX8())
       latency = MODEL_LATENCY_NS_NPU_VSI;
     else if (imx.hasEthosNPU())

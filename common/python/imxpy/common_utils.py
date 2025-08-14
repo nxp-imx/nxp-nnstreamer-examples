@@ -242,3 +242,12 @@ def store_vx_graph_compilation(imx):
         os.environ['VIV_VX_ENABLE_CACHE_GRAPH_BINARY'] = '1'
         HOME = os.getenv('HOME')
         os.environ['VIV_VX_CACHE_BINARY_GRAPH_DIR'] = HOME
+
+def disable_zero_copy_neutron(imx):
+    """ Disable input tensor zero-copy feature not yet supported by NNStreamer
+    This feature was enabled by default for Neutron NPUs
+
+    imx: imxdev.Imx() instance
+    """
+    if imx.has_npu_neutron():
+        os.environ['NEUTRON_ENABLE_ZERO_COPY'] = '0'

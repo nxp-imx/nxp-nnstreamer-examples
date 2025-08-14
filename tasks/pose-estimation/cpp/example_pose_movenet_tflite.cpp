@@ -88,7 +88,7 @@ int cmdParser(int argc, char **argv, ParserOptions& options)
                   << std::setw(25) << std::left << "  -n, --normalization"
                   << std::setw(25) << std::left
                   << "Use the selected normalization"
-                  << " (none,centered,scaled,centeredScaled,castInt32,castuInt8)" << std::endl
+                  << " (none,centered,scaled,centeredScaled)" << std::endl
 
                   << std::setw(25) << std::left << "  -c, --camera_device"
                   << std::setw(25) << std::left
@@ -191,7 +191,7 @@ int main(int argc, char **argv)
   // Initialize command line parser with default values
   ParserOptions options;
   options.backend = "NPU";
-  options.norm = "castuInt8";
+  options.norm = "none";
   options.perfType = PerformanceType::none;
   options.graphPath = getenv("HOME");
   options.camWidth = 640;

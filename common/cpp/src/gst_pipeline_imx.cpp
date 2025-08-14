@@ -33,6 +33,19 @@ void storeVxGraphCompilation(imx::Imx imx, char *graphPath)
 }
 
 /**
+ * @brief Disable input tensor zero-copy feature not yet supported by NNStreamer
+ *        This feature was enabled by default for Neutron NPUs
+ * 
+ * @param imx: i.MX used.
+ */
+void DisableZeroCopyNeutron(imx::Imx imx)
+{
+  if(imx.hasNeutronNPU()) {
+    setenv("NEUTRON_ENABLE_ZERO_COPY","0",1);
+  }
+}
+
+/**
  * @brief Counter used to avoid duplicate names into pipeline.
  */
 int GstPipelineImx::elemNameCount = 0;
@@ -100,6 +113,7 @@ void GstPipelineImx::parse(char *graphPath)
   imx::Imx imx{};
   log_info("Start app...\n");
   storeVxGraphCompilation(imx, graphPath);
+  DisableZeroCopyNeutron(imx);
 
   pipeCount += 1;
 

@@ -40,8 +40,6 @@ enum class Normalization {
   centered,
   scaled,
   centeredScaled,
-  castInt32,
-  castuInt8,
 };
 
 

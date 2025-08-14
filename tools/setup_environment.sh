@@ -49,7 +49,6 @@ export EMOTION_QUANT_VELA="${FACE_DIR}/emotion_uint8_float32_vela.tflite"
 
 # Define pose data path
 POSE_DIR="${MODELS_DIR}/pose-estimation"
-export MOVENET="${POSE_DIR}/movenet_single_pose_lightning.tflite"
 export MOVENET_QUANT="${POSE_DIR}/movenet_quant.tflite"
 export MOVENET_QUANT_VELA="${POSE_DIR}/movenet_quant_vela.tflite"
 
