@@ -1,16 +1,29 @@
 # Release Notes
 
+## [Release v1.6](https://github.com/nxp-imx/nxp-nnstreamer-examples/tree/v1.6)
+
+### Updates
+
+| Name                                               | Platforms   | Models         | Language | Backend | Status     |
+|----------------------------------------------------|-------------|----------------|----------|---------|------------|
+| face detection **(revert NPU enablement)**         | **i.MX 95** | UltraFace-slim | C++      | CPU     | regression |
+| object detection + emotion detection **(deleted)** | all         |                | C++      |         | obsolete   |
+
+### Other Changes
+- Add 3D GPU support for image resizing and color space conversion
+- Accelerated video cropping with 2D GPU
+
 ## [Release v1.5.1](https://github.com/nxp-imx/nxp-nnstreamer-examples/tree/v1.5.1)
 
 ### Updates
 
-| Name                  | Platforms   | Models      | Language      | Backend |
-|-----------------------|-------------|-------------|---------------|---------|
-| face detection        | **i.MX 95** | UltraFace   | Python/C++    | **NPU** |
-| object detection      | **i.MX 95** | Yolov4-tiny | Bash + Python | **CPU** |
-| sementic segmentation | **i.MX 95** | DeepLab v3  | Bash          | **CPU** |
-| pose estimation       | **i.MX 95** | MoveNet     | Python        | **CPU** |
-| all existing examples | **i.MX 95** |             | C++           | **CPU** |
+| Name                  | Platforms   | Models         | Language      | Backend |
+|-----------------------|-------------|----------------|---------------|---------|
+| face detection        | **i.MX 95** | UltraFace-slim | Python/C++    | **NPU** |
+| object detection      | **i.MX 95** | Yolov4-tiny    | Bash + Python | **CPU** |
+| sementic segmentation | **i.MX 95** | DeepLab v3     | Bash          | **CPU** |
+| pose estimation       | **i.MX 95** | MoveNet        | Python        | **CPU** |
+| all existing examples | **i.MX 95** |                | C++           | **CPU** |
 
 ### Other Changes
 - Update download procedure to compile models with latest eIQ Toolkit version (1.15) for i.MX 95 Neutron NPU
@@ -64,9 +77,9 @@
 
 ### New Features
 
-| Name                       | Platforms                 | Models                       | Language | Backend |
-|----------------------------|---------------------------|------------------------------|----------|---------|
-| **emotion classification** | i.MX 8M Plus <br> i.MX 93 | UltraFace + Deepface-emotion | Python   | NPU     |
+| Name                       | Platforms                 | Models                            | Language | Backend |
+|----------------------------|---------------------------|-----------------------------------|----------|---------|
+| **emotion classification** | i.MX 8M Plus <br> i.MX 93 | UltraFace-slim + Deepface-emotion | Python   | NPU     |
 
 ### Bug Fix
 - Fix Yolov4-tiny bounding box coordinates
@@ -79,11 +92,11 @@
 
 ### New Features
 
-| Name                 | Platforms                 | Models                 | Language      | Backend   |
-|----------------------|---------------------------|------------------------|---------------|-----------|
-| object detection     | i.MX 8M Plus <br> i.MX 93 | **Yolov4 tiny**        | Bash + Python | CPU / NPU |
-| **face detection**   | i.MX 8M Plus <br> i.MX 93 | UltraFace              | Python        | NPU       |
-| **face recognition** | i.MX 8M Plus <br> i.MX 93 | UltraFace + FaceNet512 | Python        | NPU       |
+| Name                 | Platforms                 | Models                      | Language      | Backend   |
+|----------------------|---------------------------|-----------------------------|---------------|-----------|
+| object detection     | i.MX 8M Plus <br> i.MX 93 | **Yolov4 tiny**             | Bash + Python | CPU / NPU |
+| **face detection**   | i.MX 8M Plus <br> i.MX 93 | UltraFace-slim              | Python        | NPU       |
+| **face recognition** | i.MX 8M Plus <br> i.MX 93 | UltraFace-slim + FaceNet512 | Python        | NPU       |
 
 ## [Release v1.0](https://github.com/nxp-imx/nxp-nnstreamer-examples/tree/v1.0)
 
