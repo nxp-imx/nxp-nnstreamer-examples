@@ -110,31 +110,39 @@ class GstVideoImx:
                     cmd = self.accelerated_videoscale(
                         flip=True, use_gpu3d=False)
                 # imxvideoconvert_ocl does not support GRAY8 sink
-                # use acceleration to RGB
+                # use acceleration to YUY2
                 if valid_dimensions or required_format:
                     if format == 'GRAY8':
                         cmd += self.videoscale_to_format(
-                            'RGB', width, height, 'ocl')
-                        cmd += f'videoconvert name=rgb_convert_cpu_{self.cnt_element_names} ! video/x-raw,format={format} ! '
+                            'YUY2', width, height, 'ocl', keep_image_ratio=keep_image_ratio)
+                        cmd += f'videoconvert name=gray_convert_cpu_{self.cnt_element_names} ! video/x-raw,format={format} ! '
                         self.cnt_element_names += 1
                     else:
                         cmd += self.videoscale_to_format(
                             format, width, height, 'ocl')
             else:
-                # no hardware acceleration
+                # no 3D GPU acceleration
                 print(
-                    'this target has no GPU3D support, operations will be executed on CPU instead')
-                cmd = self.videoscale_to_format(
-                    format, width, height, flip=False)
+                    'this target has no GPU3D support, operations will be executed on supported HW instead')
+                cmd = self.accelerated_videoscale(
+                    width, height, format, flip, False, cropping, keep_image_ratio)
         else:  # Use GPU2D or CPU
             if self.imx.has_g2d():
-                # imxvideoconvert_g2d does not support RGB nor GRAY8 sink
-                # use acceleration to RGBA
-                if format == 'RGB' or format == 'GRAY8':
+                # # imxvideoconvert_g2d does not support RGB nor GRAY8 sink on i.MX8 platforms
+                # use acceleration to RGBA instead
+                if self.imx.is_imx8() and (format == 'RGB' or format == 'GRAY8'):
                     cmd = self.videoscale_to_format(
-                        'RGBA', width, height, 'g2d', flip, cropping)
-                    cmd += f'videoconvert name=rgb_convert_cpu_{self.cnt_element_names} ! video/x-raw,format={format} ! '
+                        'RGBA', width, height, 'g2d', flip, cropping, keep_image_ratio)
+                    format_name = 'rgb' if format == 'RGB' else 'gray'
+                    cmd += f'videoconvert name={format_name}_convert_cpu_{self.cnt_element_names} ! video/x-raw,format={format} ! '
                     self.cnt_element_names += 1
+                 # # imxvideoconvert_g2d does not support GRAY8 sink on i.MX95 platform
+                 # use acceleration to YUY2 instead
+                 #TODO: to remove condition when GRAY8 will be supported
+                elif self.imx.is_imx95() and format == 'GRAY8':
+                    cmd = self.videoscale_to_format(
+                    'YUY2', width, height, 'g2d', flip, cropping, keep_image_ratio)
+                    cmd += f'videoconvert name=gray_convert_cpu_{self.cnt_element_names} ! video/x-raw,format={format} ! '
                 else:
                     cmd = self.videoscale_to_format(
                         format, width, height, 'g2d', flip, cropping)

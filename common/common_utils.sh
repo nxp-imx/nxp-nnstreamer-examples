@@ -174,8 +174,12 @@ case "${GPU}" in
     case "${GPU2D_API}" in
     G2D)
       # g2d-based
+      if [ "${IMX}" = "IMX8MP" ]; then
       VIDEO_SCALE_RGB=$(accelerated_video_scale_str ${MODEL_WIDTH} ${MODEL_HEIGHT} "RGBA")
       VIDEO_SCALE_RGB+="videoconvert name=${FORMAT_ELEMENT_NAME} ! video/x-raw,format=RGB ! "
+      else
+      VIDEO_SCALE_RGB=$(accelerated_video_scale_str ${MODEL_WIDTH} ${MODEL_HEIGHT} "RGB")
+      fi
       ;;
     PXP)
       # pxp-based

@@ -15,19 +15,19 @@ using FormatMap = std::unordered_map<std::string, bool>;
  */
 std::unordered_map<std::string, FormatMap> isFormatSupported = {
     {"i.MX 8M Plus", {
-        {"RGB16", true}, {"RGBx", true}, {"RGBA", true}, {"BGRA", true}, {"BGRx", true},
-        {"BGR16", true}, {"ARGB", true}, {"ABGR", true}, {"xRGB", true}, {"xBGR", true},
-        {"UYVY", false}, {"YUY2", false}, {"NV12", false}, {"GRAY8", false}, {"BGR", false}
+        {"RGB", false}, {"RGB16", true}, {"RGBA", true}, {"ARGB", true}, {"RGBx", true},{"xRGB", true},
+        {"BGR", false}, {"BGR16", true}, {"BGRA", true}, {"ABGR", true}, {"BGRx", true}, {"xBGR", true},
+        {"UYVY", false}, {"YUY2", false}, {"NV12", false}, {"GRAY8", false}
     }},
     {"i.MX 93", {
-        {"RGB16", true}, {"RGBx", false}, {"RGBA", false}, {"BGRA", true}, {"BGRx", true},
-        {"BGR16", false}, {"ARGB", false}, {"ABGR", false}, {"xRGB", false}, {"xBGR", false},
-        {"UYVY", true}, {"YUY2", false}, {"NV12", false}, {"GRAY8", true}, {"BGR", true}
+        {"RGB", false}, {"RGB16", true}, {"RGBA", false}, {"ARGB", false}, {"RGBx", false},{"xRGB", false},
+        {"BGR", true}, {"BGR16", false}, {"BGRA", true}, {"ABGR", false}, {"BGRx", true}, {"xBGR", false},
+        {"UYVY", true}, {"YUY2", false}, {"NV12", false}, {"GRAY8", true}
     }},
     {"i.MX 95", {
-        {"RGB16", true}, {"RGBx", true}, {"RGBA", true}, {"BGRA", true}, {"BGRx", true},
-        {"BGR16", true}, {"ARGB", true}, {"ABGR", true}, {"xRGB", true}, {"xBGR", true},
-        {"UYVY", true}, {"YUY2", true}, {"NV12", true}, {"GRAY8", true}, {"BGR", false}
+        {"RGB", true}, {"RGB16", true}, {"RGBA", true}, {"ARGB", true}, {"RGBx", true},{"xRGB", true},
+        {"BGR", false}, {"BGR16", true}, {"BGRA", true}, {"ABGR", true}, {"BGRx", true}, {"xBGR", true},
+        {"UYVY", false}, {"YUY2", false}, {"NV12", false}, {"GRAY8", false}
     }}
 };
 
@@ -131,21 +131,25 @@ void GstVideoImx::videoscaleToRGB(GstPipelineImx &pipeline,
   std::string cmd;
   std::string name;
   if (this->imx.hasGPU2d()) {
-    /**
-     * imxvideoconvert_g2d does not support RGB sink
-     * and use CPU to convert RGBA to RGB
-     */ 
-    videoTransform(pipeline, "RGBA", width, height, false);
-    name = "name=rgb_convert_cpu_" + std::to_string(pipeline.elemNameCount);
-    pipeline.elemNameCount += 1;
-    cmd = "videoconvert ";
-    cmd += name;
-    cmd += " ! video/x-raw,format=RGB ! ";
+    if (this->imx.isIMX8()) {
+      /**
+       * imxvideoconvert_g2d does not support RGB sink on i.MX 8 boards
+       * and uses CPU to convert RGBA to RGB
+       */ 
+      videoTransform(pipeline, "RGBA", width, height, false);
+      name = "name=rgb_convert_cpu_" + std::to_string(pipeline.elemNameCount);
+      pipeline.elemNameCount += 1;
+      cmd = "videoconvert ";
+      cmd += name;
+      cmd += " ! video/x-raw,format=RGB ! ";
+    } else {
+      videoTransform(pipeline, "RGB", width, height, false);
+    }
     pipeline.addToPipeline(cmd);
   } else if (this->imx.hasPxP()) {
     /** 
      * imxvideoconvert_pxp does not support RGB sink
-     * and use CPU to convert BGR to RGB
+     * and uses CPU to convert BGR to RGB
      */
     videoTransform(pipeline, "BGR", width, height, false);
     name = "name=rgb_convert_cpu_" + std::to_string(pipeline.elemNameCount);
