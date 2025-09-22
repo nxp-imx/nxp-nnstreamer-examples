@@ -64,17 +64,17 @@ class StdInHelper:
 
 class PoseExample:
 
-    def __init__(self, video_file, video_dims, camera_device, flip=False, argv=[]):
+    def __init__(self, video_file, video_dims, camera_device, flip=False, crop_video=True, argv=[]):
         # video input definitions
         self.VIDEO_INPUT_WIDTH = video_dims[0]
         self.VIDEO_INPUT_HEIGHT = video_dims[1]
-        # video input is cropped to be squared for model
-        cropped_wh = min(self.VIDEO_INPUT_WIDTH, self.VIDEO_INPUT_HEIGHT)
-        self.VIDEO_INPUT_RESIZED_WIDTH = cropped_wh
-        self.VIDEO_INPUT_RESIZED_HEIGHT = cropped_wh
+        # select if video input will be cropped or resized to preserve image ratio for model inferences
+        self.crop_video = crop_video
+        # video input is redimensioned (either cropped or resized) to be squared for model
+        min_wh = min(self.VIDEO_INPUT_WIDTH, self.VIDEO_INPUT_HEIGHT)
+        self.VIDEO_INPUT_RESIZED_WIDTH = min_wh
+        self.VIDEO_INPUT_RESIZED_HEIGHT = min_wh
         self.flip = flip
-
-        # camera definition
         self.camera_device = camera_device
 
         # model constants
@@ -200,7 +200,7 @@ class PoseExample:
 
         gstvideoimx = GstVideoImx(self.imx)
 
-        # i.MX93 and i.MX95 does not support video file decoding
+        # i.MX93 does not support video file decoding
         if self.imx.is_imx93() and self.source == 'VIDEO':
             print('video file cannot be decoded, use camera source instead')
             self.source = 'CAMERA'
@@ -217,37 +217,44 @@ class PoseExample:
             else:
                 print('only .mkv or .webm video format can be decoded by this pipeline')
                 return
-            cmdline += ' video/x-raw,width={:d},height={:d} !'.format(
+            cmdline += ' video/x-raw,width={:d},height={:d} ! '.format(
                 self.VIDEO_INPUT_WIDTH, self.VIDEO_INPUT_HEIGHT)
 
         elif self.source == 'CAMERA':
             cmdline = 'v4l2src name=cam_src device={:s} num-buffers=-1 ! '.format(
                 self.camera_device)
-            cmdline += 'video/x-raw, width={:d},height={:d} !'.format(
+            cmdline += 'video/x-raw, width={:d},height={:d} ! '.format(
                 self.VIDEO_INPUT_WIDTH, self.VIDEO_INPUT_HEIGHT)
         else:
             raise ValueError('Wrong source, must be VIDEO or CAMERA')
 
-        # crop for square video format
-        crop_left = crop_right = (
-            self.VIDEO_INPUT_WIDTH - self.VIDEO_INPUT_RESIZED_WIDTH) // 2
-        if ((crop_left * 2 + self.VIDEO_INPUT_RESIZED_WIDTH) != self.VIDEO_INPUT_WIDTH):
-            crop_right += 1
-        crop_top = crop_bottom = (
-            self.VIDEO_INPUT_HEIGHT - self.VIDEO_INPUT_RESIZED_HEIGHT) // 2
-        if ((crop_top * 2 + self.VIDEO_INPUT_RESIZED_HEIGHT) != self.VIDEO_INPUT_HEIGHT):
-            crop_bottom += 1
+        if self.crop_video:
+            # crop for square video format
+            crop_left = crop_right = (
+                self.VIDEO_INPUT_WIDTH - self.VIDEO_INPUT_RESIZED_WIDTH) // 2
+            if ((crop_left * 2 + self.VIDEO_INPUT_RESIZED_WIDTH) != self.VIDEO_INPUT_WIDTH):
+                crop_right += 1
+            crop_top = crop_bottom = (
+                self.VIDEO_INPUT_HEIGHT - self.VIDEO_INPUT_RESIZED_HEIGHT) // 2
+            if ((crop_top * 2 + self.VIDEO_INPUT_RESIZED_HEIGHT) != self.VIDEO_INPUT_HEIGHT):
+                crop_bottom += 1
 
-        cmdline += gstvideoimx.accelerated_videocrop_to_format('video_crop', top=crop_top, bottom=crop_bottom,
-                                                               left=crop_left, right=crop_right, use_gpu3d=self.use_gpu3d)
+            cmdline += gstvideoimx.accelerated_videocrop_to_format('video_crop', top=crop_top, bottom=crop_bottom,
+                                                                   left=crop_left, right=crop_right, use_gpu3d=self.use_gpu3d)
+
         if self.flip:
             cmdline += gstvideoimx.accelerated_videoscale(
                 flip=True, use_gpu3d=self.use_gpu3d)
 
         cmdline += ' tee name=t'
         cmdline += ' t. ! queue name=thread-nn max-size-buffers=2 leaky=2 ! '
-        cmdline += gstvideoimx.accelerated_videoscale(
-            self.MODEL_INPUT_WIDTH, self.MODEL_INPUT_HEIGHT, 'RGB', use_gpu3d=self.use_gpu3d)
+        if self.crop_video:
+            cmdline += gstvideoimx.accelerated_videoscale(
+                self.MODEL_INPUT_WIDTH, self.MODEL_INPUT_HEIGHT, 'RGB', use_gpu3d=self.use_gpu3d)
+        else:
+            # downscale resize preserving image ratio
+            cmdline += gstvideoimx.accelerated_videoscale(self.MODEL_INPUT_WIDTH, self.MODEL_INPUT_HEIGHT,
+                                                          'RGB', use_gpu3d=self.use_gpu3d, keep_image_ratio=True)
         cmdline += ' tensor_converter !'
         cmdline += ' tensor_filter name=model_inference framework=tensorflow-lite model={:s} {:s} !' \
             .format(self.tflite_path, self.tensor_filter_custom)
@@ -318,10 +325,27 @@ class PoseExample:
                     .copy()
 
                 # rescale normalized keypoints (x,y) per video resolution
-                np_kpts[:, self.MODEL_KEYPOINT_INDEX_X] *= \
-                    self.VIDEO_INPUT_RESIZED_WIDTH
-                np_kpts[:, self.MODEL_KEYPOINT_INDEX_Y] *= \
-                    self.VIDEO_INPUT_RESIZED_HEIGHT
+                if self.crop_video:
+                    np_kpts[:, self.MODEL_KEYPOINT_INDEX_X] *= \
+                        self.VIDEO_INPUT_RESIZED_WIDTH
+                    np_kpts[:, self.MODEL_KEYPOINT_INDEX_Y] *= \
+                        self.VIDEO_INPUT_RESIZED_HEIGHT
+                else:
+                    # rescale is based on downscale resize preserving image ratio
+                    w = self.VIDEO_INPUT_WIDTH
+                    h = self.VIDEO_INPUT_HEIGHT
+                    wm = self.MODEL_INPUT_WIDTH
+                    hm = self.MODEL_INPUT_HEIGHT
+                    if w/h >= wm/hm:
+                        np_kpts[:, self.MODEL_KEYPOINT_INDEX_X] *= w
+                        np_kpts[:, self.MODEL_KEYPOINT_INDEX_Y] = \
+                            w * np_kpts[:, self.MODEL_KEYPOINT_INDEX_Y] + \
+                            h / 2 - w * hm / (2 * wm)
+                    else:
+                        np_kpts[:, self.MODEL_KEYPOINT_INDEX_Y] *= h
+                        np_kpts[:, self.MODEL_KEYPOINT_INDEX_X] = \
+                            h * np_kpts[:, self.MODEL_KEYPOINT_INDEX_X] + \
+                            w / 2 - h * wm / (2 * hm)
 
                 # score confidence criteria
                 for np_kpt in np_kpts:
@@ -363,7 +387,7 @@ class PoseExample:
 
             # draw keypoint spot
             context.set_source_rgb(1, 0, 0)
-            context.arc(x_kpt, y_kpt, 1, 0, 2 * math.pi)
+            context.arc(x_kpt, y_kpt, 3, 0, 2 * math.pi)
             context.fill()
             context.stroke()
 
@@ -471,12 +495,18 @@ if __name__ == '__main__':
                         type=str,
                         help='camera device node',
                         default=default_camera)
+    parser.add_argument('--square_cropping',
+                        default=True, action=argparse.BooleanOptionalAction,
+                        help='crop video to a square image for inference, or resize preserving video ratio instead')
     args = parser.parse_args()
 
     video_file = args.video_file
     camera_device = args.camera_device
     video_dims = tuple(args.video_dims)
     flip = args.mirror
+    crop_video = args.square_cropping
+    print(crop_video)
+
     example = PoseExample(video_file, video_dims,
-                          camera_device, flip, sys.argv[2:])
+                          camera_device, flip, crop_video, sys.argv[2:])
     example.run()

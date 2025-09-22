@@ -352,7 +352,7 @@ class FaceDetectPipe(Pipe):
 
         gstvideoimx = GstVideoImx(self.imx)
 
-        video_caps = ('video/x-raw, '
+        video_caps = ('video/x-raw,'
                       'width={:d},height={:d},framerate={:d}/1,format=YUY2') \
             .format(vw, vh, vr)
 

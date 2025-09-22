@@ -26,9 +26,11 @@ The following execution parameters are available (Run ``` ./example_pose_movenet
 
 Option | Description
 --- | ---
---video_file FILE | Selects another video source file with given FILE path
---video_dims WIDTH HEIGHT | Provides the video source resolution
---mirror | Flips the camera stream when using a front camera
+--video_file/-f FILE | Selects another video source file with given FILE path
+--video_dims/-d WIDTH HEIGHT | Provides the video source resolution
+--mirror/-m | Flips the camera stream when using a front camera
+--camera_device/-c CAMERA_DEVICE | camera device node
+--no-square_cropping | resize preserving video ratio instead of video cropping
 
 Note: Video used is in Matroska (.mkv) format with VP9 encoding, which is not supported by i.MX 93 decoding capabilities
 

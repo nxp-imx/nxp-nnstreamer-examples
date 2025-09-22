@@ -20,7 +20,7 @@ class GstVideoImx:
         # counter used to avoid duplicated names in the pipeline
         self.cnt_element_names = 0
 
-    def video_flip(self, hardware=None, flip_only=None):
+    def video_flip(self, hardware=None, flip_only=None, keep_image_ratio=False):
         """Create pipeline segment for accelerated video flip.
 
         hardware: corresponding hardware to accelerate video composition
@@ -32,7 +32,10 @@ class GstVideoImx:
             else:
                 operation_name = f"scale_csc_flip_{hardware}_{self.cnt_element_names}"
             cmd = f'imxvideoconvert_{hardware} name={operation_name} '
-            cmd += 'rotation=4 ! '
+            cmd += 'rotation=4 '
+            if keep_image_ratio:
+                cmd += 'keep-ratio=True '
+            cmd += '! '
         else:
             # no acceleration
             cmd = f'videoflip video-direction=4 name=flip_cpu_{self.cnt_element_names} ! '
@@ -40,7 +43,7 @@ class GstVideoImx:
 
         return cmd
 
-    def videoscale_to_format(self, format=None, width=None, height=None, hardware=None, flip=False, cropping=False):
+    def videoscale_to_format(self, format=None, width=None, height=None, hardware=None, flip=False, cropping=False, keep_image_ratio=False):
         """Create pipeline segment for accelerated video formatting and csc.
 
         hardware: corresponding hardware to accelerate video composition
@@ -63,7 +66,10 @@ class GstVideoImx:
                 if cropping:
                     cmd = f'imxvideoconvert_{hardware} name=video_crop_scale_csc_{hardware}_{self.cnt_element_names} videocrop-meta-enable=true ! '
                 else:
-                    cmd = f'imxvideoconvert_{hardware} name=scale_csc_{hardware}_{self.cnt_element_names} ! '
+                    cmd = f'imxvideoconvert_{hardware} name=scale_csc_{hardware}_{self.cnt_element_names} '
+                    if keep_image_ratio:
+                        cmd += 'keep-ratio=True '
+                    cmd += ' ! '
                 self.cnt_element_names += 1
         else:
             # no acceleration
@@ -87,7 +93,7 @@ class GstVideoImx:
 
         return cmd
 
-    def accelerated_videoscale(self, width=None, height=None, format=None, flip=False, use_gpu3d=False, cropping=False):
+    def accelerated_videoscale(self, width=None, height=None, format=None, flip=False, use_gpu3d=False, cropping=False, keep_image_ratio=False):
         """Create pipeline segment for accelerated video scaling and conversion
         to a given GStreamer video format.
 
@@ -119,7 +125,7 @@ class GstVideoImx:
                         self.cnt_element_names += 1
                     else:
                         cmd += self.videoscale_to_format(
-                            format, width, height, 'ocl')
+                            format, width, height, 'ocl', keep_image_ratio=keep_image_ratio)
             else:
                 # no 3D GPU acceleration
                 print(
@@ -145,22 +151,22 @@ class GstVideoImx:
                     cmd += f'videoconvert name=gray_convert_cpu_{self.cnt_element_names} ! video/x-raw,format={format} ! '
                 else:
                     cmd = self.videoscale_to_format(
-                        format, width, height, 'g2d', flip, cropping)
+                        format, width, height, 'g2d', flip, cropping, keep_image_ratio)
             elif self.imx.has_pxp():
                 if format == 'RGB':
                     # imxvideoconvert_pxp does not support RGB sink
                     # use acceleration to BGR
                     cmd = self.videoscale_to_format(
-                        'BGR', width, height, 'pxp', flip)
+                        'BGR', width, height, 'pxp', flip, keep_image_ratio=keep_image_ratio)
                     cmd += f'videoconvert name=rgb_convert_cpu_{self.cnt_element_names} ! video/x-raw,format={format} ! '
                     self.cnt_element_names += 1
                 else:
                     cmd = self.videoscale_to_format(
-                        format, width, height, 'pxp', flip)
+                        format, width, height, 'pxp', flip, keep_image_ratio=keep_image_ratio)
             else:
                 # no hardware acceleration
                 cmd = self.videoscale_to_format(
-                    format, width, height, flip=flip)
+                    format, width, height, flip=flip, keep_image_ratio=keep_image_ratio)
 
         return cmd
 
