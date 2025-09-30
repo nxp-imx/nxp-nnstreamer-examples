@@ -4,7 +4,7 @@
 # SPDX-License-Identifier: BSD-3-Clause
 
 export REALPATH="$(readlink -f -- "$0")"
-BASEDIR="${BASEDIR:-$(dirname "${REALPATH}"}
+BASEDIR="${BASEDIR:-$(dirname "${REALPATH}")}"
 MODELS_DIR="${BASEDIR}/downloads/models"
 MEDIA_DIR="${BASEDIR}/downloads/media"
 
