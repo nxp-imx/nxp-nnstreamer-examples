@@ -6,7 +6,7 @@
 set -x
 
 REALPATH="$(readlink -e "$0")"
-BASEDIR="$(dirname "${REALPATH}")/.."
+BASEDIR="${BASEDIR:-$(dirname "${REALPATH}")/..}"
 MODELS_DIR="${BASEDIR}/downloads/models"
 REQUIRED_CAMERA=0
 
