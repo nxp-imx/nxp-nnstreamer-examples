@@ -200,13 +200,17 @@ void GstVideoCompositorImx::addCompositorToPipeline(GstPipelineImx &pipeline,
   std::string cmd;
   std::string customParams;
 
+  /* env var for alpha value allows runtime customization (only for i.MX93 with pxp) */
+  const char* envAlpha = std::getenv("ALPHA_VALUE");
+  std::string alphaValue = (envAlpha != nullptr) ? envAlpha : "0.3";
+
   for (int i=0; i < this->compositorInputs.size(); i++) {
     compositorInputParams inputParams = compositorInputs.at(i);
     std::string stream = "sink_" + std::to_string(i);
     customParams += stream + "::zorder=" + std::to_string(inputParams.order) + " ";
 
     if (this->imx.hasPxP() && (inputParams.transparency == true))
-      customParams += stream + "::alpha=0.3 ";
+      customParams += stream + "::alpha=" + alphaValue + " ";
   
     switch (inputParams.position)
     {

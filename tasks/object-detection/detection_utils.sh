@@ -8,7 +8,8 @@ function gst_exec_detection {
   # accelerated video scaling before inferencing
   local VIDEO_SCALE=$(accelerated_video_scale_rgb_str ${MODEL_WIDTH} ${MODEL_HEIGHT})
   # accelerated video composition
-  local VIDEO_MIXER=$(accelerated_video_mixer_str "mix" "sink_0::zorder=2 sink_1::zorder=1" "0" "0.3" "${MODEL_LATENCY}")
+  # ALPHA_VALUE env var allows runtime customization for alpha blending (only for i.MX93 with pxp) */
+  local VIDEO_MIXER=$(accelerated_video_mixer_str "mix" "sink_0::zorder=2 sink_1::zorder=1" "0" "${ALPHA_VALUE:-0.3}" "${MODEL_LATENCY}")
 
   gst-launch-1.0 \
     v4l2src name=cam_src device=${CAMERA_DEVICE} num-buffers=-1 ! \
