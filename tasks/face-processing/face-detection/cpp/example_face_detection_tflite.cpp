@@ -29,6 +29,7 @@
 
 typedef struct {
   std::filesystem::path camDevice;
+  std::filesystem::path videoPath;
   std::filesystem::path modelPath;
   std::string backend;
   std::string norm;
@@ -55,6 +56,7 @@ int cmdParser(int argc, char **argv, ParserOptions& options)
     {"normalization", required_argument, 0, 'n'},
     {"camera_device", required_argument, 0, 'c'},
     {"model_path",    required_argument, 0, 'p'},
+    {"video_file",    required_argument, 0, 'f'},
     {"display_perf",  optional_argument, 0, 'd'},
     {"text_color",    required_argument, 0, 't'},
     {"graph_path",    required_argument, 0, 'g'},
@@ -64,7 +66,7 @@ int cmdParser(int argc, char **argv, ParserOptions& options)
   
   while ((c = getopt_long(argc,
                           argv,
-                          "hb:n:c:p:d::t:g:r:",
+                          "hb:n:c:p:f:d::t:g:r:",
                           longOptions,
                           &optionIndex)) != -1) {
     switch (c)
@@ -93,6 +95,10 @@ int cmdParser(int argc, char **argv, ParserOptions& options)
                   << std::setw(25) << std::left << "  -p, --model_path"
                   << std::setw(25) << std::left
                   << "Use the selected model path" << std::endl
+
+                  << std::setw(25) << std::left << "  -f, --video_file"
+                  << std::setw(25) << std::left
+                  << "Use the selected video file instead of camera source" << std::endl
 
                   << std::setw(25) << std::left << "  -d, --display_perf"
                   << std::setw(25) << std::left
@@ -126,6 +132,10 @@ int cmdParser(int argc, char **argv, ParserOptions& options)
 
       case 'p':
         options.modelPath.assign(optarg);
+        break;
+
+      case 'f':
+        options.videoPath.assign(optarg);
         break;
 
       case 'd':
@@ -190,18 +200,24 @@ int main(int argc, char **argv)
   // Initialize pipeline object
   GstPipelineImx pipeline;
 
-  // Add camera to pipeline
-  CameraOptions camOpt = {
-    .cameraDevice   = options.camDevice,
-    .gstName        = "cam_src",
-    .width          = options.camWidth,
-    .height         = options.camHeight,
-    .horizontalFlip = false,
-    .format         = "",
-    .framerate      = options.framerate,
-  };
-  GstCameraImx camera(camOpt);
-  camera.addCameraToPipeline(pipeline);
+  if (options.videoPath.empty()) {
+    // Add camera to pipeline
+    CameraOptions camOpt = {
+      .cameraDevice   = options.camDevice,
+      .gstName        = "cam_src",
+      .width          = options.camWidth,
+      .height         = options.camHeight,
+      .horizontalFlip = false,
+      .format         = "",
+      .framerate      = options.framerate,
+    };
+    GstCameraImx camera(camOpt);
+    camera.addCameraToPipeline(pipeline);
+  } else {
+    // Add video to pipeline
+    GstVideoFileImx video(options.videoPath, false);
+    video.addVideoToPipeline(pipeline);
+  }
 
   // Add a tee element for parallelization of tasks
   std::string teeName = "tvideo";
@@ -227,7 +243,7 @@ int main(int argc, char **argv)
   GstQueueOptions imgQueue = {
     .queueName     = "thread-img",
     .maxSizeBuffer = 2,
-    .leakType      = GstQueueLeaky::downstream,
+    .leakType      = GstQueueLeaky::no,
   };
   pipeline.addBranch(teeName, imgQueue);
 

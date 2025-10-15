@@ -145,7 +145,7 @@ GstVideoFileImx::GstVideoFileImx(const std::filesystem::path &path,
     else if (imx.isIMX95()) // v4l2 vp9 decoder not available on IMX95
       cmdDecoder += "avdec_vp9 ! ";
   } else if (g_strcmp0(media_type, "video/x-h264") == 0) {
-     cmdDecoder += "h264parse ! v4l2h264dec ! ";
+    cmdDecoder += "h264parse ! v4l2h264dec ! ";
   } else if (g_strcmp0(media_type, "video/x-h265") == 0) {
     cmdDecoder += "h265parse ! v4l2h265dec ! ";
   } else {

@@ -24,7 +24,7 @@ C++ example script needs to be generated with [cross compilation](../). [setup_e
 
 An example running classification and object detection inferences in parallel is provided, which use the video saving feature. This example can be run with both models on NPU, using the following command:
  ```bash
-./build/mixed-demos/example_classification_and_detection_tflite -p ${MOBILENETV1_QUANT},${MOBILENETV2_QUANT} -l ${MOBILENETV1_LABELS},${COCO_LABELS} -x ${MOBILENETV2_BOXES} -f ${SAVE_VIDEO_PATH}
+./build/mixed-demos/example_classification_and_detection_tflite -p ${MOBILENETV1_QUANT},${MOBILENETV2_QUANT} -l ${MOBILENETV1_LABELS},${COCO_LABELS} -x ${MOBILENETV2_BOXES} -s ${SAVE_VIDEO_PATH}
 ```
 For i.MX 93 NPU use vela converted models:<br>
 *NOTE: Video saving feature is not available on i.MX 93.*
@@ -34,7 +34,7 @@ For i.MX 93 NPU use vela converted models:<br>
 
 For i.MX 95 NPU use neutron converted models:
  ```bash
-./build/mixed-demos/example_classification_and_detection_tflite -p ${MOBILENETV1_QUANT_NEUTRON},${MOBILENETV2_QUANT_NEUTRON} -l ${MOBILENETV1_LABELS},${COCO_LABELS} -x ${MOBILENETV2_BOXES} -f ${SAVE_VIDEO_PATH}
+./build/mixed-demos/example_classification_and_detection_tflite -p ${MOBILENETV1_QUANT_NEUTRON},${MOBILENETV2_QUANT_NEUTRON} -l ${MOBILENETV1_LABELS},${COCO_LABELS} -x ${MOBILENETV2_BOXES} -s ${SAVE_VIDEO_PATH}
 ```
 
 To use CPU or GPU backend, refers to the execution parameter ```--backend``` below.<br>
@@ -53,7 +53,7 @@ Option | Description
 -t, --text_color | Color of performances displayed, can choose between red, green, blue, and black<br> default: white
 -g, --graph_path | Path to store the result of the OpenVX graph compilation (only for i.MX8MPlus)<br> default: home directory
 -r, --cam_params | Use the selected camera resolution and framerate<br> default: 640x480, 30fps
--f, --video_file | Use the selected path to generate a video (only for i.MX 8M Plus)
+-s, --save_video | Use the selected path to generate a video (not available on i.MX 93)
 
 Press ```Esc or ctrl+C``` to stop the execution of the pipeline.
 
@@ -86,6 +86,7 @@ Option | Description
 -b, --backend FACE_BACKEND,POSE_BACKEND | Use the selected backend (CPU, GPU, NPU)<br> default: NPU,NPU
 -n, --normalization FACE_NORM,POSE_NORM | Use the selected normalization (none, centered, scaled, centeredScaled)<br> default: none,none
 -c, --camera_device | Use the selected camera device (/dev/video{number})<br>default: /dev/video0 for i.MX 93 and /dev/video3 for i.MX 8MP
+-f, --video_file | Use the selected video file instead of camera source
 -p, --model_path FACE_MODEL,POSE_MODEL | Use the selected model path
 -d, --display_perf |Display performances, can specify time or freq
 -t, --text_color | Color of performances displayed, can choose between red, green, blue, and black<br> default: white

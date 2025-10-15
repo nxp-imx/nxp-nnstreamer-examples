@@ -37,7 +37,7 @@ typedef struct {
   std::filesystem::path camDevice;
   std::filesystem::path cPath;
   std::filesystem::path dPath;
-  std::filesystem::path videoPath;
+  std::filesystem::path savePath;
   std::string cBackend;
   std::string dBackend;
   std::string cNorm;
@@ -73,7 +73,7 @@ int cmdParser(int argc, char **argv, ParserOptions& options)
     {"model_path",    required_argument, 0, 'p'},
     {"labels_path",   required_argument, 0, 'l'},
     {"boxes_path",    required_argument, 0, 'x'},
-    {"video_file",    required_argument, 0, 'f'},
+    {"save_video",    required_argument, 0, 's'},
     {"display_perf",  optional_argument, 0, 'd'},
     {"text_color",    required_argument, 0, 't'},
     {"graph_path",    required_argument, 0, 'g'},
@@ -83,7 +83,7 @@ int cmdParser(int argc, char **argv, ParserOptions& options)
 
   while ((c = getopt_long(argc,
                           argv,
-                          "hb:n:c:p:l:x:f:d::t:g:r:",
+                          "hb:n:c:p:l:x:s:d::t:g:r:",
                           longOptions,
                           &optionIndex)) != -1) {
     switch (c)
@@ -121,7 +121,7 @@ int cmdParser(int argc, char **argv, ParserOptions& options)
                   << std::setw(25) << std::left
                   << "Use the selected boxes path" << std::endl
 
-                  << std::setw(25) << std::left << "  -f, --video_file"
+                  << std::setw(25) << std::left << "  -s, --save_video"
                   << std::setw(25) << std::left
                   << "Use the selected path to generate a video (optional)" << std::endl
                   
@@ -182,8 +182,8 @@ int cmdParser(int argc, char **argv, ParserOptions& options)
         options.dDataDir.boxesDir = dataDir.boxesDir;
         break;
 
-      case 'f':
-        options.videoPath.assign(optarg);
+      case 's':
+        options.savePath.assign(optarg);
         break;
 
       case 'd':
@@ -389,7 +389,7 @@ int main(int argc, char **argv)
       .queueName = "thread-save",
     };
     pipeline.addBranch(ppTeeName, saveQueue);
-    postProcess.saveToVideo(pipeline, videoFormat, options.videoPath);
+    postProcess.saveToVideo(pipeline, videoFormat, options.savePath);
 
     // Add a branch to tee element to display result
     GstQueueOptions displayQueue = {
