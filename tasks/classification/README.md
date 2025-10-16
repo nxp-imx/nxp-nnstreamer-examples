@@ -3,8 +3,8 @@
 ## Overview
 Name | Implementation | Model | ML engine | Features
 --- | --- | --- | --- | --- |
-[example_classification_mobilenet_v1_tflite.cpp](./cpp/example_classification_mobilenet_v1_tflite.cpp) | C++ | MobileNetV1 | TFLite| camera<br>gst-launch<br>
-[example_classification_mobilenet_v1_tflite.sh](./example_classification_mobilenet_v1_tflite.sh) | Bash | MobileNetV1 | TFLite| camera<br>gst-launch<br>
+[example_classification_mobilenet_v1_tflite.cpp](./cpp/example_classification_mobilenet_v1_tflite.cpp) | C++ | MobileNetV1 | TFLite | v4l2 camera<br>video file decoding<br>gst-launch<br>
+[example_classification_mobilenet_v1_tflite.sh](./example_classification_mobilenet_v1_tflite.sh) | Bash | MobileNetV1 | TFLite | v4l2 camera<br>gst-launch<br>
 
 ## MobileNetV1 image classification
 ### Bash

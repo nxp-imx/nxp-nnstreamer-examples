@@ -3,8 +3,8 @@
 ## Overview
 Name | Implementation | Model | ML engine | Features
 --- | --- | --- | --- | ---
-[example_segmentation_deeplab_v3_tflite.cpp](./cpp/example_segmentation_deeplab_v3_tflite.cpp) | C++ | DeepLabV3 | TFLite | multifilesrc<br>gst-launch<br>
-[example_segmentation_deeplab_v3_tflite.sh](./example_segmentation_deeplab_v3_tflite.sh) | Bash | DeepLabV3 | TFLite | multifilesrc<br>gst-launch<br>
+[example_segmentation_deeplab_v3_tflite.cpp](./cpp/example_segmentation_deeplab_v3_tflite.cpp) | C++ | DeepLabV3 | TFLite | jpeg files slideshow<br>gst-launch<br>
+[example_segmentation_deeplab_v3_tflite.sh](./example_segmentation_deeplab_v3_tflite.sh) | Bash | DeepLabV3 | TFLite | jpeg files slideshow<br>gst-launch<br>
 
 ## DeepLabV3 segmentation
 ### Bash

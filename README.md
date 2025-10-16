@@ -57,14 +57,14 @@ Examples can then be run directly on the target. More information on individual 
 # Tasks
 Note that examples may not run on all platforms - check table below for platform compatibility.
 
-Snapshot | Name | Platforms | Features
---- | --- | --- | ---
-[![object detection demo](./tasks/object-detection/detection_demo.webp)](./tasks/object-detection/) | [Object Detection](./tasks/object-detection/) | i.MX 8M Plus <br> i.MX 93 <br> i.MX 95| MobileNet SSD <br> YOLOv4 Tiny <br> TFLite <br> v4l2 camera <br> gst-launch <br> [custom python tensor_filter](./tasks/object-detection/postprocess_yolov4_tiny.py)
-[![classification demo](./tasks/classification/classification_demo.webp)](./tasks/classification/) | [Classification](./tasks/classification/) | i.MX 8M Plus <br> i.MX 93 <br> i.MX 95| MobileNet <br> TFLite <br> v4l2 camera <br> gst-launch
-[![semantic segmentation demo](./tasks/semantic-segmentation/segmentation_demo.webp)](./tasks/semantic-segmentation/) | [Semantic Segmentation](./tasks/semantic-segmentation/) | i.MX 8M Plus <br> i.MX 93 <br> i.MX 95| DeepLabV3<br> TFLite<br> jpeg files slideshow<br> gst-launch
-[![pose estmation demo](./tasks/pose-estimation/pose_demo.webp)](./tasks/pose-estimation/) | [Pose Estimation](./tasks/pose-estimation/) |i.MX 8M Plus <br> i.MX 93<br> i.MX 95| MoveNet<br> TFLite <br> video file decoding (i.MX 8M Plus only)<br> v4l2 camera <br> gst-launch <br> python
-[![face processing demo](./tasks/face-processing/face_demo.webp)](./tasks/face-processing/) | [Face Processing](./tasks/face-processing/) | i.MX 8M Plus <br> i.MX 93<br> i.MX 95| UltraFace-slim <br> FaceNet512 <br> Deepface-emotion <br> TFLite <br> v4l2 camera <br> python
-[![monocular depth estimation demo](./tasks/monocular-depth-estimation/depth_demo.webp)](./tasks/monocular-depth-estimation/) | [Monocular Depth Estimation](./tasks/monocular-depth-estimation/) | i.MX 8M Plus <br> i.MX 93<br> i.MX 95| MiDaS v2 <br> TFLite <br> v4l2 camera <br> C++ <br> custom C++ decoding
-[![mixed demo](./tasks/mixed-demos/mixed_demo.webp)](./tasks/mixed-demos/) | [Mixed Demos](./tasks/mixed-demos/) | i.MX 8M Plus <br> i.MX 93<br> i.MX 95| MobileNet SSD <br> MobileNet <br> MoveNet <br> UltraFace-slim <br> Deepface-emotion <br> TFLite <br> v4l2 camera <br> C++ <br> custom C++ decoding
+Snapshot | Name | Platforms | Implementations | Models | ML engine | Features
+-------- | ---- | --------- | ----- | ---------- | -------- | ---------------
+[![object detection demo](./tasks/object-detection/detection_demo.webp)](./tasks/object-detection/) | [Object Detection](./tasks/object-detection/) | i.MX 8M Plus<br>i.MX 93<br>i.MX 95 | Bash<br>C++ | MobileNet SSD<br>YOLOv4 Tiny | TFLite | v4l2 camera<br>gst-launch<br>[custom python tensor_filter](./tasks/object-detection/postprocess_yolov4_tiny.py)
+[![classification demo](./tasks/classification/classification_demo.webp)](./tasks/classification/) | [Classification](./tasks/classification/) | i.MX 8M Plus<br>i.MX 93<br>i.MX 95 | Bash<br>C++ | MobileNet | TFLite | v4l2 camera<br>video file decoding<br>gst-launch
+[![semantic segmentation demo](./tasks/semantic-segmentation/segmentation_demo.webp)](./tasks/semantic-segmentation/) | [Semantic Segmentation](./tasks/semantic-segmentation/) | i.MX 8M Plus<br>i.MX 93<br>i.MX 95 | Bash<br>C++ | DeepLabV3 | TFLite | jpeg files slideshow<br>gst-launch
+[![pose estmation demo](./tasks/pose-estimation/pose_demo.webp)](./tasks/pose-estimation/) | [Pose Estimation](./tasks/pose-estimation/) |i.MX 8M Plus<br>i.MX 93<br>i.MX 95 | C++<br>Python | MoveNet | TFLite | v4l2 camera<br>video file decoding<br>gst-launch<br>custom model decoding
+[![face processing demo](./tasks/face-processing/face_demo.webp)](./tasks/face-processing/) | [Face Processing](./tasks/face-processing/) | i.MX 8M Plus<br>i.MX 93<br>i.MX 95 | C++<br>Python | UltraFace-slim <br> FaceNet512 <br> Deepface-emotion | TFLite | v4l2 camera<br>video file decoding<br>gst-launch<br>custom model decoding
+[![monocular depth estimation demo](./tasks/monocular-depth-estimation/depth_demo.webp)](./tasks/monocular-depth-estimation/) | [Monocular Depth Estimation](./tasks/monocular-depth-estimation/) | i.MX 8M Plus<br>i.MX 93<br>i.MX 95 | C++ | MiDaS v2 | TFLite | v4l2 camera<br>video file decoding<br>gst-launch<br>custom model decoding
+[![mixed demo](./tasks/mixed-demos/mixed_demo.webp)](./tasks/mixed-demos/) | [Mixed Demos](./tasks/mixed-demos/) | i.MX 8M Plus<br>i.MX 93<br>i.MX 95 | C++ | MobileNet SSD<br>MobileNet<br>MoveNet<br>UltraFace-slim<br>Deepface-emotion | TFLite | v4l2 camera<br>video file decoding<br>gst-launch<br>custom model decoding<br>video file encoding
 
 *Images and video used have been released under Creative Commons CC0 1.0 license or belong to Public Domain*
