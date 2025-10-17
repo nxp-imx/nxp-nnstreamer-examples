@@ -205,6 +205,10 @@ class PoseExample:
             print('video file cannot be decoded, use camera source instead')
             self.source = 'CAMERA'
 
+        if self.imx.is_imx95():
+            print("i.MX95 can't decode VP9, use camera source instead")
+            self.source = 'CAMERA'
+
         if self.source == 'VIDEO':
             cmdline = 'filesrc location={:s} !'.format(self.video_path)
             extension = os.path.splitext(self.video_file)[1]
@@ -212,8 +216,6 @@ class PoseExample:
             if extension == '.webm' or extension == '.mkv':
                 if self.imx.id() == SocId.IMX8MP:
                     cmdline += ' matroskademux ! v4l2vp9dec name=video-decode !'
-                elif self.imx.is_imx95():
-                    cmdline += ' matroskademux ! avdec_vp9 name=video-decode !'
             else:
                 print('only .mkv or .webm video format can be decoded by this pipeline')
                 return

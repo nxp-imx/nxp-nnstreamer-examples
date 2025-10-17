@@ -139,11 +139,16 @@ GstVideoFileImx::GstVideoFileImx(const std::filesystem::path &path,
 
   // Determine decoder
   if (g_strcmp0(media_type, "video/x-vp9") == 0) {
-    cmdDecoder += "vp9parse ! ";
-    if (imx.isIMX8())
-      cmdDecoder += "v4l2vp9dec ! ";
-    else if (imx.isIMX95()) // v4l2 vp9 decoder not available on IMX95
-      cmdDecoder += "avdec_vp9 ! ";
+    if (imx.isIMX8()) {
+      cmdDecoder += "vp9parse ! v4l2vp9dec ! ";
+    } else {
+      log_error("The platform does not support VP9 codec.\n");
+      gst_caps_unref(caps);
+      g_list_free(video_streams);
+      g_object_unref(info);
+      g_object_unref(discoverer);
+      exit(-1);
+    }
   } else if (g_strcmp0(media_type, "video/x-h264") == 0) {
     cmdDecoder += "h264parse ! v4l2h264dec ! ";
   } else if (g_strcmp0(media_type, "video/x-h265") == 0) {
