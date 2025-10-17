@@ -12,24 +12,17 @@ python_path = os.path.join(os.path.dirname(os.path.abspath(__file__)),
                            '../../../common/python')
 sys.path.append(python_path)
 from imxpy.imx_dev import Imx, SocId  # noqa
+from imxpy.common_utils import get_default_camera_device  # noqa
 
 python_path = os.path.join(os.path.dirname(os.path.abspath(__file__)),
                            '../common')
 sys.path.append(python_path)
-from facedetectpipe import FaceDetectPipe # noqa
+from facedetectpipe import FaceDetectPipe  # noqa
 
 if __name__ == '__main__':
 
     imx = Imx()
-    if imx.id() == SocId.IMX8MP:
-        default_camera = '/dev/video3'
-    elif imx.is_imx93():
-        default_camera = '/dev/video0'
-    elif imx.is_imx95():
-        default_camera = '/dev/video13'
-    else:
-        name = imx.name()
-        raise NotImplementedError(f'Platform not supported [{name}]')
+    default_camera = get_default_camera_device(imx)
 
     parser = argparse.ArgumentParser(description='Face Identification')
     parser.add_argument('--camera_device', '-c', type=str,

@@ -19,7 +19,7 @@ python_path = os.path.join(os.path.dirname(os.path.abspath(__file__)),
                            '../../common/python')
 sys.path.append(python_path)
 from imxpy.imx_dev import Imx, SocId  # noqa
-from imxpy.common_utils import GstVideoImx, store_vx_graph_compilation, disable_zero_copy_neutron  # noqa
+from imxpy.common_utils import GstVideoImx, store_vx_graph_compilation, disable_zero_copy_neutron, get_default_camera_device  # noqa
 
 gi.require_version('Gst', '1.0')
 from gi.repository import Gst, GLib
@@ -469,15 +469,7 @@ if __name__ == '__main__':
     default_dims = (854, 480)
 
     imx = Imx()
-    if imx.id() == SocId.IMX8MP:
-        default_camera = '/dev/video3'
-    elif imx.is_imx93():
-        default_camera = '/dev/video0'
-    elif imx.is_imx95():
-        default_camera = '/dev/video13'
-    else:
-        name = imx.name()
-        raise NotImplementedError(f'Platform not supported [{name}]')
+    default_camera = get_default_camera_device(imx)
 
     parser = argparse.ArgumentParser(description='Pose Detection')
     parser.add_argument('--video_file', '-f',

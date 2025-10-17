@@ -8,6 +8,23 @@ import os
 from . import imx_dev
 
 
+def get_default_camera_device(imx):
+    """Get the default camera device path for the current platform.
+
+    imx: imxdev.Imx() instance
+    return: default camera device path string
+    """
+    if imx.id() == imx_dev.SocId.IMX8MP:
+        return '/dev/video3'
+    elif imx.is_imx93():
+        return '/dev/video0'
+    elif imx.is_imx95():
+        return '/dev/video13'
+    else:
+        name = imx.name()
+        raise NotImplementedError(f'Platform not supported [{name}]')
+
+
 class GstVideoImx:
     """Helper class for video pipeline segments handling.
 
@@ -258,6 +275,7 @@ def store_vx_graph_compilation(imx):
         os.environ['VIV_VX_ENABLE_CACHE_GRAPH_BINARY'] = '1'
         HOME = os.getenv('HOME')
         os.environ['VIV_VX_CACHE_BINARY_GRAPH_DIR'] = HOME
+
 
 def disable_zero_copy_neutron(imx):
     """ Disable input tensor zero-copy feature not yet supported by NNStreamer
