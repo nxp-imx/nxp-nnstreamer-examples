@@ -24,6 +24,8 @@ class GstVideoImx:
         """Create pipeline segment for accelerated video flip.
 
         hardware: corresponding hardware to accelerate video composition
+        flip_only: if no other operations than image flip are required
+        keep_image_ratio: resize while maintaining image aspect ratio
         return: GStreamer pipeline segment string
         """
         if hardware is not None:
@@ -33,7 +35,7 @@ class GstVideoImx:
                 operation_name = f"scale_csc_flip_{hardware}_{self.cnt_element_names}"
             cmd = f'imxvideoconvert_{hardware} name={operation_name} '
             cmd += 'rotation=4 '
-            if keep_image_ratio:
+            if not flip_only and keep_image_ratio:
                 cmd += 'keep-ratio=True '
             cmd += '! '
         else:
@@ -46,10 +48,13 @@ class GstVideoImx:
     def videoscale_to_format(self, format=None, width=None, height=None, hardware=None, flip=False, cropping=False, keep_image_ratio=False):
         """Create pipeline segment for accelerated video formatting and csc.
 
-        hardware: corresponding hardware to accelerate video composition
         format: GStreamer video format
         width: output video width after rescale
         height: output video height after rescale
+        hardware: corresponding hardware to accelerate video composition
+        flip: mirror mode, flip the image (not available on 3D GPU)
+        cropping: enable video cropping acceleration
+        keep_image_ratio: resize while maintaining image aspect ratio
         return: GStreamer pipeline segment string
         """
         valid_dimensions = width is not None and height is not None
@@ -102,6 +107,8 @@ class GstVideoImx:
         format: GStreamer video format
         flip: mirror mode, flip the image (not available on 3D GPU)
         use_gpu3d: use the GPU3D instead of GPU2D if available
+        cropping: enable video cropping acceleration
+        keep_image_ratio: resize while maintaining image aspect ratio
         return: GStreamer pipeline segment string
         """
 
@@ -120,12 +127,12 @@ class GstVideoImx:
                 if valid_dimensions or required_format:
                     if format == 'GRAY8':
                         cmd += self.videoscale_to_format(
-                            'YUY2', width, height, 'ocl', keep_image_ratio=keep_image_ratio)
+                            'YUY2', width, height, 'ocl', False, cropping, keep_image_ratio)
                         cmd += f'videoconvert name=gray_convert_cpu_{self.cnt_element_names} ! video/x-raw,format={format} ! '
                         self.cnt_element_names += 1
                     else:
                         cmd += self.videoscale_to_format(
-                            format, width, height, 'ocl', keep_image_ratio=keep_image_ratio)
+                            format, width, height, 'ocl', False, cropping, keep_image_ratio)
             else:
                 # no 3D GPU acceleration
                 print(
@@ -134,7 +141,7 @@ class GstVideoImx:
                     width, height, format, flip, False, cropping, keep_image_ratio)
         else:  # Use GPU2D or CPU
             if self.imx.has_g2d():
-                # # imxvideoconvert_g2d does not support RGB nor GRAY8 sink on i.MX8 platforms
+                # imxvideoconvert_g2d does not support RGB nor GRAY8 sink on i.MX8 platforms
                 # use acceleration to RGBA instead
                 if self.imx.is_imx8() and (format == 'RGB' or format == 'GRAY8'):
                     cmd = self.videoscale_to_format(
@@ -142,12 +149,12 @@ class GstVideoImx:
                     format_name = 'rgb' if format == 'RGB' else 'gray'
                     cmd += f'videoconvert name={format_name}_convert_cpu_{self.cnt_element_names} ! video/x-raw,format={format} ! '
                     self.cnt_element_names += 1
-                 # # imxvideoconvert_g2d does not support GRAY8 sink on i.MX95 platform
+                 # imxvideoconvert_g2d does not support GRAY8 sink on i.MX95 platform
                  # use acceleration to YUY2 instead
                  #TODO: to remove condition when GRAY8 will be supported
                 elif self.imx.is_imx95() and format == 'GRAY8':
                     cmd = self.videoscale_to_format(
-                    'YUY2', width, height, 'g2d', flip, cropping, keep_image_ratio)
+                        'YUY2', width, height, 'g2d', flip, cropping, keep_image_ratio)
                     cmd += f'videoconvert name=gray_convert_cpu_{self.cnt_element_names} ! video/x-raw,format={format} ! '
                 else:
                     cmd = self.videoscale_to_format(
@@ -171,19 +178,21 @@ class GstVideoImx:
         return cmd
 
     def accelerated_videocrop_to_format(self, videocrop_name, width=None, height=None, top=None, bottom=None,
-                                        left=None, right=None, format=None, use_gpu3d=False):
+                                        left=None, right=None, format=None, flip=False, use_gpu3d=False, keep_image_ratio=False):
         """Create pipeline segment for accelerated video cropping and conversion
         to a given GStreamer video format.
 
         videocrop_name: GStreamer videocrop element name
-        width: output video width after rescale
-        height: output video height after rescale
+        width: output video width after rescale (done after cropping)
+        height: output video height after rescale (done after cropping)
         top: top pixels to be cropped - may be setup via property later
         bottom: bottom pixels to be cropped - may be setup via property later
         left: left pixels to be cropped - may be setup via property later
         right: right pixels to be cropped - may be setup via property later
         format: GStreamer video format
+        flip: mirror mode, flip the image (not available on 3D GPU)
         use_gpu3d: use the GPU3D instead of GPU2D if available
+        keep_image_ratio: resize while maintaining image aspect ratio
         return: GStreamer pipeline segment string
         """
 
@@ -198,15 +207,8 @@ class GstVideoImx:
             cmd += f'right={right} '
         cmd += '! '
 
-        # video cropping is not currently accelerated on 3D GPU
-        if use_gpu3d == True and self.imx.has_g2d():
-            cmd += f'imxvideoconvert_g2d name=accelerated-crop videocrop-meta-enable=true ! '
-            if width or height or format:
-                cmd += self.accelerated_videoscale(
-                    width, height, format, use_gpu3d=True, cropping=False)
-        else:
-            cmd += self.accelerated_videoscale(width, height,
-                                               format, use_gpu3d=use_gpu3d, cropping=True)
+        cmd += self.accelerated_videoscale(width, height,
+                                           format, flip, cropping=True, use_gpu3d=use_gpu3d, keep_image_ratio=keep_image_ratio)
 
         return cmd
 
