@@ -38,36 +38,115 @@ function setup_env {
     error "Invalid combination ${IMX}/${BACKEND}"
   fi
 
+
+# Create camera source pipeline segment
+# This function allows selecting between v4l2src and libcamera based on platform
+function camera_source_str {
+
   REQUIRED_CAMERA=${REQUIRED_CAMERA:-1}
   if [ "${REQUIRED_CAMERA}" -gt 0 ] ; then
-    # default camera configuration (can also be overridden by user)
-    declare -A CAMERA_DEVICE_DEFAULT
-    CAMERA_DEVICE_DEFAULT[IMX8MP]="/dev/video3"
-    CAMERA_DEVICE_DEFAULT[IMX93]="/dev/video0"
-    CAMERA_DEVICE_DEFAULT[IMX95]="/dev/video13"
-    local CAMERA_DEVICE_DEFAULT_IMX=${CAMERA_DEVICE_DEFAULT[${IMX}]}
 
-    CAMERA_DEVICE="${CAMERA_DEVICE:-${CAMERA_DEVICE_DEFAULT_IMX}}"
-    if [ ! -c ${CAMERA_DEVICE} ]; then
-      local MSG="Camera device ${CAMERA_DEVICE} not found."
-      MSG="$MSG Check device and set CAMERA_DEVICE variable appropriately."
-      error "$MSG"
+    # Ensure IMX variable is set
+    if [ -z "${IMX}" ]; then
+      error "IMX variable not set"
     fi
 
-    CAMERA_WIDTH="${CAMERA_WIDTH:-640}"
-    CAMERA_HEIGHT="${CAMERA_HEIGHT:-480}"
-    CAMERA_FPS="${CAMERA_FPS:-30}"
+    # Determine default camera type based on platform
+    local CAMERA_BACKEND_DEFAULT
+    case "${IMX}" in
+    IMX95)
+      # Future: libcamera will be default for IMX95
+      CAMERA_BACKEND_DEFAULT="v4l2"
+      ;;
+    *)
+      CAMERA_BACKEND_DEFAULT="v4l2"
+      ;;
+    esac
+
+    # Use user-specified CAMERA_BACKEND or fall back to platform default
+    CAMERA_BACKEND="${CAMERA_BACKEND:-${CAMERA_BACKEND_DEFAULT}}"
+
+    # Validate camera type is supported on current platform
+    case "${IMX}" in
+    IMX95)
+      # Both v4l2 and libcamera supported for i.MX95 platform
+      case "${CAMERA_BACKEND}" in
+      v4l2|libcamera)
+        ;;
+      *)
+        error "invalid camera type ${CAMERA_BACKEND} for platform ${IMX}. Supported: v4l2, libcamera"
+        ;;
+      esac
+      ;;
+    *)
+      # Default to v4l2 only for other platforms
+      case "${CAMERA_BACKEND}" in
+      v4l2)
+        ;;
+      *)
+      error "invalid camera type ${CAMERA_BACKEND} for platform ${IMX}. Supported: v4l2"
+        ;;
+      esac
+      ;;
+    esac
+
+    # Generate camera source pipeline based on resolved type
+    case "${CAMERA_BACKEND}" in
+    v4l2)
+
+      # default camera configuration fo v4l2 source (can also be overridden by user)
+      declare -A CAMERA_DEVICE_DEFAULT
+      CAMERA_DEVICE_DEFAULT[IMX8MP]="/dev/video3"
+      CAMERA_DEVICE_DEFAULT[IMX93]="/dev/video0"
+      CAMERA_DEVICE_DEFAULT[IMX95]="/dev/video13"
+      local CAMERA_DEVICE_DEFAULT_IMX=${CAMERA_DEVICE_DEFAULT[${IMX}]}
+
+      CAMERA_DEVICE="${CAMERA_DEVICE:-${CAMERA_DEVICE_DEFAULT_IMX}}"
+      if [ ! -c ${CAMERA_DEVICE} ]; then
+        local MSG="Camera device ${CAMERA_DEVICE} not found."
+        MSG="$MSG Check device with 'v4l2-ctl --list-devices' and set CAMERA_DEVICE variable appropriately."
+        error "$MSG"
+      fi
+
+      CAMERA_WIDTH="${CAMERA_WIDTH:-640}"
+      CAMERA_HEIGHT="${CAMERA_HEIGHT:-480}"
+      CAMERA_FPS="${CAMERA_FPS:-30}"
+
+      CAMERA_SOURCE="v4l2src name=cam_src device=${CAMERA_DEVICE} num-buffers=-1 ! "
+      ;;
+
+    libcamera)
+      # default camera configuration fo v4l2 source (can also be overridden by user)
+      # first camera device found by cam -l is used by default if CAMERA_DEVICE is not specified
+      CAMERA_INFO=$(cam -l | awk '/Available cameras:/ {getline; print}')
+      CAMERA_DEVICE_DEFAULT=$(echo "$CAMERA_INFO" | sed -n "s/.*(\(.*\)).*/\1/p")
+      CAMERA_DEVICE="${CAMERA_DEVICE:-${CAMERA_DEVICE_DEFAULT}}"
+
+      if [ -z ${CAMERA_DEVICE} ]; then
+        local MSG="No libcamera compatible camera device were found."
+        MSG="$MSG Check device list with 'cam -l' and set CAMERA_DEVICE variable appropriately."
+        error "$MSG"
+      fi
+
+      CAMERA_WIDTH="${CAMERA_WIDTH:-1920}"
+      CAMERA_HEIGHT="${CAMERA_HEIGHT:-1080}"
+      CAMERA_FPS="${CAMERA_FPS:-60}"
+
+      CAMERA_SOURCE="libcamerasrc name=cam_src camera-name="${CAMERA_DEVICE}" ! queue ! "
+      ;;
+    esac
   fi
+}
  
   # backend default configuration for ML inferences
-  BACKEND="${BACKEND:-NPU}"
-  case "${BACKEND}" in
+  INFERENCE_BACKEND="${BACKEND:-NPU}"
+  case "${INFERENCE_BACKEND}" in
   CPU|NPU)
     export USE_GPU_INFERENCE=0 ;;
   GPU)
     export USE_GPU_INFERENCE=1 ;;
   *)
-    error "invalid backend ${BACKEND}" ;;
+    error "invalid inference backend ${INFERENCE_BACKEND}" ;;
   esac
 
   # GPU configuration for image processing
@@ -150,7 +229,7 @@ function accelerated_video_scale_str {
     esac
     ;;
   *)
-    error "invalid GPU ${BACKEND}" ;;
+    error "invalid GPU ${GPU}" ;;
   esac
 
 
@@ -205,7 +284,7 @@ case "${GPU}" in
   esac
     ;;
   *)
-    error "invalid GPU ${BACKEND}" ;;
+    error "invalid GPU ${GPU}" ;;
   esac
 
   echo "${VIDEO_SCALE_RGB}"

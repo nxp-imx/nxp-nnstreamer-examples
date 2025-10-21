@@ -3,8 +3,6 @@
 # Copyright 2023-2025 NXP
 # SPDX-License-Identifier: BSD-3-Clause
 
-set -x
-
 REALPATH="$(readlink -e "$0")"
 BASEDIR="$(dirname "${REALPATH}")/../.."
 MODELS_DIR="${BASEDIR}/downloads/models/object-detection"
@@ -13,6 +11,7 @@ source "${BASEDIR}/common/common_utils.sh"
 source "${BASEDIR}/tasks/object-detection/detection_utils.sh"
 
 setup_env
+camera_source_str
 
 # model and framework dependant variables 
 declare -A MODEL_BACKEND
@@ -36,7 +35,7 @@ MODEL_LATENCY_NPU_NS[IMX93]="60000000"
 declare -A MODEL_LATENCY_NS
 MODEL_LATENCY_NS[CPU]=${MODEL_LATENCY_CPU_NS[${IMX}]}
 MODEL_LATENCY_NS[NPU]=${MODEL_LATENCY_NPU_NS[${IMX}]}
-MODEL_LATENCY=${MODEL_LATENCY_NS[${BACKEND}]}
+MODEL_LATENCY=${MODEL_LATENCY_NS[${INFERENCE_BACKEND}]}
 
 MODEL_WIDTH=416
 MODEL_HEIGHT=416
@@ -54,10 +53,9 @@ FILTER_BACKEND_NPU[IMX8MP]=" custom=Delegate:External,ExtDelegateLib:libvx_deleg
 FILTER_BACKEND_NPU[IMX93]=" custom=Delegate:External,ExtDelegateLib:libethosu_delegate.so ! "
 
 declare -A FILTER_BACKEND
-declare -A FILTER_BACKEND
 FILTER_BACKEND[CPU]="${FILTER_COMMON} custom=Delegate:XNNPACK,NumThreads:$(nproc --all) !"
 FILTER_BACKEND[NPU]="${FILTER_COMMON} ${FILTER_BACKEND_NPU[${IMX}]}"
-TENSOR_FILTER=${FILTER_BACKEND[${BACKEND}]}
+TENSOR_FILTER=${FILTER_BACKEND[${INFERENCE_BACKEND}]}
 
 # python filter configuration
 FRAMEWORK="python3"
@@ -76,7 +74,7 @@ fi
 declare -A PREPROCESS_BACKEND
 PREPROCESS_BACKEND[CPU]="tensor_transform name=tensor_preprocess0 mode=arithmetic option=typecast:int16,add:-128 ! tensor_transform name=tensor_preprocess1 mode=typecast option=int8 !"
 PREPROCESS_BACKEND[NPU]="tensor_transform name=tensor_preprocess0 mode=arithmetic option=typecast:int16,add:-128 ! tensor_transform name=tensor_preprocess1 mode=typecast option=int8 !"
-TENSOR_PREPROCESS=${PREPROCESS_BACKEND[${BACKEND}]}
+TENSOR_PREPROCESS=${PREPROCESS_BACKEND[${INFERENCE_BACKEND}]}
 
 
 # tensor decoder configuration: yolov4-tiny without post processing

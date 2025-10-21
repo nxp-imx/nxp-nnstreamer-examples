@@ -8,8 +8,10 @@ function gst_exec_classification {
   # accelerated video scaling before inferencing
   local VIDEO_SCALE=$(accelerated_video_scale_rgb_str ${MODEL_WIDTH} ${MODEL_HEIGHT})
 
+  set -x
+
   gst-launch-1.0 \
-    v4l2src name=cam_src device=${CAMERA_DEVICE} num-buffers=-1 ! \
+    ${CAMERA_SOURCE} \
       video/x-raw,width=${CAMERA_WIDTH},height=${CAMERA_HEIGHT},framerate=${CAMERA_FPS}/1 !   \
       tee name=t \
     t. ! queue name=thread-nn max-size-buffers=2 leaky=2 ! \

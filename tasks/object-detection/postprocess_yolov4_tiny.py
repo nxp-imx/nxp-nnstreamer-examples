@@ -140,7 +140,7 @@ class CustomFilter(object):
 
     def setInputDim(self, input_dims):
 
-        assert (len(input_dims) == 2), "Must be 2 output tensors for a Yolov4-tiny model"
+        assert (len(input_dims) == 2), "Must be 2 output tensors for a Yolov4-tiny model (ignore this message during pipeline warmup)"
         num_classes_and_anchors = self.total_classes_data * self.num_anchor_boxes
         dim_input_1 = input_dims[0].getDims()
         dim_input_2 = input_dims[1].getDims()

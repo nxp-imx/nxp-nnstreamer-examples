@@ -3,8 +3,6 @@
 # Copyright 2022-2025 NXP
 # SPDX-License-Identifier: BSD-3-Clause
 
-set -x
-
 REALPATH="$(readlink -e "$0")"
 BASEDIR="$(dirname "${REALPATH}")/../.."
 MODELS_DIR="${BASEDIR}/downloads/models/object-detection"
@@ -13,6 +11,7 @@ source "${BASEDIR}/common/common_utils.sh"
 source "${BASEDIR}/tasks/object-detection/detection_utils.sh"
 
 setup_env
+camera_source_str
 
 # model and framework dependant variables 
 declare -A MODEL_BACKEND
@@ -24,7 +23,7 @@ MODEL_BACKEND_NPU[IMX95]="${MODELS_DIR}/ssdlite_mobilenet_v2_coco_quant_uint8_fl
 MODEL_BACKEND[CPU]="${MODELS_DIR}/ssdlite_mobilenet_v2_coco_quant_uint8_float32_no_postprocess.tflite"
 MODEL_BACKEND[GPU]="${MODELS_DIR}/ssdlite_mobilenet_v2_coco_no_postprocess.tflite"
 MODEL_BACKEND[NPU]=${MODEL_BACKEND_NPU[${IMX}]}
-MODEL=${MODEL_BACKEND[${BACKEND}]}
+MODEL=${MODEL_BACKEND[${INFERENCE_BACKEND}]}
 
 declare -A MODEL_LATENCY_CPU_NS
 MODEL_LATENCY_CPU_NS[IMX8MP]="60000000"
@@ -43,7 +42,7 @@ declare -A MODEL_LATENCY_NS
 MODEL_LATENCY_NS[CPU]=${MODEL_LATENCY_CPU_NS[${IMX}]}
 MODEL_LATENCY_NS[GPU]=${MODEL_LATENCY_GPU_NS[${IMX}]}
 MODEL_LATENCY_NS[NPU]=${MODEL_LATENCY_NPU_NS[${IMX}]}
-MODEL_LATENCY=${MODEL_LATENCY_NS[${BACKEND}]}
+MODEL_LATENCY=${MODEL_LATENCY_NS[${INFERENCE_BACKEND}]}
 
 MODEL_WIDTH=300
 MODEL_HEIGHT=300
@@ -66,14 +65,14 @@ declare -A FILTER_BACKEND
 FILTER_BACKEND[CPU]="${FILTER_COMMON} custom=Delegate:XNNPACK,NumThreads:$(nproc --all) !"
 FILTER_BACKEND[GPU]="${FILTER_COMMON} custom=Delegate:External,ExtDelegateLib:libvx_delegate.so ! "
 FILTER_BACKEND[NPU]="${FILTER_COMMON} ${FILTER_BACKEND_NPU[${IMX}]}"
-TENSOR_FILTER=${FILTER_BACKEND[${BACKEND}]}
+TENSOR_FILTER=${FILTER_BACKEND[${INFERENCE_BACKEND}]}
 
 # tensor preprocessing configuration: normalize video for float input models
 declare -A PREPROCESS_BACKEND
 PREPROCESS_BACKEND[CPU]=""
 PREPROCESS_BACKEND[GPU]="tensor_transform name=tensor_preprocess mode=arithmetic option=typecast:float32,add:-127.5,div:127.5 ! "
 PREPROCESS_BACKEND[NPU]=""
-TENSOR_PREPROCESS=${PREPROCESS_BACKEND[${BACKEND}]}
+TENSOR_PREPROCESS=${PREPROCESS_BACKEND[${INFERENCE_BACKEND}]}
 
 # tensor decoder configuration: mobilenet ssd without post processing
 TENSOR_DECODER="tensor_decoder mode=bounding_boxes"

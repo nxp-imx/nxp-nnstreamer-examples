@@ -11,8 +11,10 @@ function gst_exec_detection {
   # ALPHA_VALUE env var allows runtime customization for alpha blending (only for i.MX93 with pxp) */
   local VIDEO_MIXER=$(accelerated_video_mixer_str "mix" "sink_0::zorder=2 sink_1::zorder=1" "0" "${ALPHA_VALUE:-0.3}" "${MODEL_LATENCY}")
 
+  set -x
+
   gst-launch-1.0 \
-    v4l2src name=cam_src device=${CAMERA_DEVICE} num-buffers=-1 ! \
+    ${CAMERA_SOURCE} \
       video/x-raw,width=${CAMERA_WIDTH},height=${CAMERA_HEIGHT},framerate=${CAMERA_FPS}/1 ! \
       tee name=t \
     t. ! queue name=thread-nn max-size-buffers=2 leaky=2 ! \
