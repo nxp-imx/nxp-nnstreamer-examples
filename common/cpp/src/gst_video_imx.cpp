@@ -59,56 +59,47 @@ void GstVideoImx::videoTransform(GstPipelineImx &pipeline,
   std::string cmdFormat;
   std::string name;
   int dimLimit = 16;
-  bool validFormat;
+  bool isValidDimensions = (width > dimLimit || width == -1) && (height > dimLimit || height == -1);
+  bool validFormat = true;
 
-  if (format.length() != 0) {
+  if (!format.empty()) {
     cmdFormat = ",format=" + format;
     validFormat = isFormatSupported[imx.socName()][format];
   }
 
-  if (this->imx.hasGPU2d()
-      && (width > dimLimit || width == -1)
-      && (height > dimLimit || height == -1)
-      && (useCPU == false)
-      && validFormat) {
-    name = (flip == true) ? "name=scale_csc_flip_g2d_" : "name=scale_csc_g2d_";
-    name += std::to_string(pipeline.elemNameCount);
-    name += " ";
-    cmd = "imxvideoconvert_g2d ";
-    cmd += name;
-    cmd += (flip == true) ? "rotation=4 ! " : "! ";
-  } else if (this->imx.hasPxP()
-           && (width > dimLimit || width == -1)
-           && (height > dimLimit|| height == -1)
-           && (useCPU == false)
-           && validFormat) {
-    name = (flip == true) ? "name=scale_csc_flip_pxp_" : "name=scale_csc_pxp_";
-    name += std::to_string(pipeline.elemNameCount);
-    name += " ";
-    cmd = "imxvideoconvert_pxp ";
-    cmd += name;
-    cmd += (flip == true) ? "rotation=4 ! " : "! ";
-  } else {
-    /* no acceleration */
-    name = "name=scale_cpu_" + std::to_string(pipeline.elemNameCount);
-    cmd = "videoscale ";
-    cmd += name;
-    cmd += " ! ";
+  if (!isValidDimensions || useCPU || !validFormat)
+    goto cpu_implementation;
 
-    name = "name=csc_cpu_" + std::to_string(pipeline.elemNameCount);
-    cmd += "videoconvert ";
-    cmd += name;
-    cmd += " ";
-    cmd += (flip == true) ? "! videoflip video-direction=4 ! " : "! ";
+  if (this->imx.hasGPU2d()) {
+    name = (flip  ? "name=scale_csc_flip_g2d_" : "name=scale_csc_g2d_") +
+            std::to_string(pipeline.elemNameCount) + " ";
+    cmd = "imxvideoconvert_g2d " + name + (flip ? "rotation=4 ! " : "! ");
+    goto build_caps;
   }
+
+  if (this->imx.hasPxP()) {
+    name = (flip ? "name=scale_csc_flip_pxp_" : "name=scale_csc_pxp_") +
+            std::to_string(pipeline.elemNameCount) + " ";
+    cmd = "imxvideoconvert_pxp " + name + (flip ? "rotation=4 ! " : "! ");
+    goto build_caps;
+  }
+
+cpu_implementation:
+  name = "name=scale_cpu_" + std::to_string(pipeline.elemNameCount);
+  cmd = "videoscale " + name + " ! ";
+
+  name = "name=csc_cpu_" + std::to_string(pipeline.elemNameCount);
+  cmd += "videoconvert " + name + " ";
+  cmd += (flip ? "! videoflip video-direction=4 ! " : "! ");
+
+build_caps:
   pipeline.elemNameCount += 1;
 
   if (width > 0 && height > 0) {
-    cmd += "video/x-raw,width=" + std::to_string(width) + ",";
-    cmd += "height=" + std::to_string(height) + cmdFormat;
+    cmd += "video/x-raw,width=" + std::to_string(width) + 
+           ",height=" + std::to_string(height) + cmdFormat;
     cmd += (aspectRatio == true) ? ",pixel-aspect-ratio=1/1 ! " : " ! ";
-  } else {
-    if (format.length() != 0)
+  } else if (!format.empty()) {
       cmd += "video/x-raw" + cmdFormat + " ! ";
   }
 
