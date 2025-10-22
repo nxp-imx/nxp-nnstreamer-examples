@@ -42,6 +42,7 @@ typedef struct {
   int camWidth;
   int camHeight;
   int framerate;
+  bool useGpu3D;
 } ParserOptions;
 
 
@@ -64,12 +65,13 @@ int cmdParser(int argc, char **argv, ParserOptions& options)
     {"text_color",    required_argument, 0, 't'},
     {"graph_path",    required_argument, 0, 'g'},
     {"cam_params",    required_argument, 0, 'r'},
+    {"use_gpu3d",     required_argument, 0, 'u'},
     {0,               0,                 0,   0}
   };
 
   while ((c = getopt_long(argc,
                           argv,
-                          "hb:n:c:p:f:d::t:g:r:",
+                          "hb:n:c:p:f:d::t:g:r:u:",
                           longOptions,
                           &optionIndex)) != -1) {
     switch (c)
@@ -118,7 +120,11 @@ int cmdParser(int argc, char **argv, ParserOptions& options)
 
                   << std::setw(25) << std::left << "  -r, --cam_params"
                   << std::setw(25) << std::left
-                  << "Use the selected camera resolution and framerate" << std::endl;
+                  << "Use the selected camera resolution and framerate" << std::endl
+                  
+                  << std::setw(25) << std::left << "  -u, --use_gpu3d"
+                  << std::setw(25) << std::left
+                  << "Use the 3D GPU hardware acceleration for video transformation (if available)" << std::endl;
         return 1;
  
       case 'b':
@@ -178,6 +184,13 @@ int cmdParser(int argc, char **argv, ParserOptions& options)
         options.framerate = std::stoi(temp.substr(temp.find(",")+1));
         break;
 
+      case 'u':
+        if (optarg != nullptr)
+          options.useGpu3D = (std::string(optarg) == "true");
+        else
+          options.useGpu3D = false;
+        break;
+
       default:
         break;
     }
@@ -197,6 +210,7 @@ int main(int argc, char **argv)
   options.camWidth = 640;
   options.camHeight = 480;
   options.framerate = 30;
+  options.useGpu3D = false;
   if (cmdParser(argc, argv, options))
     return 0;
 
@@ -238,7 +252,8 @@ int main(int argc, char **argv)
   gstvideoimx.videocrop(pipeline,
                         "crop",
                         cropDim,
-                        cropDim);
+                        cropDim,
+                        options.useGpu3D);
 
   // Add a tee element for parallelization of tasks
   std::string teeName = "t";

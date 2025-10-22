@@ -92,6 +92,7 @@ Option | Description
 -t, --text_color | Color of performances displayed, can choose between red, green, blue, and black<br> default: white
 -g, --graph_path | Path to store the result of the OpenVX graph compilation (only for i.MX8MPlus)<br> default: home directory
 -r, --cam_params | Use the selected camera resolution and framerate<br> default: 640x480, 30fps
+-u, --use_gpu3d  | Use the 3D GPU hardware acceleration for video transformation (if available)<br> default: false
 
 Press ```Esc or ctrl+C``` to stop the execution of the pipeline.
 

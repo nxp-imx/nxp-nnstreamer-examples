@@ -172,11 +172,13 @@ void GstVideoImx::videoscaleToRGB(GstPipelineImx &pipeline,
  * @param gstName: GStreamer videocrop element name.
  * @param newWidth: output video width after crop.
  * @param newHeight: output video height after crop.
+ * @param useGpu3D: use GPU 3D acceleration for cropping instead of GPU 2D.
  */
 void GstVideoImx::videocrop(GstPipelineImx &pipeline,
                             const std::string &gstName, 
                             const int &newWidth,
-                            const int &newHeight)
+                            const int &newHeight,
+                            const bool &useGpu3D)
 {
   int width = pipeline.getDisplayWidth();
   int height = pipeline.getDisplayHeight();
@@ -197,8 +199,12 @@ void GstVideoImx::videocrop(GstPipelineImx &pipeline,
     cmd += "bottom=" + std::to_string(bottom) + " ";
     cmd += "left=" + std::to_string(left) + " ";
     cmd += "right=" + std::to_string(right) + " ! ";
-    if (imx.hasGPU2d())
+
+    if (!useGpu3D && imx.hasGPU2d())
       cmd += "imxvideoconvert_g2d videocrop-meta-enable=true ! ";
+    else if (useGpu3D && imx.hasGPU3d())
+      cmd += "imxvideoconvert_ocl videocrop-meta-enable=true ! ";
+
     cmd += "video/x-raw,width=" + std::to_string(newWidth) +
             ",height=" + std::to_string(newHeight);
   }

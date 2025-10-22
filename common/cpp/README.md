@@ -166,7 +166,8 @@ GstVideoImx videoProcessor;
 videoProcessor.videocrop(
     pipeline,     // Pipeline object
     640,          // Crop width
-    480           // Crop height
+    480,          // Crop height
+    true          // use GPU 3D acceleration for cropping instead of GPU 2D
 );
 ```
 

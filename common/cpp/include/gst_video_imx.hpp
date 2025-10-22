@@ -35,6 +35,7 @@ class GstVideoImx {
     void videocrop(GstPipelineImx &pipeline,
                    const std::string &gstName,
                    const int &newWidth,
-                   const int &newHeight);
+                   const int &newHeight,
+                   const bool &useGpu3D);
 };
 #endif
