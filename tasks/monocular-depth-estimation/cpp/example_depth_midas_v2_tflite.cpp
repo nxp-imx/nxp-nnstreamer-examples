@@ -206,7 +206,9 @@ int main(int argc, char **argv)
   // Initialize pipeline object
   GstPipelineImx pipeline;
 
-  if (options.videoPath.empty()) {
+  bool UseCameraSource = options.videoPath.empty();
+
+  if (UseCameraSource) {
     // Add camera to pipeline
     CameraOptions camOpt = {
       .cameraDevice   = options.camDevice,

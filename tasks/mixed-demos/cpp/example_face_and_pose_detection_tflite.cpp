@@ -243,7 +243,9 @@ int main(int argc, char **argv)
   GstPipelineImx pipeline;
 
   int cropDim;
-  if (options.videoPath.empty()) {
+  bool UseCameraSource = options.videoPath.empty();
+
+  if (UseCameraSource) {
     // Add camera to pipeline
     CameraOptions camOpt = {
       .cameraDevice   = options.camDevice,
@@ -319,7 +321,7 @@ int main(int argc, char **argv)
   GstQueueOptions imgQueue = {
     .queueName     = "thread-img",
     .maxSizeBuffer = 2,
-    .leakType      = GstQueueLeaky::no,
+    .leakType      = (UseCameraSource) ? GstQueueLeaky::downstream : GstQueueLeaky::no,
   };
   pipeline.addBranch(teeName, imgQueue);
 

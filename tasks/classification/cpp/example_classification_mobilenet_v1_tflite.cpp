@@ -209,8 +209,10 @@ int main(int argc, char **argv)
 
   // Initialize pipeline object
   GstPipelineImx pipeline;
- 
-  if (options.videoPath.empty()) {
+
+  bool UseCameraSource = options.videoPath.empty();
+
+  if (UseCameraSource) {
     // Add camera to pipeline
     CameraOptions camOpt = {
       .cameraDevice   = options.camDevice,
@@ -254,10 +256,11 @@ int main(int argc, char **argv)
   pipeline.linkToTextOverlay(overlayName);
 
   // Add a branch to tee element to display result
+
   GstQueueOptions imgQueue = {
     .queueName     = "thread-img",
     .maxSizeBuffer = 2,
-    .leakType      = GstQueueLeaky::no,
+    .leakType      = (UseCameraSource) ? GstQueueLeaky::downstream : GstQueueLeaky::no,
   };
   pipeline.addBranch(teeName, imgQueue);
 
