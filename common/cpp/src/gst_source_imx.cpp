@@ -4,6 +4,7 @@
  */ 
 
 #include "gst_source_imx.hpp"
+#include <cstdlib>
 
 /**
  * @brief Parameterized constructor.
@@ -16,27 +17,73 @@ GstCameraImx::GstCameraImx(CameraOptions &options)
       gstName(options.gstName),
       framerate(options.framerate)
 {
+  imx::Imx imx{};
+
+  // Determine camera backend
+  const char* camera_backend_env = std::getenv("CAMERA_BACKEND");
+  std::string camera_backend;
+
+  if (camera_backend_env) {
+      camera_backend = camera_backend_env;
+    } else {
+      // Set default based on platform
+      switch (imx.socId()) {
+        case imx::IMX95:
+          // Future: libcamera will be default for IMX95, but v4l2 for now
+          camera_backend = "v4l2";
+          break;
+        default:
+          camera_backend = "v4l2";
+          break;
+      }
+    }
+
+  // Validate camera backend for current platform
+  switch (imx.socId()) {
+    case imx::IMX95:
+      if (camera_backend != "v4l2" && camera_backend != "libcamera") {
+        log_error("Invalid camera backend %s for platform IMX95. Supported: v4l2, libcamera\n", camera_backend.c_str());
+        exit(-1);
+      }
+      break;
+    default:
+      if (camera_backend != "v4l2") {
+        log_error("Invalid camera backend %s for this platform. Supported: v4l2\n", camera_backend.c_str());
+        exit(-1);
+      }
+      break;
+  }
+
+  this->cameraBackend = camera_backend;
+
   if (options.cameraDevice.string().length() != 0) {
     device = options.cameraDevice;
   } else {
-    imx::Imx imx{};
-    switch (imx.socId())
-    {
-      case imx::IMX8MP:
-        device = "/dev/video3";
-        break;
-
-      case imx::IMX93:
-        device = "/dev/video0";
-        break;
-
-      case imx::IMX95:
-        device = "/dev/video13";
-        break;
-
-      default:
-        log_error("Select a camera device using -c argument option\n");
-        break;
+    if (camera_backend == "v4l2") {
+      // Set default v4l2 device based on platform
+      switch (imx.socId()) {
+        case imx::IMX8MP:
+          device = "/dev/video3";
+          break;
+        case imx::IMX93:
+          device = "/dev/video0";
+          break;
+        case imx::IMX95:
+          device = "/dev/video13";
+          break;
+        default:
+          log_error("Select a camera device using -c argument option\n");
+          break;
+      }
+    } else if (camera_backend == "libcamera") {
+        // For libcamera, get device from CAMERA_DEVICE environment variable
+        const char* camera_device_env = std::getenv("LIBCAMERA_CAM_DEVICE");
+        if (camera_device_env !=  nullptr) {
+          device = camera_device_env;
+        } else {
+          log_error("LIBCAMERA_CAM_DEVICE environment variable not set for libcamera backend\n");
+          exit(-1);
+        }
     }
   }
 }
@@ -52,10 +99,24 @@ void GstCameraImx::addCameraToPipeline(GstPipelineImx &pipeline)
   pipeline.setDisplayResolution(this->width, this->height);
 
   std::string cmd;
-  cmd += "v4l2src name=" + gstName + " device=" + device.string();
-  cmd += " num-buffers=-1 ! video/x-raw,width=";
-  cmd += std::to_string(width) + ",height=" + std::to_string(height);
-  cmd += ",framerate=" + std::to_string(framerate) + "/1 ! ";
+
+  if (cameraBackend == "libcamera") {
+    // libcamera source
+    cmd += "libcamerasrc name=" + gstName;
+    cmd += " camera-name=" + device.string() + " ! ";   
+    cmd += "video/x-raw,width=" + std::to_string(width) + ",height=" + std::to_string(height);
+    if (framerate > 0)
+      cmd += ",framerate=" + std::to_string(framerate) + "/1";
+    cmd += ",format=YUY2 ! ";
+    cmd += "queue ! ";
+  } else {
+    // v4l2 source
+    cmd += "v4l2src name=" + gstName + " device=" + device.string();
+    cmd += " num-buffers=-1 ! video/x-raw,width=";
+    cmd += std::to_string(width) + ",height=" + std::to_string(height);
+    cmd += ",framerate=" + std::to_string(framerate) + "/1 ! ";
+  }
+  
   pipeline.addToPipeline(cmd);
 
   if ((format.length() != 0) or flip)

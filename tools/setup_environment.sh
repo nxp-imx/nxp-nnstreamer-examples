@@ -17,6 +17,12 @@ export SAVE_VIDEO_PATH="/root/video.mkv"
 export CAM1_PATH="/dev/video0"
 export CAM2_PATH="/dev/video2"
 
+# Define camera path for libcamera source
+# first camera device found by cam -l is used by default if CAMERA_DEVICE is not specified
+CAM_INFO=$(cam -l | awk '/Available cameras:/ {getline; print}')
+CAM_DEVICE_DEFAULT=$(echo "$CAM_INFO" | sed -n "s/.*(\(.*\)).*/\1/p")
+export LIBCAMERA_CAM_DEVICE="${CAMERA_DEVICE:-${CAM_DEVICE_DEFAULT}}"
+
 # Define classification data path
 CLASSIFICATION_DIR="${MODELS_DIR}/classification"
 export MOBILENETV1_LABELS="${CLASSIFICATION_DIR}/labels_mobilenet_quant_v1_224.txt"

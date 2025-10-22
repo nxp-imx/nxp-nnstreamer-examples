@@ -116,7 +116,7 @@ function camera_source_str {
       ;;
 
     libcamera)
-      # default camera configuration fo v4l2 source (can also be overridden by user)
+      # default camera configuration fo libcamera source (can also be overridden by user)
       # first camera device found by cam -l is used by default if CAMERA_DEVICE is not specified
       CAMERA_INFO=$(cam -l | awk '/Available cameras:/ {getline; print}')
       CAMERA_DEVICE_DEFAULT=$(echo "$CAMERA_INFO" | sed -n "s/.*(\(.*\)).*/\1/p")

@@ -52,6 +52,7 @@ class GstCameraImx : public GstSourceImx {
     std::string gstName;
     bool flip;
     GstVideoImx videoscale{};
+    std::string cameraBackend;
     std::filesystem::path device;
     int framerate;
 
