@@ -46,6 +46,7 @@ Option | Description
 -b, --backend CLASS_BACKEND,DET_BACKEND | Use the selected backend (CPU, GPU, NPU)<br> default: NPU,NPU
 -n, --normalization CLASS_NORM,DET_NORM | Use the selected normalization (none, centered, scaled, centeredScaled)<br> default: none,none
 -c, --camera_device | Use the selected camera device (/dev/video{number})<br>default: /dev/video0 for i.MX 93 and /dev/video3 for i.MX 8M Plus
+-f, --video_file | Use the selected video file instead of camera source
 -p, --model_path CLASS_MODEL,DET_MODEL | Use the selected model path
 -l, --labels_path CLASS_LABELS,DET_LABELS | Use the selected labels path
 -x, --boxes_path DET_BOXES | Use the selected boxes path
