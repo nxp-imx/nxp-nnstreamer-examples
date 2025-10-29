@@ -4,8 +4,37 @@
 # SPDX-License-Identifier: BSD-3-Clause
 
 import os
-
+import subprocess
 from . import imx_dev
+
+
+def get_camera_backend(imx):
+    """Get the camera backend to use for the current platform.
+
+    imx: imxdev.Imx() instance
+    return: camera backend string ("v4l2" or "libcamera")
+    """
+    # Check environment variable first
+    camera_backend = os.getenv('CAMERA_BACKEND')
+
+    if camera_backend:
+        # Validate the specified backend for current platform
+        if imx.is_imx95():
+            if camera_backend not in ["v4l2", "libcamera"]:
+                raise ValueError(
+                    f"Invalid camera backend {camera_backend} for platform i.MX95. Supported: v4l2, libcamera")
+        else:
+            if camera_backend != "v4l2":
+                raise ValueError(
+                    f"Invalid camera backend {camera_backend} for this platform. Supported: v4l2")
+        return camera_backend
+    else:
+        # Set default based on platform
+        if imx.is_imx95():
+            # Future: libcamera will be default for i.MX95
+            return "v4l2"
+        else:
+            return "v4l2"
 
 
 def get_default_camera_device(imx):
@@ -14,15 +43,81 @@ def get_default_camera_device(imx):
     imx: imxdev.Imx() instance
     return: default camera device path string
     """
-    if imx.id() == imx_dev.SocId.IMX8MP:
-        return '/dev/video3'
-    elif imx.is_imx93():
-        return '/dev/video0'
-    elif imx.is_imx95():
-        return '/dev/video13'
+    # Determine camera backend
+    camera_backend = get_camera_backend(imx)
+
+    if camera_backend == "v4l2":
+        if imx.id() == imx_dev.SocId.IMX8MP:
+            return '/dev/video3'
+        elif imx.is_imx93():
+            return '/dev/video0'
+        elif imx.is_imx95():
+            return '/dev/video13'
+        else:
+            name = imx.name()
+            raise NotImplementedError(f'Platform not supported [{name}]')
+    elif camera_backend == "libcamera":
+        # For libcamera, get device from environment variable or detect first available
+        camera_device = os.getenv('LIBCAMERA_CAM_DEVICE')
+        if camera_device:
+            return camera_device
+        else:
+            # Try to detect first available libcamera device
+            try:
+                result = subprocess.run(
+                    ['cam', '-l'], capture_output=True, text=True, check=True)
+                lines = result.stdout.split('\n')
+                for i, line in enumerate(lines):
+                    if 'Available cameras:' in line and i + 1 < len(lines):
+                        next_line = lines[i + 1].strip()
+                        # Extract camera name from format like "1 : camera_name (/base/soc@0/...)"
+                        if '(' in next_line and ')' in next_line:
+                            start = next_line.find('(') + 1
+                            end = next_line.find(')')
+                            return next_line[start:end]
+                raise RuntimeError(
+                    "No libcamera compatible camera device found")
+            except (subprocess.CalledProcessError, FileNotFoundError):
+                raise RuntimeError(
+                    "libcamera tools not available or no cameras found")
     else:
-        name = imx.name()
-        raise NotImplementedError(f'Platform not supported [{name}]')
+        raise ValueError(f"Unknown camera backend: {camera_backend}")
+
+
+def get_camera_source_pipeline(imx, camera_device, width, height, framerate=None, format=None):
+    """Generate camera source pipeline segment based on backend.
+
+    imx: imxdev.Imx() instance
+    camera_device: camera device path or name
+    width: video width
+    height: video height
+    framerate: video framerate
+    return: GStreamer pipeline segment string
+    """
+    camera_backend = get_camera_backend(imx)
+
+    if camera_backend == "libcamera":
+        # libcamera source
+        cmd = f"libcamerasrc name=cam_src camera-name={camera_device} ! "
+        cmd += f"video/x-raw,width={width},height={height}"
+        if framerate:
+            cmd += f",framerate={framerate}/1"
+        if format:
+            cmd += f",format={format}"
+        cmd += " ! queue ! "
+        return cmd
+    else:
+        # v4l2 source (default)
+        if not os.path.exists(camera_device):
+            raise FileExistsError(f'cannot find camera [{camera_device}]')
+        cmd = f"v4l2src name=cam_src device={camera_device} num-buffers=-1 ! "
+        cmd += f"video/x-raw,width={width},height={height}"
+        if framerate:
+            cmd += f",framerate={framerate}/1"
+        if format:
+            cmd += f",format={format}"
+        cmd += " !"
+        return cmd
 
 
 class GstVideoImx:

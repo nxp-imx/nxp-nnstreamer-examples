@@ -23,7 +23,7 @@ python_path = os.path.join(os.path.dirname(os.path.abspath(__file__)),
                            '../../../common/python')
 sys.path.append(python_path)
 from imxpy.imx_dev import Imx  # noqa
-from imxpy.common_utils import GstVideoImx, store_vx_graph_compilation, disable_zero_copy_neutron  # noqa
+from imxpy.common_utils import GstVideoImx, store_vx_graph_compilation, disable_zero_copy_neutron, get_camera_source_pipeline  # noqa
 
 
 class StdInHelper:
@@ -313,9 +313,6 @@ class FaceDetectPipe(Pipe):
         self.video_rate = video_fps
         self.flip = flip
 
-        if not os.path.exists(self.camera_device):
-            raise FileExistsError(f'cannot find camera [{self.camera_device}]')
-
         # models
         if model_directory is None:
             pwd = os.path.dirname(os.path.abspath(__file__))
@@ -352,12 +349,7 @@ class FaceDetectPipe(Pipe):
 
         gstvideoimx = GstVideoImx(self.imx)
 
-        video_caps = ('video/x-raw,'
-                      'width={:d},height={:d},framerate={:d}/1,format=YUY2') \
-            .format(vw, vh, vr)
-
-        cmdline = 'v4l2src device={:s} ! '.format(self.camera_device)
-        cmdline += '  {:s} ! '.format(video_caps)
+        cmdline = get_camera_source_pipeline(self.imx, self.camera_device, vw, vh, vr, 'YUY2')
         if self.flip:
             if self.secondary_pipe:
                 print('video flip is currently enabled for face detection demo only')

@@ -12,7 +12,7 @@ function gst_exec_classification {
 
   gst-launch-1.0 \
     ${CAMERA_SOURCE} \
-      video/x-raw,width=${CAMERA_WIDTH},height=${CAMERA_HEIGHT},framerate=${CAMERA_FPS}/1 !   \
+      video/x-raw,width=${CAMERA_WIDTH},height=${CAMERA_HEIGHT},framerate=${CAMERA_FPS}/1,format=YUY2 !   \
       tee name=t \
     t. ! queue name=thread-nn max-size-buffers=2 leaky=2 ! \
       ${VIDEO_SCALE} \
@@ -23,5 +23,5 @@ function gst_exec_classification {
       overlay.text_sink \
     t. ! queue name=thread-img max-size-buffers=2 leaky=2 ! \
       textoverlay name=overlay font-desc=\"Sans, 24\" ! \
-      waylandsink sync=false
+      waylandsink name=sink
 }

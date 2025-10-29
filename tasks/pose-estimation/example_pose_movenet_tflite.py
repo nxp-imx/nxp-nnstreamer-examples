@@ -19,7 +19,7 @@ python_path = os.path.join(os.path.dirname(os.path.abspath(__file__)),
                            '../../common/python')
 sys.path.append(python_path)
 from imxpy.imx_dev import Imx, SocId  # noqa
-from imxpy.common_utils import GstVideoImx, store_vx_graph_compilation, disable_zero_copy_neutron, get_default_camera_device  # noqa
+from imxpy.common_utils import GstVideoImx, store_vx_graph_compilation, disable_zero_copy_neutron, get_camera_source_pipeline, get_default_camera_device  # noqa
 
 gi.require_version('Gst', '1.0')
 from gi.repository import Gst, GLib
@@ -223,10 +223,14 @@ class PoseExample:
                 self.VIDEO_INPUT_WIDTH, self.VIDEO_INPUT_HEIGHT)
 
         elif self.source == 'CAMERA':
-            cmdline = 'v4l2src name=cam_src device={:s} num-buffers=-1 ! '.format(
-                self.camera_device)
-            cmdline += 'video/x-raw, width={:d},height={:d} ! '.format(
-                self.VIDEO_INPUT_WIDTH, self.VIDEO_INPUT_HEIGHT)
+            # Use the new camera source pipeline function
+            cmdline = get_camera_source_pipeline(
+                self.imx,
+                self.camera_device,
+                self.VIDEO_INPUT_WIDTH,
+                self.VIDEO_INPUT_HEIGHT,
+                format='YUY2')
+
         else:
             raise ValueError('Wrong source, must be VIDEO or CAMERA')
 
