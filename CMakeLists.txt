@@ -25,6 +25,9 @@ link_directories( ${CAIRO_LIBRARY_DIRS} )
 include_directories( ${CMAKE_CURRENT_SOURCE_DIR}/common/cpp/include )
 file( GLOB all_SRCS "${CMAKE_CURRENT_SOURCE_DIR}/common/cpp/src/*.cpp" )
 
+# Check OpenMP library
+find_package(OpenMP REQUIRED)
+
 # Example of object classification (mobilenet_v1)
 add_executable(
   example_classification_mobilenet_v1_tflite
@@ -165,11 +168,13 @@ add_executable(
   ${CMAKE_CURRENT_SOURCE_DIR}/tasks/monocular-depth-estimation/cpp/example_depth_midas_v2_tflite.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/tasks/monocular-depth-estimation/cpp/custom_depth_decoder.cpp
 )
-target_include_directories(example_depth_midas_v2_tflite PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/tasks/monocular-depth-estimation/cpp/)
+target_include_directories( example_depth_midas_v2_tflite PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/tasks/monocular-depth-estimation/cpp/ )
 target_link_libraries(
   example_depth_midas_v2_tflite
   ${GSTREAMER_LIBRARIES}
   ${CAIRO_LIBRARIES}
   tensorflow-lite
+  "${OpenMP_CXX_FLAGS}"
 )
 set_target_properties( example_depth_midas_v2_tflite PROPERTIES RUNTIME_OUTPUT_DIRECTORY ./monocular-depth-estimation )
+target_compile_options( example_depth_midas_v2_tflite PRIVATE "${OpenMP_CXX_FLAGS}" )

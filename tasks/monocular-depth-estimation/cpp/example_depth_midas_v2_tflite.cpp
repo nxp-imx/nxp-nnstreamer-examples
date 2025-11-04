@@ -196,7 +196,7 @@ int main(int argc, char **argv)
   options.framerate = 30;
   if (cmdParser(argc, argv, options))
     return 0;
-  
+
   imx::Imx imx{};
   if (imx.isIMX95() && (options.backend == "NPU")) {
     log_error("Example can't run on NPU in i.MX95\n");
@@ -251,10 +251,10 @@ int main(int argc, char **argv)
                       depthEstimation.getModelWidth(),
                       depthEstimation.getModelHeight(),
                       "GRAY8",
-                      1);
+                      30);
   appsrc.addAppSrcToPipeline(displayPipeline);
 
-  // Add video transform because cairooverlay element displaying performances doesn't support GRAY8 format
+  // Add video transform because display plugin doesn't support GRAY8 format
   GstVideoImx gstvideoimx;
   gstvideoimx.videoTransform(displayPipeline, "", -1, -1, false, false, true);
 

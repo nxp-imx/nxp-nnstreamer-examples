@@ -1,5 +1,5 @@
 /**
- * Copyright 2024 NXP
+ * Copyright 2024-2025 NXP
  * SPDX-License-Identifier: BSD-3-Clause 
  */ 
 
@@ -9,6 +9,9 @@
 #include <cassert>
 #include <iostream>
 #include <algorithm>
+#ifdef _OPENMP
+#include <omp.h>
+#endif
 
 BufferInfo getTensorInfo(GstBuffer* buffer, int tensorIndex)
 {
@@ -52,38 +55,60 @@ void newDataCallback(GstElement* element,
   BufferInfo bufferInfo;
   checkNumTensor(buffer, 1);
   bufferInfo = getTensorInfo(buffer, 0);
+  float* outputData = bufferInfo.bufferFP32;
 
-  float *min = std::min_element(bufferInfo.bufferFP32, bufferInfo.bufferFP32 + bufferInfo.size);
-  float *max = std::max_element(bufferInfo.bufferFP32, bufferInfo.bufferFP32 + bufferInfo.size);
-
-  if ((*max - *min) > MODEL_THRESHOLD) {
-    for (int i = 0; i < bufferInfo.size; i++) {
-      data->output[i] = (guchar)std::round(255*(bufferInfo.bufferFP32[i] - *min) / (*max - *min));
-    }
-  } else {
-    std::fill_n(&data->output[0], bufferInfo.size, 0);
+  if (!outputData || bufferInfo.size != MODEL_OUTPUT_DIM) {
+    log_error("Invalid model output data or size mismatch\n");
+    exit(-1);
   }
 
-  data->size = bufferInfo.size;
+  // Parallel min/max reduction using OpenMP
+  float minVal = outputData[0];
+  float maxVal = outputData[0];
+
+#ifdef _OPENMP
+  #pragma omp parallel for reduction(min:minVal) reduction(max:maxVal) schedule(static)
+#endif
+  for (int i = 1; i < MODEL_OUTPUT_DIM; i++) {
+    const float val = outputData[i];
+    if (val < minVal) minVal = val;
+    if (val > maxVal) maxVal = val;
+  }
+
+  const float range = maxVal - minVal;
+  if (range > MODEL_THRESHOLD) {
+    const float scale = 255.0f / range;
+#ifdef _OPENMP
+    #pragma omp parallel for schedule(static)
+#endif
+    for (int i = 0; i < MODEL_OUTPUT_DIM; i++) {
+      data->output[i] = (guchar)std::round(scale * (outputData[i] - minVal));
+    }
+  } else {
+    memset(data->output, 0, MODEL_OUTPUT_DIM);
+  }
+
   pushBuffer(data);
 }
 
 
 void pushBuffer(DecoderData* data)
 {
-  static GstClockTime timestamp = 0;
-  GstBuffer *buffer = gst_buffer_new_allocate(NULL, data->size, NULL);
-  GstMapInfo map;
-  gst_buffer_map(buffer, &map, GST_MAP_WRITE);
-  memcpy((guchar *)map.data, data->output, gst_buffer_get_size(buffer));
-  GST_BUFFER_PTS(buffer) = timestamp;
-  GST_BUFFER_DURATION(buffer) = gst_util_uint64_scale_int(1, GST_SECOND, 2);
-  timestamp += GST_BUFFER_DURATION(buffer);
+  // Create buffer that wraps our existing data (zero-copy)
+  GstBuffer *buffer = gst_buffer_new_wrapped_full(
+    GST_MEMORY_FLAG_READONLY,
+    data->output,
+    MODEL_OUTPUT_DIM,
+    0,
+    MODEL_OUTPUT_DIM,
+    NULL,
+    NULL
+  );
 
   GstFlowReturn ret;
   g_signal_emit_by_name(data->appSrc, "push-buffer", buffer, &ret);
-  gst_buffer_unmap(buffer, &map);
   gst_buffer_unref(buffer);
+
   if (ret != GST_FLOW_OK) {
     log_error("Could not push buffer to appsrc\n");
     exit(-1);
