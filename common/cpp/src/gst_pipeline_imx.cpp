@@ -5,6 +5,7 @@
 
 #include "gst_pipeline_imx.hpp"
 #include <cmath>
+#include <regex>
 
 
 // Default font size is 15 pixels for a width of 640
@@ -17,6 +18,52 @@ const float lineSpace = 20.0f/640;
 const float firstLineSpace = 18.0f/640;
 
 /**
+ * @brief Check if file path is sanitized and safe to use
+ * @param path Input path
+ * @return true if path is safe, false otherwise
+ */
+bool isValidGraphPath(const char* path) {
+  if (!path)
+    return false;
+
+  std::string pathStr(path);
+  size_t pathStrLen = pathStr.length();
+
+  // Check path length (not empty and reasonable limit)
+  if ((pathStrLen == 0) || (pathStrLen > 4096))
+    return false;
+
+  // Whitelist allowed characters: alphanumeric, forward slash, hyphen, underscore, dot
+  try {
+    std::regex validChars("^[a-zA-Z0-9/_.-]+$");
+    if (!std::regex_match(pathStr, validChars))
+      return false;
+  } catch (const std::regex_error&) {
+    // If regex fails, reject the path for safety
+    return false;
+  }
+
+  // Check for directory traversal attempts
+  if (pathStr.find("..") != std::string::npos)
+    return false;
+
+  // Ensure the directory exists and is writable
+  struct stat statbuf;
+  if (stat(path, &statbuf) != 0) {
+    // If path doesn't exist, check if parent directory exists
+    std::string parentDir = pathStr.substr(0, pathStr.find_last_of('/'));
+    if (!parentDir.empty() && stat(parentDir.c_str(), &statbuf) != 0)
+      return false;
+  } else {
+    // Path exists, check if it's a directory
+    if (!S_ISDIR(statbuf.st_mode))
+      return false;
+  }
+
+  return true;
+}
+
+/**
  * @brief Store on disk .nb files that contains the result of the OpenVX graph
  *        compilation. This feature is only available for iMX8 platforms to get
  *        the warmup time only once.
@@ -26,7 +73,7 @@ const float firstLineSpace = 18.0f/640;
  */
 void storeVxGraphCompilation(imx::Imx imx, char *graphPath)
 {
-  if(imx.socId() == imx::IMX8MP) {
+  if(imx.socId() == imx::IMX8MP && isValidGraphPath(graphPath)) {
     setenv("VIV_VX_ENABLE_CACHE_GRAPH_BINARY","1",1);
     setenv("VIV_VX_CACHE_BINARY_GRAPH_DIR",graphPath,1);
   }
@@ -282,6 +329,11 @@ gboolean GstPipelineImx::sigintSignalHandler(gpointer user_data)
 {
   AppData* gApp = (AppData *) user_data;
   if (save == true) {
+    if (!gApp->gstPipeline) {
+      log_error("Pipeline is null\n");
+      exit(-1);
+    }
+
     int result = gst_element_send_event(gApp->gstPipeline, gst_event_new_eos());
     if (!result) {
       log_error("Couldn't send EOS event\n");

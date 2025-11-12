@@ -82,8 +82,8 @@ class GstPipelineImx {
     static inline std::vector<float> infVector;
     static inline float perfFontSize = 0;
     static inline std::string perfColor = "";
-    int displayWidth;
-    int displayHeight;
+    int displayWidth = 0;
+    int displayHeight = 0;
 
   public:
     static int elemNameCount;

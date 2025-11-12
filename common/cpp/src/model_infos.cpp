@@ -32,7 +32,7 @@ ModelInfos::ModelInfos(const std::filesystem::path &path,
                        const std::string &backend,
                        const std::string &norm,
                        const int &numThreads)
-    : modelPath(path), backend(backend)
+    : modelPath(path), backend(backend), modelWidth(0), modelHeight(0), modelChannel(0)
 {
   setTensorFilterConfig(imx, numThreads);
   tensorData.tensorNormalization = norm;
