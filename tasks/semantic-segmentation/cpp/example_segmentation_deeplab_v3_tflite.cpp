@@ -10,7 +10,7 @@
  * Pipeline:
  * multifilesrc -- jpegdec -- imxvideoconvert -- tee -----------------------------------------------------------------
  *                                                |                                                                  |
- *                                                |                                                             videomixer -- waylandsink
+ *                                                |                                                            imxcompositor -- waylandsink
  *                                                |                                                                  |
  *                                                --- tensor_converter -- tensor_transform -- tensor_filter -- tensor_decoder
  */
@@ -182,6 +182,8 @@ int main(int argc, char **argv)
                              "",
                              segmentation.getModelWidth(),
                              segmentation.getModelHeight(),
+                             false,
+                             true,
                              false);
 
   // Add a tee element for parallelization of tasks
@@ -206,13 +208,21 @@ int main(int argc, char **argv)
   };
   decoder.addImageSegment(pipeline, decOptions);
 
-  // compositor class is not used because
-  // it doesn't support 513x513 input dimension,
-  // so videomixer is added manually.
-
-  // Link decoder result to a video compositor
+  // Initialize compositor element
   std::string compositorName = "mix";
-  pipeline.addToPipeline(compositorName + ". "); 
+  GstVideoCompositorImx compositor(compositorName);
+
+  // Set no latency for video compositor so far
+  int latency = 0;
+
+  // Add tensor decoder output to the compositor
+  compositorInputParams firstInputParams = {
+    .position     = displayPosition::center,
+    .order        = 1,
+    .keepRatio    = false,
+    .transparency = false,
+  };
+  compositor.addToCompositor(pipeline, firstInputParams);
 
   // Add a branch to tee element to display result
   GstQueueOptions imgQueue = {
@@ -222,12 +232,21 @@ int main(int argc, char **argv)
   };
   pipeline.addBranch(teeName, imgQueue);
 
-  // Add video compositing
-  pipeline.addToPipeline("videomixer name="
-                         + compositorName
-                         + " sink_1::alpha=0.4 " 
-                         + "sink_0::alpha=1.0 background=3 ! "
-                         + "videoconvert ! ");
+  // Add camera input to the compositor
+  compositorInputParams secondInputParams = {
+    .position     = displayPosition::center,
+    .order        = 2,
+    .keepRatio    = false,
+    .transparency = true,
+  };
+  compositor.addToCompositor(pipeline, secondInputParams);
+
+
+  // Use the same alpha value for all devices unless the user overrides it.
+  setenv("ALPHA_VALUE", "0.5", 0);
+
+  // Compositing pipeline input video with model processed output
+  compositor.addCompositorToPipeline(pipeline, latency);
 
   // Display processed video
   GstVideoPostProcess postProcess;

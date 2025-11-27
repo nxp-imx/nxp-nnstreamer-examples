@@ -188,6 +188,7 @@ function accelerated_video_scale_str {
   local OUTPUT_WIDTH=$1
   local OUTPUT_HEIGHT=$2
   local OUTPUT_FORMAT=$3
+  local OUTPUT_PIXEL_ASPECT_RATIO=$4
   local ELEMENT_NAME
 
   if [[ -z "${OUTPUT_FORMAT}" ]]
@@ -197,6 +198,13 @@ function accelerated_video_scale_str {
   else
     FORMAT=",format=${OUTPUT_FORMAT}"
     ELEMENT_NAME="scale_csc"
+  fi
+
+  if [[ -z "${OUTPUT_PIXEL_ASPECT_RATIO}" ]]
+  then
+    PIXEL_ASPECT_RATIO=""
+  else
+    PIXEL_ASPECT_RATIO=",pixel-aspect-ratio=${OUTPUT_PIXEL_ASPECT_RATIO}"
   fi
 
   case "${GPU}" in
@@ -233,7 +241,7 @@ function accelerated_video_scale_str {
   esac
 
 
-  VIDEO_SCALE+="video/x-raw,width=${OUTPUT_WIDTH},height=${OUTPUT_HEIGHT}${FORMAT} ! "
+  VIDEO_SCALE+="video/x-raw,width=${OUTPUT_WIDTH},height=${OUTPUT_HEIGHT}${FORMAT}${PIXEL_ASPECT_RATIO} ! "
 
   echo "${VIDEO_SCALE}"
 }
@@ -306,17 +314,21 @@ function accelerated_video_mixer_str {
   local ALPHA_CHANNEL_VALUE=$4
   local LATENCY=$5
 
+  # Add alpha channel configuration only if alpha parameters are provided
+  if [ -n "${ALPHA_CHANNEL_PAD}" ] && [ -n "${ALPHA_CHANNEL_VALUE}" ]; then
+    VIDEO_MIXER_ALPHA_CONFIG="${VIDEO_MIXER} sink_${ALPHA_CHANNEL_PAD}::alpha=${ALPHA_CHANNEL_VALUE}"
+  else
+    VIDEO_MIXER_ALPHA_CONFIG=""
+  fi
+
   case "${GPU2D_API}" in
   G2D)
     # g2d-based
-    VIDEO_MIXER="imxcompositor_g2d name=${MIXER_NAME} ${MIXER_ARGS}"
+    VIDEO_MIXER="imxcompositor_g2d name=${MIXER_NAME} ${MIXER_ARGS} ${VIDEO_MIXER_ALPHA_CONFIG}"
     ;;
   PXP)
     # pxp-based
-    VIDEO_MIXER="\
-      imxcompositor_pxp name=${MIXER_NAME} ${MIXER_ARGS} \
-      sink_${ALPHA_CHANNEL_PAD}::alpha=${ALPHA_CHANNEL_VALUE} \
-    "
+    VIDEO_MIXER="imxcompositor_pxp name=${MIXER_NAME} ${MIXER_ARGS} ${VIDEO_MIXER_ALPHA_CONFIG}"
     ;;
   *)
     # cpu-based

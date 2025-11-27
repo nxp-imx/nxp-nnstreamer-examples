@@ -3,15 +3,14 @@
 # Copyright 2022-2025 NXP
 # SPDX-License-Identifier: BSD-3-Clause
 
-# segmentation pipeline g2d accelerated for video rescaling
-# video compositor elements are not working for 513x513 - nnstreamer bug
-# https://github.com/nnstreamer/nnstreamer/issues/3866
-# fall back to regular videomixer
-
 function gst_exec_segmentation {
 
+  # use a common format decoder output to a compositor for consistent alpha blending
+  local VIDEO_COMPOSITOR_FORMAT="YUY2"
   # accelerated video scaling before inferencing
-  local VIDEO_SCALE=$(accelerated_video_scale_str ${MODEL_WIDTH} ${MODEL_HEIGHT} ${SCALE_FORMAT})
+  local VIDEO_SCALE=$(accelerated_video_scale_str ${MODEL_WIDTH} ${MODEL_HEIGHT} "" "1/1")
+  # accelerated video composition
+  local VIDEO_MIXER=$(accelerated_video_mixer_str "mix" "sink_0::zorder=1 sink_1::zorder=2" "1" "${ALPHA_VALUE:-0.5}" "${MODEL_LATENCY}")
 
   gst-launch-1.0 \
     multifilesrc location="${IMAGES_DIR}/image%04d.jpg" loop=true caps=image/jpeg,framerate=1/2 ! \
@@ -24,8 +23,8 @@ function gst_exec_segmentation {
       ${TENSOR_PREPROCESS} \
       ${TENSOR_FILTER} \
       ${TENSOR_DECODER} \
-      videoconvert ! mix. \
+      videoconvert ! video/x-raw,format=${VIDEO_COMPOSITOR_FORMAT} ! mix. \
     t. ! queue name=thread-img max-size-buffers=2 ! \
-      videomixer name=mix sink_1::alpha=0.4 sink_0::alpha=1.0 background=3 ! \
+      ${VIDEO_MIXER} \
       waylandsink
 }

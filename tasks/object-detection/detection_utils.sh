@@ -8,8 +8,13 @@ function gst_exec_detection {
   # accelerated video scaling before inferencing
   local VIDEO_SCALE=$(accelerated_video_scale_rgb_str ${MODEL_WIDTH} ${MODEL_HEIGHT})
   # accelerated video composition
-  # ALPHA_VALUE env var allows runtime customization for alpha blending (only for i.MX93 with pxp) */
-  local VIDEO_MIXER=$(accelerated_video_mixer_str "mix" "sink_0::zorder=2 sink_1::zorder=1" "0" "${ALPHA_VALUE:-0.3}" "${MODEL_LATENCY}")
+  # ALPHA_VALUE env var allows runtime customization for alpha blending
+  # Default alpha value depends on device: 0.3 for i.MX93 (PxP), 0.8 for others
+  local DEFAULT_ALPHA="0.8"
+  if [ "${IMX}" == "IMX93" ]; then
+    DEFAULT_ALPHA="0.3"
+  fi
+  local VIDEO_MIXER=$(accelerated_video_mixer_str "mix" "sink_0::zorder=2 sink_1::zorder=1" "0" "${ALPHA_VALUE:-${DEFAULT_ALPHA}}" "${MODEL_LATENCY}")
 
   set -x
 

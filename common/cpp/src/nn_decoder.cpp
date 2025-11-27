@@ -36,6 +36,8 @@ void NNDecoder::addImageSegment(GstPipelineImx &pipeline,
 {
   std::string cmd;
   std::string name;
+  // Use a common format decoder output to a compositor for consistent alpha blending
+  const std::string videoMixerFormat = "YUY2";
   name = "name=tensor_decode_segmentation_" + std::to_string(pipeline.elemNameCount) + " ";
   pipeline.elemNameCount += 1;
   cmd = "tensor_decoder ";
@@ -45,7 +47,7 @@ void NNDecoder::addImageSegment(GstPipelineImx &pipeline,
   if (options.numClass != -1) {
     cmd += " option2=" + std::to_string(options.numClass) + "! ";
   } else {
-    cmd += " ! videoconvert ! ";
+    cmd += " ! videoconvert ! video/x-raw,format=" + videoMixerFormat + " ! ";
   }
   pipeline.addToPipeline(cmd);
 }
