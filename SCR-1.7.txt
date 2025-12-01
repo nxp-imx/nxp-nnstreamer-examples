@@ -2,7 +2,7 @@
 NXP Software Content Register
 
 Package:                    nxp-nnstreamer-examples
-Version:                    1.6
+Version:                    1.7
 
 Release Location:           https://github.com/nxp-imx/nxp-nnstreamer-examples
 Type of content:            Source code

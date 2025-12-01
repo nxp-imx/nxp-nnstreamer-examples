@@ -1,5 +1,17 @@
 # Release Notes
 
+## [Release v1.7](https://github.com/nxp-imx/nxp-nnstreamer-examples/tree/v1.7)
+
+### Updates
+- libcamerasrc plugin support for camera input on i.MX95
+- Enablement of downscale resize preserving image ratio for python examples
+- Multimedia video files support for most C++ examples
+
+### Other Changes
+- Resize and color space conversion operations are both supported with g2d on i.MX95
+- Accelerated video cropping with 3D GPU for python examples
+- Monocular depth estimation post-processing optimized for better performances
+
 ## [Release v1.6](https://github.com/nxp-imx/nxp-nnstreamer-examples/tree/v1.6)
 
 ### Updates
