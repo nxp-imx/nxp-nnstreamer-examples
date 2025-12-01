@@ -3,8 +3,8 @@
 ## Overview
 Name | Implementation | Model | ML engine |Features
 --- | --- | --- | --- | ---
-[example_pose_movenet_tflite.py](./example_pose_movenet_tflite.py) | Python | MoveNet Lightning | TFLite | v4l2 camera<br>video file decoding<br>gst-launch<br>custom model decoding
-[example_pose_movenet_tflite.cpp](./cpp/example_pose_movenet_tflite.cpp) | C++ | MoveNet Lightning | TFLite | v4l2 camera<br>video file decoding<br>gst-launch<br>custom model decoding
+[example_pose_movenet_tflite.py](./example_pose_movenet_tflite.py) | Python | MoveNet Lightning | TFLite | v4l2/libcamera<br>video file decoding<br>gst-launch<br>custom model decoding
+[example_pose_movenet_tflite.cpp](./cpp/example_pose_movenet_tflite.cpp) | C++ | MoveNet Lightning | TFLite | v4l2/libcamera<br>video file decoding<br>gst-launch<br>custom model decoding
 
 ## MoveNet Lightning pose estimation
 ### Python

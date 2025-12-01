@@ -3,11 +3,11 @@
 ## Overview
 Name | Implementation | Model | ML engine | Features
 --- | --- | --- | --- | ---
-[example_face_detection_tflite.py](./face-detection/example_face_detection_tflite.py) | Python | UltraFace-slim | TFLite | v4l2 camera<br>gst-launch<br>custom model decoding
-[example_face_detection_tflite.cpp](./face-detection/cpp/example_face_detection_tflite.cpp) | C++ | UltraFace-slim | TFLite | v4l2 camera<br>video file decoding<br>gst-launch<br>custom model decoding
-[example_face_recognition_tflite.py](./face-recognition/example_face_recognition_tflite.py) | Python | UltraFace-slim <br> FaceNet512 <br> | TFLite | v4l2 camera<br>gst-launch<br>custom model decoding
-[example_emotion_classification_tflite.py](./emotion-classification/example_emotion_classification_tflite.py) | Python | UltraFace-slim <br> Deepface-emotion <br> | TFLite | v4l2 camera<br>gst-launch<br>custom model decoding
-[example_emotion_classification_tflite.cpp](./emotion-classification/cpp/example_emotion_classification_tflite.cpp) | C++ | UltraFace-slim <br> Deepface-emotion <br> | TFLite | v4l2 camera<br>gst-launch<br>custom model decoding
+[example_face_detection_tflite.py](./face-detection/example_face_detection_tflite.py) | Python | UltraFace-slim | TFLite | v4l2/libcamera<br>gst-launch<br>custom model decoding
+[example_face_detection_tflite.cpp](./face-detection/cpp/example_face_detection_tflite.cpp) | C++ | UltraFace-slim | TFLite | v4l2/libcamera<br>video file decoding<br>gst-launch<br>custom model decoding
+[example_face_recognition_tflite.py](./face-recognition/example_face_recognition_tflite.py) | Python | UltraFace-slim <br> FaceNet512 <br> | TFLite | v4l2/libcamera<br>gst-launch<br>custom model decoding
+[example_emotion_classification_tflite.py](./emotion-classification/example_emotion_classification_tflite.py) | Python | UltraFace-slim <br> Deepface-emotion <br> | TFLite | v4l2/libcamera<br>gst-launch<br>custom model decoding
+[example_emotion_classification_tflite.cpp](./emotion-classification/cpp/example_emotion_classification_tflite.cpp) | C++ | UltraFace-slim <br> Deepface-emotion <br> | TFLite | v4l2/libcamera<br>gst-launch<br>custom model decoding
 
 Those examples use 2 GStreamer pipelines that are running concurrently.<br>
 Press ```Esc or ctrl+C``` to stop the execution of all the pipelines.<br>

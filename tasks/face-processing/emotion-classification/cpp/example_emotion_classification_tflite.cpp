@@ -8,7 +8,7 @@
  * The model used is emotion_uint8_float32.tflite for emotion detection, and ultraface_slim_uint8_float32.tflite for face detection,
  * which can be retrieved from https://github.com/nxp-imx/nxp-nnstreamer-examples/blob/main/downloads/download.ipynb
  * Pipeline:
- * pipeline 1: v4l2src -- tee -- imxvideoconvert --------------------------------------------------------
+ * pipeline 1: source --- tee -- imxvideoconvert --------------------------------------------------------
  *                |                                                                                     |
  *                |                                                                                    cairooverlay -- waylandsink
  *                |                                                                                     |       |

@@ -7,7 +7,7 @@
  * NNstreamer application for face detection using tensorflow-lite.
  * The model used is movenet_single_pose_lightning.tflite which can be retrieved from https://github.com/nxp-imx/nxp-nnstreamer-examples/blob/main/downloads/download.ipynb
  * Pipeline:
- * v4l2src -- imxvideoconvert -- tee -----------------------------------------------------------------------------------
+ * source --- imxvideoconvert -- tee -----------------------------------------------------------------------------------
  *                                |                                                                                     |
  *                                |                                                                               cairooverlay -- waylandsink
  *                                |                                                                                     |

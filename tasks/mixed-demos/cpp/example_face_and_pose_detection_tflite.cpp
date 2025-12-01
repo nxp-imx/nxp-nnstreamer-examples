@@ -9,7 +9,7 @@
  * which can be retrieved from https://github.com/nxp-imx/nxp-nnstreamer-examples/blob/main/downloads/download.ipynb
  *  
  * Pipeline:
- * v4l2src -- videocrop -- tee -----------------------------------------------------------------------------------
+ * source --- videocrop -- tee -----------------------------------------------------------------------------------
  *                          |                                                                                     |
  *                          |                                                                               cairooverlay -- cairooverlay -- waylandsink
  *                          |                                                                                     |               |

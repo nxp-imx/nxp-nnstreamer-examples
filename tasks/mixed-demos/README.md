@@ -3,9 +3,9 @@
 ## Overview
 Name | Implementation | Model | ML engine | Features
 --- | --- | --- | --- | ---
-[example_classification_and_detection_tflite.cpp](./cpp/example_classification_and_detection_tflite.cpp) | C++ | MobileNetV1<br>SSD MobileNetV2 | TFLite | v4l2 camera<br>gst-launch<br>video file encoding
-[example_face_and_pose_detection_tflite.cpp](./cpp/example_face_and_pose_detection_tflite.cpp) | C++ | UltraFace<br>MoveNet Lightning | TFLite | v4l2 camera<br>video file decoding<br>gst-launch<br>custom model decoding
-[example_double_classification_tflite.cpp](./cpp/example_double_classification_tflite.cpp) | C++ | MobileNetV1 | TFLite| v4l2 camera<br>gst-launch
+[example_classification_and_detection_tflite.cpp](./cpp/example_classification_and_detection_tflite.cpp) | C++ | MobileNetV1<br>SSD MobileNetV2 | TFLite | v4l2/libcamera<br>gst-launch<br>video file encoding
+[example_face_and_pose_detection_tflite.cpp](./cpp/example_face_and_pose_detection_tflite.cpp) | C++ | UltraFace<br>MoveNet Lightning | TFLite | v4l2/libcamera<br>video file decoding<br>gst-launch<br>custom model decoding
+[example_double_classification_tflite.cpp](./cpp/example_double_classification_tflite.cpp) | C++ | MobileNetV1 | TFLite| v4l2/libcamera<br>gst-launch
 
 Mixed examples goal is to demonstrate the possibility to make applications which use multiple models running in parallel, while keeping good performances. Three examples are available:
 

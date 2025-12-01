@@ -8,7 +8,7 @@
  * The model used is ssdlite_mobilenet_v2_coco_no_postprocess.tflite which can be retrieved from https://github.com/nxp-imx/nxp-nnstreamer-examples/blob/main/downloads/download.ipynb
  *  
  * Pipeline:
- * v4l2src -- tee -----------------------------------------------------------------------------------
+ * source --- tee -----------------------------------------------------------------------------------
  *             |                                                                                     |
  *             |                                                                              video_compositor -- waylandsink
  *             |                                                                                     |

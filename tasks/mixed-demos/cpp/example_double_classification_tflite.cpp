@@ -8,13 +8,13 @@
  * The model used is mobilenet_v1_1.0_224.tflite which can be retrieved from https://github.com/nxp-imx/nxp-nnstreamer-examples/blob/main/downloads/download.ipynb
  *  
  * Pipeline:
- * v4l2src -- tee -----------------------------------------------------------------------------------
+ * source --- tee -----------------------------------------------------------------------------------
  *             |                                                                                     |
  *             |                                                                                textoverlay ----------
  *             |                                                                                     |                |
  *             --- imxvideoconvert -- tensor_converter -- tensor_transform -- tensor_filter -- tensor_decoder         |
  *                                                                                                                    |
- * v4l2src -- tee -----------------------------------------------------------------------------------                 |
+ * source --- tee -----------------------------------------------------------------------------------                 |
  *             |                                                                                     |                |
  *             |                                                                                textoverlay -- video_compositor -- waylandsink
  *             |                                                                                     |

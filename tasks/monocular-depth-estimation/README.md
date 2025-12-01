@@ -3,7 +3,7 @@
 ## Overview
 Name |Platforms | Model | ML engine | Features
 --- | --- | --- | --- | ---
-[example_depth_midas_v2_tflite.cpp](./cpp/example_depth_midas_v2_tflite.cpp) | C++ | MiDaS v2 | TFLite | v4l2 camera<br>video file decoding<br>gst-launch<br>custom model decoding
+[example_depth_midas_v2_tflite.cpp](./cpp/example_depth_midas_v2_tflite.cpp) | C++ | MiDaS v2 | TFLite | v4l2/libcamera<br>video file decoding<br>gst-launch<br>custom model decoding
 
 ## MiDaS v2 monocular depth estimation
 ### C++
