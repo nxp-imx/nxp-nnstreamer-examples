@@ -69,7 +69,7 @@ std::string TensorCustomGenerator::ethosNPU()
  */
 std::string TensorCustomGenerator::neutronNPU()
 {
-  tensorData.tensorFilterCustom = "custom=Delegate:External,";
+  tensorData.tensorFilterCustom = "custom=UseDefaultDelegates:true,Delegate:External,";
   tensorData.tensorFilterCustom += "ExtDelegateLib:libneutron_delegate.so";
   return tensorData.tensorFilterCustom;
 }
