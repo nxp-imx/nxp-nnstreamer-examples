@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Copyright 2022-2025 NXP
+# Copyright 2022-2026 NXP
 # SPDX-License-Identifier: BSD-3-Clause
 
 REALPATH="$(readlink -e "$0")"
@@ -17,7 +17,8 @@ camera_source_str
 declare -A MODEL_BACKEND_NPU
 MODEL_BACKEND_NPU[IMX8MP]="${MODELS_DIR}/mobilenet_v1_1.0_224_quant_uint8_float32.tflite"
 MODEL_BACKEND_NPU[IMX93]="${MODELS_DIR}/mobilenet_v1_1.0_224_quant_uint8_float32_vela.tflite"
-MODEL_BACKEND_NPU[IMX95]="${MODELS_DIR}/mobilenet_v1_1.0_224_quant_uint8_float32_neutron.tflite"
+MODEL_BACKEND_NPU[IMX95]="${MODELS_DIR}/mobilenet_v1_1.0_224_quant_uint8_float32_imx95.tflite"
+MODEL_BACKEND_NPU[IMX952]="${MODELS_DIR}/mobilenet_v1_1.0_224_quant_uint8_float32_imx952.tflite"
 
 declare -A MODEL_BACKEND
 MODEL_BACKEND[CPU]="${MODELS_DIR}/mobilenet_v1_1.0_224_quant_uint8_float32.tflite"
@@ -39,7 +40,9 @@ FILTER_COMMON="tensor_filter name=${INFERENCE_NAME} framework=${FRAMEWORK} model
 declare -A FILTER_BACKEND_NPU
 FILTER_BACKEND_NPU[IMX8MP]=" custom=Delegate:External,ExtDelegateLib:libvx_delegate.so ! "
 FILTER_BACKEND_NPU[IMX93]=" custom=Delegate:External,ExtDelegateLib:libethosu_delegate.so ! "
-FILTER_BACKEND_NPU[IMX95]=" custom=UseDefaultDelegates:true,Delegate:External,ExtDelegateLib:libneutron_delegate.so ! "
+for platform in IMX95 IMX952; do
+    FILTER_BACKEND_NPU[$platform]=" custom=UseDefaultDelegates:true,Delegate:External,ExtDelegateLib:libneutron_delegate.so ! "
+done
 
 declare -A FILTER_BACKEND
 FILTER_BACKEND[CPU]="${FILTER_COMMON}"

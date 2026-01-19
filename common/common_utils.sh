@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# Copyright 2022-2025 NXP
+# Copyright 2022-2026 NXP
 # SPDX-License-Identifier: BSD-3-Clause
 
 function error {
@@ -31,6 +31,12 @@ function setup_env {
     # This feature was enabled by default for Neutron NPUs
     export NEUTRON_ENABLE_ZERO_COPY='0'
   fi
+  if [[ "${UNAME}" =~ "imx952" ]]; then
+    IMX="IMX952"
+    # Disable input tensor zero-copy feature not yet supported by NNStreamer
+    # This feature was enabled by default for Neutron NPUs
+    export NEUTRON_ENABLE_ZERO_COPY='0'
+  fi
   if [ -z ${IMX} ]; then
     error "platform not supported"
   fi
@@ -54,8 +60,8 @@ function camera_source_str {
     # Determine default camera type based on platform
     local CAMERA_BACKEND_DEFAULT
     case "${IMX}" in
-    IMX95)
-      # Future: libcamera will be default for IMX95
+    IMX95|IMX952)
+      # Future: libcamera will be default for IMX95 and IMX952
       CAMERA_BACKEND_DEFAULT="v4l2"
       ;;
     *)
@@ -68,8 +74,8 @@ function camera_source_str {
 
     # Validate camera type is supported on current platform
     case "${IMX}" in
-    IMX95)
-      # Both v4l2 and libcamera supported for i.MX95 platform
+    IMX95|IMX952)
+      # Both v4l2 and libcamera supported for i.MX95 and i.MX952 platforms
       case "${CAMERA_BACKEND}" in
       v4l2|libcamera)
         ;;
@@ -99,6 +105,7 @@ function camera_source_str {
       CAMERA_DEVICE_DEFAULT[IMX8MP]="/dev/video3"
       CAMERA_DEVICE_DEFAULT[IMX93]="/dev/video0"
       CAMERA_DEVICE_DEFAULT[IMX95]="/dev/video13"
+      CAMERA_DEVICE_DEFAULT[IMX952]="/dev/video13"
       local CAMERA_DEVICE_DEFAULT_IMX=${CAMERA_DEVICE_DEFAULT[${IMX}]}
 
       CAMERA_DEVICE="${CAMERA_DEVICE:-${CAMERA_DEVICE_DEFAULT_IMX}}"
@@ -153,9 +160,7 @@ function camera_source_str {
   GPU=${GPU:-GPU2D}
   # GPU2D API
   case "${IMX}" in
-  IMX8MP)
-    GPU2D_API="G2D" ;;
-  IMX95)
+  IMX8MP|IMX95|IMX952)
     GPU2D_API="G2D" ;;
   IMX93)
     GPU2D_API="PXP" ;;
@@ -164,9 +169,7 @@ function camera_source_str {
   esac
   # GPU3D API
   case "${IMX}" in
-  IMX8MP)
-    GPU3D_API="OCL" ;;
-  IMX95)
+  IMX8MP|IMX95|IMX952)
     GPU3D_API="OCL" ;;
   *)
     GPU3D_API="NONE" ;;
