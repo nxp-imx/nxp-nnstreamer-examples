@@ -1,5 +1,5 @@
 /**
- * Copyright 2024-2025 NXP
+ * Copyright 2024-2026 NXP
  * SPDX-License-Identifier: BSD-3-Clause
  */
 
@@ -198,7 +198,7 @@ int main(int argc, char **argv)
     return 0;
 
   imx::Imx imx{};
-  if (imx.isIMX95() && (options.backend == "NPU")) {
+  if (imx.hasNeutronNPU() && (options.backend == "NPU")) {
     log_error("Example can't run on NPU in i.MX95\n");
     return 0;
   }

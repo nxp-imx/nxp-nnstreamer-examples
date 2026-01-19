@@ -1,5 +1,5 @@
 /**
- * Copyright 2024 NXP
+ * Copyright 2024,2026 NXP
  * SPDX-License-Identifier: BSD-3-Clause 
  */ 
 
@@ -12,7 +12,7 @@
 
 #include "logging.hpp"
 
-#define NUMBER_OF_SOC       9
+#define NUMBER_OF_SOC       10
 #define NUMBER_OF_FEATURE   3
 #define SOC_ID_PATH         "/sys/devices/soc0/soc_id"
 
@@ -32,6 +32,7 @@ namespace imx {
     IMX8QXP,
     IMX93,
     IMX95,
+    IMX952,
     UNKNOWN,
   };
 
@@ -59,6 +60,7 @@ namespace imx {
     "i.MX8QXP",
     "i.MX93",
     "i.MX95",
+    "i.MX952",
   };
 
 
@@ -75,6 +77,7 @@ namespace imx {
     "i.MX 8QuadXPlus",
     "i.MX 93",
     "i.MX 95",
+    "i.MX 952",
   };
 
 
@@ -91,6 +94,7 @@ namespace imx {
     [IMX8QXP] = {{[GPU2D] = true, [GPU3D] = true, [NPU] = false}},
     [IMX93] = {{[GPU2D] = false, [GPU3D] = false, [NPU] = true}},
     [IMX95] = {{[GPU2D] = true, [GPU3D] = true, [NPU] = true}},
+    [IMX952] = {{[GPU2D] = true, [GPU3D] = true, [NPU] = true}},
   }};
 
 
@@ -169,7 +173,7 @@ namespace imx {
 
       bool hasEthosNPU() { return soc == IMX93; }
 
-      bool hasNeutronNPU() { return soc == IMX95; }
+      bool hasNeutronNPU() { return (soc == IMX95 || soc == IMX952); }
 
       bool hasG2d() { return (isIMX8() && soc != IMX8MQ) || soc == IMX95; }
 
