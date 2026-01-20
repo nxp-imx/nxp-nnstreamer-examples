@@ -42,6 +42,7 @@ BACKEND=CPU GPU=GPU2D ./tasks/object-detection/example_detection_mobilenet_ssd_v
 | i.MX 8M Plus | :white_check_mark: | :white_check_mark: | :white_check_mark: |
 |   i.MX 93    | :white_check_mark: | :white_check_mark: | :x: |
 |   i.MX 95    | :white_check_mark: | :white_check_mark: | :white_check_mark: |
+|   i.MX 952   | :white_check_mark: | :white_check_mark: | :x: |
 
 C++ example script needs to be generated with [cross compilation](../). [setup_environment.sh](../tools/setup_environment.sh) script needs to be executed in [nxp-nnstreamer-examples](../) folder to define data paths:
 ```bash
@@ -60,7 +61,12 @@ For i.MX 93 NPU use vela converted model:
 
 For i.MX 95 NPU use neutron converted model:
 ```bash
-./build/object-detection/example_detection_mobilenet_ssd_v2_tflite -p  ${MOBILENETV2_QUANT_NEUTRON} -l ${COCO_LABELS} -x ${MOBILENETV2_BOXES}
+./build/object-detection/example_detection_mobilenet_ssd_v2_tflite -p  ${MOBILENETV2_QUANT_IMX95} -l ${COCO_LABELS} -x ${MOBILENETV2_BOXES}
+```
+
+For i.MX 952 NPU use neutron converted model:
+```bash
+./build/object-detection/example_detection_mobilenet_ssd_v2_tflite -p  ${MOBILENETV2_QUANT_IMX952} -l ${COCO_LABELS} -x ${MOBILENETV2_BOXES}
 ```
 
 Inference on CPU with the following script:

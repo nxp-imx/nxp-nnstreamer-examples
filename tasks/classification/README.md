@@ -13,6 +13,7 @@ Name | Implementation | Model | ML engine | Features
 | i.MX 8M Plus | :white_check_mark: | :white_check_mark: | :white_check_mark: |
 |   i.MX 93    | :white_check_mark: | :white_check_mark: | :x: |
 |   i.MX 95    | :white_check_mark: | :white_check_mark: | :x: |
+|   i.MX 952   | :white_check_mark: | :white_check_mark: | :x: |
 
 The image classification demo in bash supports multiple backend for model inferences (refers to above table), default value can be overridden by explicitly defining BACKEND variable. Similarly, the GPU variable allows to choose between 2D GPU (GPU2D) or 3D GPU (GPU3D) if available for scaling and color space conversion operations.
 For instance:
@@ -27,6 +28,7 @@ BACKEND=CPU GPU=GPU2D ./tasks/classification/example_classification_mobilenet_v1
 | i.MX 8M Plus | :white_check_mark: | :white_check_mark: | :white_check_mark: |
 |   i.MX 93    | :white_check_mark: | :white_check_mark: | :x: |
 |   i.MX 95    | :white_check_mark: | :white_check_mark: | :white_check_mark: |
+|   i.MX 952   | :white_check_mark: | :white_check_mark: | :x: |
 
 C++ example script needs to be generated with [cross compilation](../). [setup_environment.sh](../tools/setup_environment.sh) script needs to be executed in [nxp-nnstreamer-examples](../) folder to define data paths:
 ```bash
@@ -45,7 +47,12 @@ For i.MX 93 NPU use vela converted model:
 
 For i.MX 95 NPU use neutron converted model:
 ```bash
-./build/classification/example_classification_mobilenet_v1_tflite -p  ${MOBILENETV1_QUANT_NEUTRON} -l ${MOBILENETV1_LABELS}
+./build/classification/example_classification_mobilenet_v1_tflite -p  ${MOBILENETV1_QUANT_IMX95} -l ${MOBILENETV1_LABELS}
+```
+
+For i.MX 952 NPU use neutron converted model:
+```bash
+./build/classification/example_classification_mobilenet_v1_tflite -p  ${MOBILENETV1_QUANT_IMX952} -l ${MOBILENETV1_LABELS}
 ```
 
 Inference on CPU with the following script:

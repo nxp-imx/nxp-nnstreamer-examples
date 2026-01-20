@@ -49,6 +49,7 @@ GPU=GPU2D ./tasks/face-processing/face-detection/example_face_detection_tflite.p
 | i.MX 8M Plus | :white_check_mark: | :white_check_mark: | :white_check_mark: |
 |   i.MX 93    | :white_check_mark: | :white_check_mark: | :x: |
 |   i.MX 95    | :white_check_mark: | :white_check_mark: | :white_check_mark: |
+|   i.MX 952   | :white_check_mark: | :white_check_mark: | :x: |
 
 C++ example script needs to be generated with [cross compilation](../). [setup_environment.sh](../tools/setup_environment.sh) script needs to be executed in [nxp-nnstreamer-examples](../) folder to define data paths:
 ```bash
@@ -64,7 +65,11 @@ For i.MX 93 NPU use vela converted model:
 ```
 For i.MX 95 NPU use neutron converted model:
 ```bash
-./build/face-processing/example_face_detection_tflite -p ${ULTRAFACE_QUANT_NEUTRON}
+./build/face-processing/example_face_detection_tflite -p ${ULTRAFACE_QUANT_IMX95}
+```
+For i.MX 952 NPU use neutron converted model:
+```bash
+./build/face-processing/example_face_detection_tflite -p ${ULTRAFACE_QUANT_IMX952}
 ```
 Inference on CPU with the following script:
 ```bash
