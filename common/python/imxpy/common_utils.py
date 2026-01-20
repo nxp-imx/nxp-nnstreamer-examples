@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 #
-# Copyright 2022-2025 NXP
+# Copyright 2022-2026 NXP
 # SPDX-License-Identifier: BSD-3-Clause
 
 import os
@@ -19,7 +19,7 @@ def get_camera_backend(imx):
 
     if camera_backend:
         # Validate the specified backend for current platform
-        if imx.is_imx95():
+        if imx.is_imx95() or imx.is_imx952():
             if camera_backend not in ["v4l2", "libcamera"]:
                 raise ValueError(
                     f"Invalid camera backend {camera_backend} for platform i.MX95. Supported: v4l2, libcamera")
@@ -30,7 +30,7 @@ def get_camera_backend(imx):
         return camera_backend
     else:
         # Set default based on platform
-        if imx.is_imx95():
+        if imx.is_imx95() or imx.is_imx952():
             # Future: libcamera will be default for i.MX95
             return "v4l2"
         else:
@@ -51,7 +51,7 @@ def get_default_camera_device(imx):
             return '/dev/video3'
         elif imx.is_imx93():
             return '/dev/video0'
-        elif imx.is_imx95():
+        elif imx.is_imx95() or imx.is_imx952():
             return '/dev/video13'
         else:
             name = imx.name()
@@ -264,7 +264,7 @@ class GstVideoImx:
                  # imxvideoconvert_g2d does not support GRAY8 sink on i.MX95 platform
                  # use acceleration to YUY2 instead
                  #TODO: to remove condition when GRAY8 will be supported
-                elif self.imx.is_imx95() and format == 'GRAY8':
+                elif self.imx.is_imx95() or imx.is_imx952() and format == 'GRAY8':
                     cmd = self.videoscale_to_format(
                         'YUY2', width, height, 'g2d', flip, cropping, keep_image_ratio)
                     cmd += f'videoconvert name=gray_convert_cpu_{self.cnt_element_names} ! video/x-raw,format={format} ! '
