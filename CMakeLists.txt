@@ -1,7 +1,7 @@
-# Copyright 2023-2025 NXP
+# Copyright 2023-2026 NXP
 # SPDX-License-Identifier: BSD-3-Clause
 
-cmake_minimum_required( VERSION 3.0 )
+cmake_minimum_required( VERSION 3.5 )
 project( nxp-nnstreamer-examples )
 
 # Specify the C++ standard
