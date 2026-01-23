@@ -1,0 +1,3 @@
+tensorflow==2.18.0
+numpy
+jupyter==1.0.0
