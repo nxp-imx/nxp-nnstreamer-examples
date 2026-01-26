@@ -8,11 +8,12 @@ Name | Implementation | Model | ML engine | Features
 
 ## DeepLabV3 segmentation
 ### Bash
-|   Platforms  | NPU | CPU | GPU |
-| ------------ | --- | --- | --- |
-| i.MX 8M Plus | :white_check_mark: | :white_check_mark: | :white_check_mark: |
-|   i.MX 93    | :white_check_mark: | :white_check_mark: | :x: |
-|   i.MX 95    | :x: | :white_check_mark: | :x: |
+|   Platforms  | NPU | CPU |
+| ------------ | --- | --- |
+| i.MX 8M Plus | :white_check_mark: | :white_check_mark: |
+|   i.MX 93    | :white_check_mark: | :white_check_mark: |
+|   i.MX 95    | :x: | :white_check_mark: |
+|   i.MX 952   | :x: | :white_check_mark: |
 
 The semantic segmentation demo in bash supports multiple backend for model inferences (refers to above table), default value can be overridden by explicitly defining BACKEND variable, for instance:
 ```bash
@@ -20,11 +21,12 @@ BACKEND=CPU ./tasks/semantic-segmentation/example_segmentation_deeplab_v3_tflite
 ```
 
 ### C++
-|   Platforms  | NPU | CPU | GPU |
-| ------------ | --- | --- | --- |
-| i.MX 8M Plus | :white_check_mark: | :white_check_mark: | :white_check_mark: |
-|   i.MX 93    | :white_check_mark: | :white_check_mark: | :x: |
-|   i.MX 95    | :x: | :white_check_mark: | :white_check_mark: |
+|   Platforms  | NPU | CPU |
+| ------------ | --- | --- |
+| i.MX 8M Plus | :white_check_mark: | :white_check_mark: |
+|   i.MX 93    | :white_check_mark: | :white_check_mark: |
+|   i.MX 95    | :x: | :white_check_mark: |
+|   i.MX 952   | :x: | :white_check_mark: |
 
 C++ example script needs to be generated with [cross compilation](../). [setup_environment.sh](../tools/setup_environment.sh) script needs to be executed in [nxp-nnstreamer-examples](../) folder to define data paths:
 ```bash

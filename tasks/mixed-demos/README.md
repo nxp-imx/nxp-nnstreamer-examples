@@ -11,11 +11,12 @@ Mixed examples goal is to demonstrate the possibility to make applications which
 
 ## Classification and Object Detection (MobileNetV1/SSD MobileNetV2)
 ### C++
-|   Platforms  | NPU | CPU | GPU |
-| ------------ | --- | --- | --- |
-| i.MX 8M Plus | :white_check_mark: | :white_check_mark: | :white_check_mark: |
-|   i.MX 93    | :white_check_mark: | :white_check_mark: | :x: |
-|   i.MX 95    | :white_check_mark: | :white_check_mark: | :white_check_mark: |
+|   Platforms  | NPU | CPU |
+| ------------ | --- | --- |
+| i.MX 8M Plus | :white_check_mark: | :white_check_mark: |
+|   i.MX 93    | :white_check_mark: | :white_check_mark: |
+|   i.MX 95    | :white_check_mark: | :white_check_mark: |
+|   i.MX 952   | :white_check_mark: | :white_check_mark: |
 
 C++ example script needs to be generated with [cross compilation](../). [setup_environment.sh](../tools/setup_environment.sh) script needs to be executed in [nxp-nnstreamer-examples](../) folder to define data paths:
 ```bash
@@ -60,11 +61,12 @@ Press ```Esc or ctrl+C``` to stop the execution of the pipeline.
 
 ## Pose Estimation and Face Detection (MoveNet/UltraFace-slim)
 ### C++
-|   Platforms  | NPU | CPU | GPU |
-| ------------ | --- | --- | --- |
-| i.MX 8M Plus | :white_check_mark: | :white_check_mark: | :white_check_mark: |
-|   i.MX 93    | :white_check_mark: | :white_check_mark: | :x: |
-|   i.MX 95    | :x: | :x: | :x: |
+|   Platforms  | NPU | CPU |
+| ------------ | --- | --- |
+| i.MX 8M Plus | :white_check_mark: | :white_check_mark: |
+|   i.MX 93    | :white_check_mark: | :white_check_mark: |
+|   i.MX 95    | :x: | :x: |
+|   i.MX 952   | :x: | :x: |
 
 C++ example script needs to be generated with [cross compilation](../). [setup_environment.sh](../tools/setup_environment.sh) script needs to be executed in [nxp-nnstreamer-examples](../) folder to define data paths:
 ```bash
@@ -99,11 +101,12 @@ Press ```Esc or ctrl+C``` to stop the execution of the pipeline.
 
 ## Double MobileNetV1 Classification
 ### C++
-|   Platforms  | NPU | CPU | GPU |
-| ------------ | --- | --- | --- |
-| i.MX 8M Plus | :white_check_mark: | :white_check_mark: | :white_check_mark: |
-|   i.MX 93    | :white_check_mark: | :white_check_mark: | :x: |
-|   i.MX 95    | :white_check_mark: | :white_check_mark: | :white_check_mark: |
+|   Platforms  | NPU | CPU |
+| ------------ | --- | --- |
+| i.MX 8M Plus | :white_check_mark: | :white_check_mark: |
+|   i.MX 93    | :white_check_mark: | :white_check_mark: |
+|   i.MX 95    | :white_check_mark: | :white_check_mark: |
+|   i.MX 952   | :white_check_mark: | :white_check_mark: |
 
 *NOTES:*
 - *A warmup time for NPU inference on i.MX 95 can take up to 1 minute.*

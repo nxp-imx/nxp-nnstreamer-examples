@@ -31,11 +31,12 @@ For face detection demo, display can be flipped using the --mirror option.<br>
 
 ## Face Detection
 ### Python
-|   Platforms  | NPU | CPU | GPU |
-| ------------ | --- | --- | --- |
-| i.MX 8M Plus | :white_check_mark: | :x: | :x: |
-|   i.MX 93    | :white_check_mark: | :x: | :x: |
-|   i.MX 95    | :white_check_mark: | :x: | :x: |
+|   Platforms  | NPU | CPU |
+| ------------ | --- | --- |
+| i.MX 8M Plus | :white_check_mark: | :x: |
+|   i.MX 93    | :white_check_mark: | :x: |
+|   i.MX 95    | :white_check_mark: | :x: |
+|   i.MX 952   | :white_check_mark: | :x: |
 
 Demo application is to be started from Linux. Camera device node may be configured via command line argument (default: `/dev/video3` on i.MX 8M Plus and `/dev/video0` on i.MX 93, `/dev/video13` on i.MX 95).
 GPU environment variable allows to choose between 2D GPU (GPU2D) or 3D GPU (GPU3D) if available for scaling and color space conversion operations.
@@ -44,12 +45,12 @@ It draws bounding boxes around the detected faces, and displays number of detect
 GPU=GPU2D ./tasks/face-processing/face-detection/example_face_detection_tflite.py [--camera_device=</dev/videoN>]
 ```
 ### C++
-|   Platforms  | NPU | CPU | GPU |
-| ------------ | --- | --- | --- |
-| i.MX 8M Plus | :white_check_mark: | :white_check_mark: | :white_check_mark: |
-|   i.MX 93    | :white_check_mark: | :white_check_mark: | :x: |
-|   i.MX 95    | :white_check_mark: | :white_check_mark: | :white_check_mark: |
-|   i.MX 952   | :white_check_mark: | :white_check_mark: | :x: |
+|   Platforms  | NPU | CPU |
+| ------------ | --- | --- |
+| i.MX 8M Plus | :white_check_mark: | :white_check_mark: |
+|   i.MX 93    | :white_check_mark: | :white_check_mark: |
+|   i.MX 95    | :white_check_mark: | :white_check_mark: |
+|   i.MX 952   | :white_check_mark: | :white_check_mark: |
 
 C++ example script needs to be generated with [cross compilation](../). [setup_environment.sh](../tools/setup_environment.sh) script needs to be executed in [nxp-nnstreamer-examples](../) folder to define data paths:
 ```bash
@@ -97,11 +98,12 @@ Press ```Esc or ctrl+C``` to stop the execution of the pipeline.
 
 ## Emotion Classification
 ### Python
-|   Platforms  | NPU | CPU | GPU |
-| ------------ | --- | --- | --- |
-| i.MX 8M Plus | :white_check_mark: | :x: | :x: |
-|   i.MX 93    | :white_check_mark: | :x: | :x: |
-|   i.MX 95    | :x: | :x: | :x: |
+|   Platforms  | NPU | CPU |
+| ------------ | --- | --- |
+| i.MX 8M Plus | :white_check_mark: | :x: |
+|   i.MX 93    | :white_check_mark: | :x: |
+|   i.MX 95    | :x: | :x: |
+|   i.MX 952   | :x: | :x: |
 
 Demo application is to be started from Linux. Camera device node may be configured via command line argument (default: `/dev/video3` on i.MX 8M Plus, `/dev/video0` on i.MX 93, `/dev/video13` on i.MX 95).
 GPU environment variable allows to choose between 2D GPU (GPU2D) or 3D GPU (GPU3D) if available for scaling and color space conversion operations on main pipeline.
@@ -112,11 +114,12 @@ GPU=GPU2D ./tasks/face-processing/emotion-classification/example_emotion_classif
 7 emotions can be recognised: angry, disgust, fear, happy, sad, surprise and neutral.
 
 ### C++
-|   Platforms  | NPU | CPU | GPU |
-| ------------ | --- | --- | --- |
-| i.MX 8M Plus | :white_check_mark: | :white_check_mark: | :white_check_mark: |
-|   i.MX 93    | :white_check_mark: | :white_check_mark: | :x: |
-|   i.MX 95    | :x: | :white_check_mark: | :white_check_mark: |
+|   Platforms  | NPU | CPU |
+| ------------ | --- | --- |
+| i.MX 8M Plus | :white_check_mark: | :white_check_mark: |
+|   i.MX 93    | :white_check_mark: | :white_check_mark: |
+|   i.MX 95    | :x: | :white_check_mark: |
+|   i.MX 952   | :x: | :white_check_mark: |
 
 C++ example script needs to be generated with [cross compilation](../). [setup_environment.sh](../tools/setup_environment.sh) script needs to be executed in [nxp-nnstreamer-examples](../) folder to define data paths:
 ```bash
@@ -156,11 +159,12 @@ Press ```Esc or ctrl+C``` to stop the execution of the pipeline.
 
 ## Face Recognition
 ### Python
-|   Platforms  | NPU | CPU | GPU |
-| ------------ | --- | --- | --- |
-| i.MX 8M Plus | :white_check_mark: | :x: | :x: |
-|   i.MX 93    | :white_check_mark: | :x: | :x: |
-|   i.MX 95    | :x: | :x: | :x: |
+|   Platforms  | NPU | CPU |
+| ------------ | --- | --- |
+| i.MX 8M Plus | :white_check_mark: | :x: |
+|   i.MX 93    | :white_check_mark: | :x: |
+|   i.MX 95    | :x: | :x: |
+|   i.MX 952   | :x: | :x: |
 
 Demo application is to be started from Linux. Camera device node may be configured via command line argument (default: `/dev/video3` on i.MX 8M Plus, `/dev/video0` on i.MX 93, `/dev/video13` on i.MX 95).
 GPU environment variable allows to choose between 2D GPU (GPU2D) or 3D GPU (GPU3D) if available for scaling and color space conversion operations on main pipeline.

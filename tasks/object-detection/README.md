@@ -9,11 +9,12 @@ Name | Implementation | Model | ML engine | Features
 
 ## YOLOv4 Tiny object detection 
 ### Bash
-|   Platforms  | NPU | CPU | GPU |
-| ------------ | --- | --- | --- |
-| i.MX 8M Plus | :white_check_mark: | :white_check_mark: | :x: |
-|   i.MX 93    | :white_check_mark: | :white_check_mark: | :x: |
-|   i.MX 95    | :x: | :white_check_mark: | :x: |
+|   Platforms  | NPU | CPU |
+| ------------ | --- | --- |
+| i.MX 8M Plus | :white_check_mark: | :white_check_mark: |
+|   i.MX 93    | :white_check_mark: | :white_check_mark: |
+|   i.MX 95    | :x: | :white_check_mark: |
+|   i.MX 952   | :x: | :white_check_mark: |
 
 *NOTE: YOLOv4 Tiny output does not directly work with the YOLOv5 mode of tensor_decoder element, so a python filter is used to post-process and reshape this output as required.*
 
@@ -25,11 +26,12 @@ BACKEND=CPU GPU=GPU2D ./tasks/object-detection/example_detection_yolo_v4_tiny_tf
 
 ## SSD MobileNetV2 object detection
 ### Bash
-|   Platforms  | NPU | CPU | GPU |
-| ------------ | --- | --- | --- |
-| i.MX 8M Plus | :white_check_mark: | :white_check_mark: | :white_check_mark: |
-|   i.MX 93    | :white_check_mark: | :white_check_mark: | :x: |
-|   i.MX 95    | :white_check_mark: | :white_check_mark: | :x: |
+|   Platforms  | NPU | CPU |
+| ------------ | --- | --- |
+| i.MX 8M Plus | :white_check_mark: | :white_check_mark: |
+|   i.MX 93    | :white_check_mark: | :white_check_mark: |
+|   i.MX 95    | :white_check_mark: | :white_check_mark: |
+|   i.MX 952   | :white_check_mark: | :white_check_mark: |
 
 The object detection demo in bash using SSD MobiletNetV2 supports multiple backend for model inferences (refers to above table), default value can be overridden by explicitly defining BACKEND variable. Similarly, the GPU variable allows to choose between 2D GPU (GPU2D) or 3D GPU (GPU3D) if available for scaling and color space conversion operations.
 For instance:

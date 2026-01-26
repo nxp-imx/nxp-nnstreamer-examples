@@ -8,11 +8,12 @@ Name | Implementation | Model | ML engine |Features
 
 ## MoveNet Lightning pose estimation
 ### Python
-|   Platforms  | NPU | CPU | GPU |
-| ------------ | --- | --- | --- |
-| i.MX 8M Plus | :white_check_mark: | :white_check_mark: | :x: |
-|   i.MX 93    | :x: | :white_check_mark: | :x: |
-|   i.MX 95    | :x: | :white_check_mark: | :x: |
+|   Platforms  | NPU | CPU |
+| ------------ | --- | --- |
+| i.MX 8M Plus | :white_check_mark: | :white_check_mark: |
+|   i.MX 93    | :x: | :white_check_mark: |
+|   i.MX 95    | :x: | :white_check_mark: |
+|   i.MX 952   | :x: | :white_check_mark: |
 
 Default backend can be overridden by explicitly defining BACKEND variable, and source can be selected as VIDEO or CAMERA.
 Similarly, the GPU variable allows to choose between 2D GPU (GPU2D) or 3D GPU (GPU3D) if available for scaling and color space conversion operations.
@@ -35,11 +36,12 @@ Option | Description
 Note: Video used is in Matroska (.mkv) format with VP9 encoding, which is not supported by i.MX 93 decoding capabilities
 
 ### C++
-|   Platforms  | NPU | CPU | GPU |
-| ------------ | --- | --- | --- |
-| i.MX 8M Plus | :white_check_mark: | :white_check_mark: | :white_check_mark: |
-|   i.MX 93    | :x: | :white_check_mark: | :x: |
-|   i.MX 95    | :x: | :white_check_mark: | :white_check_mark: |
+|   Platforms  | NPU | CPU |
+| ------------ | --- | --- |
+| i.MX 8M Plus | :white_check_mark: | :white_check_mark: |
+|   i.MX 93    | :x: | :white_check_mark: |
+|   i.MX 95    | :x: | :white_check_mark: |
+|   i.MX 952   | :x: | :white_check_mark: |
 
 C++ example script needs to be generated with [cross compilation](../). [setup_environment.sh](../tools/setup_environment.sh) script needs to be executed in [nxp-nnstreamer-examples](../) folder to define data paths:
 ```bash
