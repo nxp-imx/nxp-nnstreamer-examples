@@ -264,7 +264,7 @@ class GstVideoImx:
                  # imxvideoconvert_g2d does not support GRAY8 sink on i.MX95 platform
                  # use acceleration to YUY2 instead
                  #TODO: to remove condition when GRAY8 will be supported
-                elif self.imx.is_imx95() or imx.is_imx952() and format == 'GRAY8':
+                elif self.imx.is_imx95() or self.imx.is_imx952() and format == 'GRAY8':
                     cmd = self.videoscale_to_format(
                         'YUY2', width, height, 'g2d', flip, cropping, keep_image_ratio)
                     cmd += f'videoconvert name=gray_convert_cpu_{self.cnt_element_names} ! video/x-raw,format={format} ! '

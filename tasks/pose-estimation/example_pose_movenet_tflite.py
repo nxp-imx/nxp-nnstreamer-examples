@@ -135,7 +135,7 @@ class PoseExample:
         disable_zero_copy_neutron(self.imx)
 
         if self.backend == 'NPU':
-            if self.imx.is_imx93() or self.imx.is_imx95() or imx.is_imx952():
+            if self.imx.is_imx93() or self.imx.is_imx95() or self.imx.is_imx952():
                 name = imx.name()
                 raise NotImplementedError(f"Example can't run on {name} NPU")
 
@@ -205,7 +205,7 @@ class PoseExample:
             print('video file cannot be decoded, use camera source instead')
             self.source = 'CAMERA'
 
-        if self.imx.is_imx95() or imx.is_imx952():
+        if self.imx.is_imx95() or self.imx.is_imx952():
             print("i.MX95 can't decode VP9, use camera source instead")
             self.source = 'CAMERA'
 
