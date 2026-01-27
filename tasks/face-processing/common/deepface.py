@@ -1,20 +1,20 @@
 #!/usr/bin/env python3
 #
-# Copyright 2023, 2025 NXP
+# Copyright 2023, 2025-2026 NXP
 # SPDX-License-Identifier: BSD-3-Clause
 
 import numpy as np
 import os
+from imxpy.imx_dev import Imx  # noqa
 
 
-class FNModel:
+class DFModel:
 
-    def __init__(self, model_directory, vela=False):
+    def __init__(self, model_directory):
 
         """Helper class for DeepFace-emotion model.
 
         model_directory: directory where tflite model is located
-        vela: use vela version of the model
         """
         # Face detection definitions
         self.MODEL_DEEPFACE_WIDTH = 48
@@ -22,15 +22,35 @@ class FNModel:
         self.MODEL_DEEPFACE_NUM_CLASSES = 7
         self.MODEL_DEEPFACE_CLASSES = ['angry', 'disgust', 'fear', 'happy', 'sad', 'surprise', 'neutral']
 
+        # Check for model-specific backend first, then fall back to global BACKEND
+        self.backend = os.getenv('BACKEND_DEEPFACE', os.getenv('BACKEND', 'CPU'))
+
         # model location
-        if vela:
-            name = 'emotion_uint8_float32_vela.tflite'
-        else:
+        self.imx = Imx()
+        if self.backend == 'NPU':
+            if self.imx.has_npu_ethos():
+                name = 'emotion_uint8_float32_vela.tflite'
+            elif self.imx.has_npu_neutron():
+                if self.imx.is_imx95():
+                    #name = 'ultraface_slim_uint8_float32_imx95.tflite'
+                    name = 'emotion_uint8_float32.tflite'
+                else: #imx952 device
+                    #name = 'ultraface_slim_uint8_float32_imx952.tflite'
+                    name = 'emotion_uint8_float32.tflite'
+            else: #imx8mp device
+                name = 'emotion_uint8_float32.tflite'
+        else:  # backend = CPU
             name = 'emotion_uint8_float32.tflite'
+
         self.tflite_model = os.path.join(model_directory, name)
 
         if not os.path.exists(self.tflite_model):
             raise FileExistsError(f'cannot find model [{self.tflite_model}]')
+
+    def get_backend(self):
+        """Get backend type.
+        """
+        return self.backend
 
     def get_model_path(self):
         """Get full path to model file.

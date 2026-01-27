@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 #
-# Copyright 2022-2025 NXP
+# Copyright 2022-2026 NXP
 # SPDX-License-Identifier: BSD-3-Clause
 
 import argparse
@@ -363,8 +363,7 @@ if __name__ == '__main__':
     models_dir = os.path.join(pwd, '../../../downloads/models/face-processing')
     mface_db_dir = os.path.join(pwd, 'facenet_db')
 
-    has_ethosu = imx.has_npu_ethos()
-    model = facenet.FNModel(models_dir, mface_db_dir, vela=has_ethosu)
+    model = facenet.FNModel(models_dir, mface_db_dir)
     secondary = SecondaryPipe(model, video_resolution=vr, video_fps=fps)
 
     # main pipeline for face detection

@@ -1,36 +1,51 @@
 #!/usr/bin/env python3
 #
-# Copyright 2022-2023, 2025 NXP
+# Copyright 2022-2023, 2025-2026 NXP
 # SPDX-License-Identifier: BSD-3-Clause
 
 import numpy as np
 import os
+from imxpy.imx_dev import Imx  # noqa
 
 
 class FNModel:
 
     def __init__(self, model_directory, database_directory,
-                 match_threshold=1.0, vela=False):
+                 match_threshold=1.0):
         """Helper class for FaceNet model.
 
         model_directory: directory where tflite model is located
         database_directory: directory for face / embedding bundle records
         match_threshold: threshold for euclidean distance match comparison
             (the lower the stricter)
-        vela: use vela version of the model
         """
         # Face detection definitions
         self.MODEL_FACENET_WIDTH = 160
         self.MODEL_FACENET_HEIGHT = 160
         self.MODEL_FACENET_EMBEDDING_LEN = 512
 
+        # Check for model-specific backend first, then fall back to global BACKEND
+        self.backend = os.getenv('BACKEND_FACENET', os.getenv('BACKEND', 'CPU'))
+
         self.match_threshold = match_threshold
 
         # model location
-        if vela:
-            name = 'facenet512_uint8_vela.tflite'
-        else:
+        self.imx = Imx()
+        if self.backend == 'NPU':
+            if self.imx.has_npu_ethos():
+                name = 'facenet512_uint8_vela.tflite'
+            elif self.imx.has_npu_neutron():
+                if self.imx.is_imx95():
+                    #name = 'facenet512_uint8_imx95.tflite'
+                    name = 'facenet512_uint8.tflite'
+                else: #imx952 device
+                    #name = 'facenet512_uint8_imx952.tflite'
+                    name = 'facenet512_uint8.tflite'
+            else: #imx8mp device
+                name = 'facenet512_uint8.tflite'
+        else:  # backend = CPU
             name = 'facenet512_uint8.tflite'
+
         self.tflite_model = os.path.join(model_directory, name)
 
         if not os.path.exists(self.tflite_model):
@@ -40,6 +55,11 @@ class FNModel:
             if not os.path.exists(database_directory):
                 os.mkdir(database_directory)
         self.database_dir = database_directory
+
+    def get_backend(self):
+        """Get backend type.
+        """
+        return self.backend
 
     def get_model_path(self):
         """Get full path to model file.

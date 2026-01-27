@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 #
-# Copyright 2023-2025 NXP
+# Copyright 2023-2026 NXP
 # SPDX-License-Identifier: BSD-3-Clause
 
 import argparse
@@ -272,8 +272,7 @@ if __name__ == '__main__':
     pwd = os.path.dirname(os.path.abspath(__file__))
     models_dir = os.path.join(pwd, '../../../downloads/models/face-processing')
 
-    has_ethosu = imx.has_npu_ethos()
-    model = deepface.FNModel(models_dir, vela=has_ethosu)
+    model = deepface.DFModel(models_dir)
     secondary = SecondaryPipe(model, video_resolution=vr, video_fps=fps)
 
     # main pipeline for face detection

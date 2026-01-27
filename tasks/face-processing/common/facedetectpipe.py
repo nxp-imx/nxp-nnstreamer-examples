@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 #
-# Copyright 2022-2025 NXP
+# Copyright 2022-2026 NXP
 # SPDX-License-Identifier: BSD-3-Clause
 
 import cairo
@@ -137,8 +137,8 @@ class Pipe:
                 opts = ('custom=Delegate:External,'
                         'ExtDelegateLib:libethosu_delegate.so')
             elif self.imx.has_npu_neutron():
-                print('Models not enabled yet on Neutron NPU, running on CPU instead')
-                opts = f'custom=Delegate:XNNPACK,NumThreads:{os.cpu_count()//2}'
+                opts = ('custom=Delegate:External,'
+                        'ExtDelegateLib:libneutron_delegate.so')
         else:  # backend = CPU
             opts = f'custom=Delegate:XNNPACK,NumThreads:{os.cpu_count()//2}'
         return opts
@@ -201,7 +201,7 @@ class SecondaryPipe(Pipe):
 
         cmdline += '  tensor_converter ! '
 
-        custom_ops = self.nns_tfliter_custom_options()
+        custom_ops = self.nns_tfliter_custom_options(secondary_model.get_backend())
         cmdline += ('  tensor_filter name=secondary_model_inference '
                     'framework=tensorflow-lite model={:s} {:s} ! ') \
             .format(secondary_model.get_model_path(), custom_ops)
@@ -319,10 +319,7 @@ class FaceDetectPipe(Pipe):
             model_directory = os.path.join(
                 pwd, '../../../downloads/models/face-processing')
 
-        has_ethosu = self.imx.has_npu_ethos()
-        has_neutron = self.imx.has_npu_neutron()
-        self.ultraface = ultraface.UFModel(
-            model_directory, vela=has_ethosu, neutron=has_neutron)
+        self.ultraface = ultraface.UFModel(model_directory)
 
         # pipelines variables
         self.mainloop = None
@@ -364,7 +361,7 @@ class FaceDetectPipe(Pipe):
 
         cmdline += '  tensor_converter ! '
 
-        custom_ops = self.nns_tfliter_custom_options()
+        custom_ops = self.nns_tfliter_custom_options(self.ultraface.get_backend())
         cmdline += ('  tensor_filter name=model_inference '
                     'framework=tensorflow-lite model={:s} {:s} ! ') \
             .format(self.ultraface.get_model_path(), custom_ops)

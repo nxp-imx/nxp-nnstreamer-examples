@@ -33,17 +33,28 @@ For face detection demo, display can be flipped using the --mirror option.<br>
 ### Python
 |   Platforms  | NPU | CPU |
 | ------------ | --- | --- |
-| i.MX 8M Plus | :white_check_mark: | :x: |
-|   i.MX 93    | :white_check_mark: | :x: |
-|   i.MX 95    | :white_check_mark: | :x: |
-|   i.MX 952   | :white_check_mark: | :x: |
+| i.MX 8M Plus | :white_check_mark: | :white_check_mark: |
+|   i.MX 93    | :white_check_mark: | :white_check_mark: |
+|   i.MX 95    | :white_check_mark: | :white_check_mark: |
+|   i.MX 952   | :white_check_mark: | :white_check_mark: |
 
 Demo application is to be started from Linux. Camera device node may be configured via command line argument (default: `/dev/video3` on i.MX 8M Plus and `/dev/video0` on i.MX 93, `/dev/video13` on i.MX 95).
-GPU environment variable allows to choose between 2D GPU (GPU2D) or 3D GPU (GPU3D) if available for scaling and color space conversion operations.
+Default backend can be overridden by explicitly defining BACKEND variable.<br>
+Similarly, the GPU environment variable allows to choose between 2D GPU (GPU2D) or 3D GPU (GPU3D) if available for scaling and color space conversion operations.
 It draws bounding boxes around the detected faces, and displays number of detections.
 ```
-GPU=GPU2D ./tasks/face-processing/face-detection/example_face_detection_tflite.py [--camera_device=</dev/videoN>]
+BACKEND=NPU GPU=GPU2D ./tasks/face-processing/face-detection/example_face_detection_tflite.py
 ```
+
+The following execution parameters are available (Run ``` ./example_face_detection_tflite.py -h``` to see option details):
+
+Option | Description
+--- | ---
+-c, --camera_device CAMERA_DEVICE | Camera device node
+-d, --video_dims WIDTH HEIGHT | Input resolution (width x height)
+-m, --mirror | Flips the camera stream when using a front camera
+-f, --fps FPS | Camera framerate
+
 ### C++
 |   Platforms  | NPU | CPU |
 | ------------ | --- | --- |
@@ -100,18 +111,28 @@ Press ```Esc or ctrl+C``` to stop the execution of the pipeline.
 ### Python
 |   Platforms  | NPU | CPU |
 | ------------ | --- | --- |
-| i.MX 8M Plus | :white_check_mark: | :x: |
-|   i.MX 93    | :white_check_mark: | :x: |
-|   i.MX 95    | :x: | :x: |
-|   i.MX 952   | :x: | :x: |
+| i.MX 8M Plus | :white_check_mark: | :white_check_mark: |
+|   i.MX 93    | :white_check_mark: | :white_check_mark: |
+|   i.MX 95    | :x: | :white_check_mark: |
+|   i.MX 952   | :x: | :white_check_mark: |
 
 Demo application is to be started from Linux. Camera device node may be configured via command line argument (default: `/dev/video3` on i.MX 8M Plus, `/dev/video0` on i.MX 93, `/dev/video13` on i.MX 95).
-GPU environment variable allows to choose between 2D GPU (GPU2D) or 3D GPU (GPU3D) if available for scaling and color space conversion operations on main pipeline.
+Default backend can be overridden by explicitly defining BACKEND variable. To fine-tune each model individually, you can use BACKEND_ULTRAFACE and BACKEND_DEEPFACE variables instead.<br>
+Similarly, GPU environment variable allows to choose between 2D GPU (GPU2D) or 3D GPU (GPU3D) if available for scaling and color space conversion operations on main pipeline.
 It draws bounding boxes around the detected faces, and displays predicted emotion and confidence score on each face.
 ```
-GPU=GPU2D ./tasks/face-processing/emotion-classification/example_emotion_classification_tflite.py [--camera_device=</dev/videoN>]
+BACKEND=NPU GPU=GPU2D ./tasks/face-processing/emotion-classification/example_emotion_classification_tflite.py
 ```
 7 emotions can be recognised: angry, disgust, fear, happy, sad, surprise and neutral.
+
+The following execution parameters are available (Run ``` ./example_emotion_classification_tflite.py -h``` to see option details):
+
+Option | Description
+--- | ---
+-c, --camera_device CAMERA_DEVICE | Camera device node
+-d, --video_dims WIDTH HEIGHT | Input resolution (width x height)
+-m, --mirror | Flips the camera stream when using a front camera
+-f, --fps FPS | Camera framerate
 
 ### C++
 |   Platforms  | NPU | CPU |
@@ -161,17 +182,29 @@ Press ```Esc or ctrl+C``` to stop the execution of the pipeline.
 ### Python
 |   Platforms  | NPU | CPU |
 | ------------ | --- | --- |
-| i.MX 8M Plus | :white_check_mark: | :x: |
-|   i.MX 93    | :white_check_mark: | :x: |
-|   i.MX 95    | :x: | :x: |
-|   i.MX 952   | :x: | :x: |
+| i.MX 8M Plus | :white_check_mark: | :white_check_mark: |
+|   i.MX 93    | :white_check_mark: | :white_check_mark: |
+|   i.MX 95    | :x: | :white_check_mark: |
+|   i.MX 952   | :x: | :white_check_mark: |
 
 Demo application is to be started from Linux. Camera device node may be configured via command line argument (default: `/dev/video3` on i.MX 8M Plus, `/dev/video0` on i.MX 93, `/dev/video13` on i.MX 95).
-GPU environment variable allows to choose between 2D GPU (GPU2D) or 3D GPU (GPU3D) if available for scaling and color space conversion operations on main pipeline.
+Default backend can be overridden by explicitly defining BACKEND variable. To fine-tune each model individually, you can use BACKEND_ULTRAFACE and BACKEND_FACENET variables instead.<br>
+Similarly, GPU environment variable allows to choose between 2D GPU (GPU2D) or 3D GPU (GPU3D) if available for scaling and color space conversion operations on main pipeline.
 It draws bounding boxes around the detected faces, and displays associated name and confidence score if face matches an embedding from the database. 
+
 ```
-GPU=GPU2D ./tasks/face-processing/face-recognition/example_face_recognition_tflite.py [--camera_device=</dev/videoN>]
+BACKEND=NPU GPU=GPU2D ./tasks/face-processing/face-recognition/example_face_recognition_tflite.py
 ```
+
+The following execution parameters are available (Run ``` ./example_face_recognition_tflite.py -h``` to see option details):
+
+Option | Description
+--- | ---
+-c, --camera_device CAMERA_DEVICE | Camera device node
+-d, --video_dims WIDTH HEIGHT | Input resolution (width x height)
+-m, --mirror | Flips the camera stream when using a front camera
+-f, --fps FPS | Camera framerate
+
 Database of recognizable face signatures (embeddings) is located in [face/facenet_db](./facenet_db) directory. An entry in there simply associates the \<name\> from file `<name>.npy`, with its embedding for the face, saved as a numpy binary array.
 ```
 ~/myrepo/nnst/nxp-nnstreamer-examples/face/facenet_db$ ls -al
