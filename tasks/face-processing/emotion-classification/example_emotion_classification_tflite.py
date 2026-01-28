@@ -14,9 +14,7 @@ import os
 import sys
 
 gi.require_version('Gst', '1.0')
-gi.require_version('GstApp', '1.0')
-gi.require_version('GstVideo', '1.0')
-from gi.repository import Gst, GLib, GstApp, GstVideo  # noqa
+from gi.repository import Gst, GLib  # noqa
 
 python_path = os.path.join(os.path.dirname(os.path.abspath(__file__)),
                            '../../../common/python')

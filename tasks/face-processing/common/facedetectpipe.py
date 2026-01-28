@@ -15,9 +15,7 @@ import signal
 import sys
 
 gi.require_version('Gst', '1.0')
-gi.require_version('GstApp', '1.0')
-gi.require_version('GstVideo', '1.0')
-from gi.repository import Gst, GLib, GstApp, GstVideo  # noqa
+from gi.repository import Gst, GLib  # noqa
 
 python_path = os.path.join(os.path.dirname(os.path.abspath(__file__)),
                            '../../../common/python')
@@ -281,7 +279,10 @@ class SecondaryPipe(Pipe):
         self.videocrop.set_property('left', cleft)
         self.videocrop.set_property('right', cright)
 
-        self.app_src_video.push_buffer(buffer)
+        ret = self.app_src_video.emit("push-buffer", buffer)
+
+        if ret != Gst.FlowReturn.OK:
+            logging.error(f'Failed to push buffer to appsrc: {ret}')
 
 
 class FaceDetectPipe(Pipe):
@@ -472,7 +473,11 @@ class FaceDetectPipe(Pipe):
     def video_app_sink_new_sample_cb(self, sink):
         """Callback for face detection output tensor sink signal.
         """
-        sample = sink.pull_sample()
+        sample = sink.emit("pull-sample")
+    
+        if sample is None:
+            return Gst.FlowReturn.OK
+
         if not isinstance(sample, Gst.Sample):
             logging.error('video appsink sample is not a Gst.Sample')
             return Gst.FlowReturn.ERROR
