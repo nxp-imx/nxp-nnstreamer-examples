@@ -6,12 +6,12 @@ This Notebook execution requires Jupyter Notebook python package.
 # eIQ Neutron SDK install and environment setup
 
 ## Quick install procedure example on Ubuntu
-To use eIQ Neutron SDK to convert models for Neutron NPU (i.MX95 and i.MX952), python version must be above or equal to `3.10`. To check if your python version is supported, refer to https://eiq.nxp.com/repository.<br>
+To use eIQ Neutron SDK to convert models for Neutron NPU (i.MX95 and i.MX952), python version must be above or equal to `3.10`. To check if your python version is supported, refer to https://eiq.nxp.com/repository/eiq-neutron-sdk/.<br>
 To install the SDK and set up the environment, follow these steps:
 
 ```bash
 # Install eIQ Neutron SDK from NXP repository
-pip install --index-url https://eiq.nxp.com/repository eiq-neutron-sdk==2.2.2
+pip install --index-url https://eiq.nxp.com/repository eiq-neutron-sdk==2.2.3
 ```
 
 More details on the SDK and its features can be found in the documentation of the eIQ Neutron SDK package which can be downloaded from [NXP eIQ website](https://www.nxp.com/design/design-center/software/eiq-ai-development-environment/eiq-toolkit-for-end-to-end-model-development-and-deployment:EIQ-TOOLKIT).
