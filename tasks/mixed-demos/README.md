@@ -32,10 +32,13 @@ For i.MX 93 NPU use vela converted models:<br>
  ```bash
 ./build/mixed-demos/example_classification_and_detection_tflite -p ${MOBILENETV1_QUANT_VELA},${MOBILENETV2_QUANT_VELA} -l ${MOBILENETV1_LABELS},${COCO_LABELS} -x ${MOBILENETV2_BOXES}
 ```
-
 For i.MX 95 NPU use neutron converted models:
  ```bash
-./build/mixed-demos/example_classification_and_detection_tflite -p ${MOBILENETV1_QUANT_NEUTRON},${MOBILENETV2_QUANT_NEUTRON} -l ${MOBILENETV1_LABELS},${COCO_LABELS} -x ${MOBILENETV2_BOXES} -s ${SAVE_VIDEO_PATH}
+./build/mixed-demos/example_classification_and_detection_tflite -p ${MOBILENETV1_QUANT_IMX95},${MOBILENETV2_QUANT_IMX95} -l ${MOBILENETV1_LABELS},${COCO_LABELS} -x ${MOBILENETV2_BOXES} -s ${SAVE_VIDEO_PATH}
+```
+For i.MX 952 NPU use neutron converted models:
+ ```bash
+./build/mixed-demos/example_classification_and_detection_tflite -p ${MOBILENETV1_QUANT_IMX952},${MOBILENETV2_QUANT_IMX952} -l ${MOBILENETV1_LABELS},${COCO_LABELS} -x ${MOBILENETV2_BOXES} -s ${SAVE_VIDEO_PATH}
 ```
 
 To use CPU or GPU backend, refers to the execution parameter ```--backend``` below.<br>
@@ -125,6 +128,14 @@ An example running two classification inferences in parallel, with each inferenc
 For i.MX 93 NPU use vela converted models:
 ```bash
 ./build/mixed-demos/example_double_classification_tflite -p ${MOBILENETV1_QUANT_VELA},${MOBILENETV1_QUANT_VELA} -l ${MOBILENETV1_LABELS} -c ${CAM1_PATH},${CAM2_PATH}
+```
+For i.MX 95 NPU use neutron converted models:
+```bash
+./build/mixed-demos/example_double_classification_tflite -p ${MOBILENETV1_QUANT_IMX95},${MOBILENETV1_QUANT_IMX95} -l ${MOBILENETV1_LABELS} -c ${CAM1_PATH},${CAM2_PATH}
+```
+For i.MX 952 NPU use neutron converted models:
+```bash
+./build/mixed-demos/example_double_classification_tflite -p ${MOBILENETV1_QUANT_IMX952},${MOBILENETV1_QUANT_IMX952} -l ${MOBILENETV1_LABELS} -c ${CAM1_PATH},${CAM2_PATH}
 ```
 To use CPU or GPU backend, refers to the execution parameter ```--backend``` below.<br>
 To use the non-quantized (float32) MobileNetV1 model, input normalization needs to be set with the execution parameter ```--normalization``` (description below) to ```centeredScaled``` and use ```MOBILENETV1``` environment variable for model path.<br>

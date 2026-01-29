@@ -39,12 +39,12 @@ For instance:
 BACKEND=CPU GPU=GPU2D ./tasks/object-detection/example_detection_mobilenet_ssd_v2_tflite.sh
 ```
 ### C++
-|   Platforms  | NPU | CPU | GPU |
-| ------------ | --- | --- | --- |
-| i.MX 8M Plus | :white_check_mark: | :white_check_mark: | :white_check_mark: |
-|   i.MX 93    | :white_check_mark: | :white_check_mark: | :x: |
-|   i.MX 95    | :white_check_mark: | :white_check_mark: | :white_check_mark: |
-|   i.MX 952   | :white_check_mark: | :white_check_mark: | :x: |
+|   Platforms  | NPU | CPU |
+| ------------ | --- | --- |
+| i.MX 8M Plus | :white_check_mark: | :white_check_mark: |
+|   i.MX 93    | :white_check_mark: | :white_check_mark: |
+|   i.MX 95    | :white_check_mark: | :white_check_mark: |
+|   i.MX 952   | :white_check_mark: | :white_check_mark: |
 
 C++ example script needs to be generated with [cross compilation](../). [setup_environment.sh](../tools/setup_environment.sh) script needs to be executed in [nxp-nnstreamer-examples](../) folder to define data paths:
 ```bash
