@@ -229,7 +229,7 @@ class PoseExample:
                 self.camera_device,
                 self.VIDEO_INPUT_WIDTH,
                 self.VIDEO_INPUT_HEIGHT,
-                format='YUY2')
+                video_format='YUY2')
 
         else:
             raise ValueError('Wrong source, must be VIDEO or CAMERA')

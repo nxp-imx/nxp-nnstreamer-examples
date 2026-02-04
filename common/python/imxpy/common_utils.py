@@ -84,7 +84,7 @@ def get_default_camera_device(imx):
         raise ValueError(f"Unknown camera backend: {camera_backend}")
 
 
-def get_camera_source_pipeline(imx, camera_device, width, height, framerate=None, format=None):
+def get_camera_source_pipeline(imx, camera_device, width, height, framerate=None, video_format=None):
     """Generate camera source pipeline segment based on backend.
 
     imx: imxdev.Imx() instance
@@ -102,8 +102,8 @@ def get_camera_source_pipeline(imx, camera_device, width, height, framerate=None
         cmd += f"video/x-raw,width={width},height={height}"
         if framerate:
             cmd += f",framerate={framerate}/1"
-        if format:
-            cmd += f",format={format}"
+        if video_format:
+            cmd += f",format={video_format}"
         cmd += " ! queue ! "
         return cmd
     else:
@@ -114,8 +114,8 @@ def get_camera_source_pipeline(imx, camera_device, width, height, framerate=None
         cmd += f"video/x-raw,width={width},height={height}"
         if framerate:
             cmd += f",framerate={framerate}/1"
-        if format:
-            cmd += f",format={format}"
+        if video_format:
+            cmd += f",format={video_format}"
         cmd += " !"
         return cmd
 
@@ -157,10 +157,10 @@ class GstVideoImx:
 
         return cmd
 
-    def videoscale_to_format(self, format=None, width=None, height=None, hardware=None, flip=False, cropping=False, keep_image_ratio=False):
+    def videoscale_to_format(self, video_format=None, width=None, height=None, hardware=None, flip=False, cropping=False, keep_image_ratio=False):
         """Create pipeline segment for accelerated video formatting and csc.
 
-        format: GStreamer video format
+        video_format: GStreamer video format
         width: output video width after rescale
         height: output video height after rescale
         hardware: corresponding hardware to accelerate video composition
@@ -170,7 +170,7 @@ class GstVideoImx:
         return: GStreamer pipeline segment string
         """
         valid_dimensions = width is not None and height is not None
-        required_format = format is not None
+        required_format = video_format is not None
         cmd = ''
 
         # In case function is called only for flipping
@@ -205,18 +205,18 @@ class GstVideoImx:
             if valid_dimensions:
                 cmd += f',width={width},height={height}'
             if required_format:
-                cmd += f',format={format}'
+                cmd += f',format={video_format}'
             cmd += ' ! '
 
         return cmd
 
-    def accelerated_videoscale(self, width=None, height=None, format=None, flip=False, use_gpu3d=False, cropping=False, keep_image_ratio=False):
+    def accelerated_videoscale(self, width=None, height=None, video_format=None, flip=False, use_gpu3d=False, cropping=False, keep_image_ratio=False):
         """Create pipeline segment for accelerated video scaling and conversion
         to a given GStreamer video format.
 
         width: output video width after rescale
         height: output video height after rescale
-        format: GStreamer video format
+        video_format: GStreamer video format
         flip: mirror mode, flip the image (not available on 3D GPU)
         use_gpu3d: use the GPU3D instead of GPU2D if available
         cropping: enable video cropping acceleration
@@ -225,7 +225,7 @@ class GstVideoImx:
         """
 
         valid_dimensions = width is not None and height is not None
-        required_format = format is not None
+        required_format = video_format is not None
         cmd = ''
 
         if use_gpu3d:
@@ -237,60 +237,53 @@ class GstVideoImx:
                 # imxvideoconvert_ocl does not support GRAY8 sink
                 # use acceleration to YUY2
                 if valid_dimensions or required_format:
-                    if format == 'GRAY8':
+                    if video_format == 'GRAY8':
                         cmd += self.videoscale_to_format(
                             'YUY2', width, height, 'ocl', False, cropping, keep_image_ratio)
-                        cmd += f'videoconvert name=gray_convert_cpu_{self.cnt_element_names} ! video/x-raw,format={format} ! '
+                        cmd += f'videoconvert name=gray_convert_cpu_{self.cnt_element_names} ! video/x-raw,format={video_format} ! '
                         self.cnt_element_names += 1
                     else:
                         cmd += self.videoscale_to_format(
-                            format, width, height, 'ocl', False, cropping, keep_image_ratio)
+                            video_format, width, height, 'ocl', False, cropping, keep_image_ratio)
             else:
                 # no 3D GPU acceleration
                 print(
                     'this target has no GPU3D support, operations will be executed on supported HW instead')
                 cmd = self.accelerated_videoscale(
-                    width, height, format, flip, False, cropping, keep_image_ratio)
+                    width, height, video_format, flip, False, cropping, keep_image_ratio)
         else:  # Use GPU2D or CPU
             if self.imx.has_g2d():
                 # imxvideoconvert_g2d does not support RGB nor GRAY8 sink on i.MX8 platforms
                 # use acceleration to RGBA instead
-                if self.imx.is_imx8() and (format == 'RGB' or format == 'GRAY8'):
+                if self.imx.is_imx8() and (video_format == 'RGB' or video_format == 'GRAY8'):
                     cmd = self.videoscale_to_format(
                         'RGBA', width, height, 'g2d', flip, cropping, keep_image_ratio)
-                    format_name = 'rgb' if format == 'RGB' else 'gray'
-                    cmd += f'videoconvert name={format_name}_convert_cpu_{self.cnt_element_names} ! video/x-raw,format={format} ! '
+                    format_name = 'rgb' if video_format == 'RGB' else 'gray'
+                    cmd += f'videoconvert name={format_name}_convert_cpu_{self.cnt_element_names} ! video/x-raw,format={video_format} ! '
                     self.cnt_element_names += 1
-                 # imxvideoconvert_g2d does not support GRAY8 sink on i.MX95 platform
-                 # use acceleration to YUY2 instead
-                 #TODO: to remove condition when GRAY8 will be supported
-                elif self.imx.is_imx95() or self.imx.is_imx952() and format == 'GRAY8':
-                    cmd = self.videoscale_to_format(
-                        'YUY2', width, height, 'g2d', flip, cropping, keep_image_ratio)
-                    cmd += f'videoconvert name=gray_convert_cpu_{self.cnt_element_names} ! video/x-raw,format={format} ! '
                 else:
                     cmd = self.videoscale_to_format(
-                        format, width, height, 'g2d', flip, cropping, keep_image_ratio)
+                        video_format, width, height, 'g2d', flip, cropping, keep_image_ratio)
             elif self.imx.has_pxp():
-                if format == 'RGB':
+                if video_format == 'RGB':
                     # imxvideoconvert_pxp does not support RGB sink
                     # use acceleration to BGR
                     cmd = self.videoscale_to_format(
                         'BGR', width, height, 'pxp', flip, keep_image_ratio=keep_image_ratio)
-                    cmd += f'videoconvert name=rgb_convert_cpu_{self.cnt_element_names} ! video/x-raw,format={format} ! '
+                    cmd += f'videoconvert name=rgb_convert_cpu_{self.cnt_element_names} ! video/x-raw,format={video_format} ! '
                     self.cnt_element_names += 1
                 else:
                     cmd = self.videoscale_to_format(
-                        format, width, height, 'pxp', flip, keep_image_ratio=keep_image_ratio)
+                        video_format, width, height, 'pxp', flip, keep_image_ratio=keep_image_ratio)
             else:
                 # no hardware acceleration
                 cmd = self.videoscale_to_format(
-                    format, width, height, flip=flip, keep_image_ratio=keep_image_ratio)
+                    video_format, width, height, flip=flip, keep_image_ratio=keep_image_ratio)
 
         return cmd
 
     def accelerated_videocrop_to_format(self, videocrop_name, width=None, height=None, top=None, bottom=None,
-                                        left=None, right=None, format=None, flip=False, use_gpu3d=False, keep_image_ratio=False):
+                                        left=None, right=None, video_format=None, flip=False, use_gpu3d=False, keep_image_ratio=False):
         """Create pipeline segment for accelerated video cropping and conversion
         to a given GStreamer video format.
 
@@ -301,7 +294,7 @@ class GstVideoImx:
         bottom: bottom pixels to be cropped - may be setup via property later
         left: left pixels to be cropped - may be setup via property later
         right: right pixels to be cropped - may be setup via property later
-        format: GStreamer video format
+        video_format: GStreamer video format
         flip: mirror mode, flip the image (not available on 3D GPU)
         use_gpu3d: use the GPU3D instead of GPU2D if available
         keep_image_ratio: resize while maintaining image aspect ratio
@@ -320,7 +313,7 @@ class GstVideoImx:
         cmd += '! '
 
         cmd += self.accelerated_videoscale(width, height,
-                                           format, flip, cropping=True, use_gpu3d=use_gpu3d, keep_image_ratio=keep_image_ratio)
+                                           video_format, flip, cropping=True, use_gpu3d=use_gpu3d, keep_image_ratio=keep_image_ratio)
 
         return cmd
 

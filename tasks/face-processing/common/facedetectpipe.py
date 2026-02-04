@@ -191,11 +191,11 @@ class SecondaryPipe(Pipe):
 
         h, w, num_channels = secondary_model.get_model_input_shape()
         if num_channels == 3:
-            format = 'RGB'
+            video_format = 'RGB'
         elif num_channels == 1:
-            format = 'GRAY8'
+            video_format = 'GRAY8'
         cmdline += gstvideoimx.accelerated_videocrop_to_format(
-            'video_crop', w, h, format=format, use_gpu3d=self.use_gpu3d_secondary)
+            'video_crop', w, h, video_format=video_format, use_gpu3d=self.use_gpu3d_secondary)
 
         cmdline += '  tensor_converter ! '
 
@@ -370,7 +370,7 @@ class FaceDetectPipe(Pipe):
         cmdline += 'tvideo. ! queue max-size-buffers=1 leaky=2 ! '
 
         # cairo overlay format restricted to BGRx, BGRA, RGB16
-        cmdline += gstvideoimx.accelerated_videoscale(format='RGB16')
+        cmdline += gstvideoimx.accelerated_videoscale(video_format='RGB16')
 
         cmdline += '  cairooverlay name=cairooverlay ! '
         cmdline += '  waylandsink sync=false '.format(vw, vh)
