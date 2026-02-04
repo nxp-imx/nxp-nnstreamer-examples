@@ -64,7 +64,7 @@ class StdInHelper:
 
 class PoseExample:
 
-    def __init__(self, video_file, video_dims, camera_device, flip=False, crop_video=True, argv=[]):
+    def __init__(self, video_file, video_dims, camera_device, source, flip=False, crop_video=True, argv=[]):
         # video input definitions
         self.VIDEO_INPUT_WIDTH = video_dims[0]
         self.VIDEO_INPUT_HEIGHT = video_dims[1]
@@ -125,7 +125,7 @@ class PoseExample:
         ]
 
         assert len(self.keypoints_def) == self.MODEL_KEYPOINT_SIZE
-        self.source = os.getenv('SOURCE', 'VIDEO')
+        self.source = source
         self.backend = os.getenv('BACKEND', 'CPU')
         self.gpu = os.getenv('GPU', 'GPU2D')
         self.use_gpu3d = self.gpu == 'GPU3D'
@@ -180,11 +180,12 @@ class PoseExample:
             raise FileExistsError(
                 f'cannot find tflite model [{self.tflite_path}]')
 
-        video_dir = os.path.join(
-            current_folder, '../../downloads/media/movies')
-        self.video_path = os.path.join(video_dir, self.video_file)
-        if not os.path.exists(self.video_path):
-            raise FileExistsError(f'cannot find video [{self.video_path}]')
+        if self.source == 'VIDEO':
+            video_dir = os.path.join(
+                current_folder, '../../downloads/media/movies')
+            self.video_path = os.path.join(video_dir, self.video_file)
+            if not os.path.exists(self.video_path):
+                raise FileExistsError(f'cannot find video [{self.video_path}]')
 
         signal.signal(signal.SIGINT, self.sigint_handler)
 
@@ -199,15 +200,6 @@ class PoseExample:
         self.mainloop = GLib.MainLoop()
 
         gstvideoimx = GstVideoImx(self.imx)
-
-        # i.MX93 does not support video file decoding
-        if self.imx.is_imx93() and self.source == 'VIDEO':
-            print('video file cannot be decoded, use camera source instead')
-            self.source = 'CAMERA'
-
-        if self.imx.is_imx95() or self.imx.is_imx952():
-            print("i.MX95 can't decode VP9, use camera source instead")
-            self.source = 'CAMERA'
 
         if self.source == 'VIDEO':
             cmdline = 'filesrc location={:s} !'.format(self.video_path)
@@ -469,11 +461,22 @@ class PoseExample:
 
 
 if __name__ == '__main__':
-    default_video = 'Conditioning_Drill_1-_Power_Jump.webm.480p.vp9.webm'
-    default_dims = (854, 480)
 
     imx = Imx()
     default_camera = get_default_camera_device(imx)
+    default_video = 'Conditioning_Drill_1-_Power_Jump.webm.480p.vp9.webm'
+
+    source = os.getenv('SOURCE', 'VIDEO')
+
+    # i.MX93 does not support video file decoding
+    if (imx.is_imx93() or imx.is_imx95() or imx.is_imx952()) and source == 'VIDEO':
+        print('video file cannot be decoded, switching to camera source instead')
+        source = 'CAMERA'
+
+    if source == 'CAMERA':
+        default_dims = (640, 480)
+    else:
+        default_dims = (854, 480)
 
     parser = argparse.ArgumentParser(description='Pose Detection')
     parser.add_argument('--video_file', '-f',
@@ -503,8 +506,7 @@ if __name__ == '__main__':
     video_dims = tuple(args.video_dims)
     flip = args.mirror
     crop_video = args.square_cropping
-    print(crop_video)
 
     example = PoseExample(video_file, video_dims,
-                          camera_device, flip, crop_video, sys.argv[2:])
+                          camera_device, source, flip, crop_video, sys.argv[2:])
     example.run()

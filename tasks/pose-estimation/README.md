@@ -23,6 +23,13 @@ For instance:
 BACKEND=NPU SOURCE=CAMERA GPU=GPU2D ./tasks/pose-estimation/example_pose_movenet_tflite.py
 ```
 
+By default:
+- SOURCE is set to VIDEO
+- BACKEND is set to CPU
+- GPU is set to GPU2D
+- If the board does not support video decoding, the application will fallback to CAMERA source instead
+- Camera resolution is set to 640x480
+
 The following execution parameters are available (Run ``` ./example_pose_movenet_tflite.py -h``` to see option details):
 
 Option | Description
@@ -33,7 +40,7 @@ Option | Description
 --camera_device/-c CAMERA_DEVICE | camera device node
 --no-square_cropping | resize preserving video ratio instead of video cropping
 
-Note: Video used is in Matroska (.mkv) format with VP9 encoding, which is not supported by i.MX 93 decoding capabilities
+Note: Video used is in Matroska (.mkv) format with VP9 encoding, which is not supported by i.MX 9 boards decoding capabilities
 
 ### C++
 |   Platforms  | NPU | CPU |
