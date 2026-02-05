@@ -218,6 +218,11 @@ namespace imx {
       {
         return (soc == IMX95);
       }
+
+      bool isIMX952()
+      {
+        return (soc == IMX952);
+      }
   };
 }
 #endif

@@ -128,8 +128,12 @@ void GstVideoPostProcess::saveToVideo(GstPipelineImx &pipeline,
     log_error("video file can't be encoded with %s\n", imx.socName().c_str());
     exit(-1);
   } else {
+
     std::string cmd;
-    cmd = "v4l2h265enc ! h265parse ! ";
+    if (imx.isIMX952())
+      cmd = "v4l2h264enc ! h264parse ! ";
+    else
+      cmd = "v4l2h265enc ! h265parse ! ";
 
     if (format == "mkv") {
       cmd += "matroskamux ! filesink location=";
