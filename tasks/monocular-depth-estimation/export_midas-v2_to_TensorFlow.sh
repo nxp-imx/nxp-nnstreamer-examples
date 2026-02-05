@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
-# SPDX-License-Identifier: MIT
-# Copyright 2025 NXP
+# Copyright 2025-2026 NXP
+# SPDX-License-Identifier: BSD-3-Clause
 
 python3.10 -m venv env
 
