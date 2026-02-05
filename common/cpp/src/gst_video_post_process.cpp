@@ -1,5 +1,5 @@
 /**
- * Copyright 2024-2025 NXP
+ * Copyright 2024-2026 NXP
  * SPDX-License-Identifier: BSD-3-Clause
  */
 
@@ -244,21 +244,12 @@ void GstVideoCompositorImx::addCompositorToPipeline(GstPipelineImx &pipeline,
     }
   }
 
-  if(this->imx.hasGPU2d()) {
-    cmd = "imxcompositor_g2d name=" + this->gstName + " ";
-    cmd += customParams;
-  } else if(this->imx.hasPxP()) {
-    /** 
-     * imxcompositor_pxp does not support RGBA sink
-     * and use CPU to convert RGBA to RGB
-     */ 
-    cmd = "imxcompositor_pxp name=" + this->gstName + " ";
-    cmd += customParams;
-  } else {
-    /*  no acceleration */
-    cmd = "compositor name=" + gstName + " ";
-    cmd += customParams;
-  }
+  if(this->imx.hasGPU2d())
+    cmd = "imxcompositor_g2d name=" + this->gstName + " " + customParams;
+  else if(this->imx.hasPxP())
+    cmd = "imxcompositor_pxp name=" + this->gstName + " " + customParams;
+  else
+    cmd = "compositor name=" + gstName + " " + customParams;
 
   if(latency != 0) {
     cmd += "latency=" + std::to_string(latency);
