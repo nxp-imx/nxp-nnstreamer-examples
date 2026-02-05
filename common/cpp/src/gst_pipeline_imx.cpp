@@ -1,5 +1,5 @@
 /**
- * Copyright 2024-2025 NXP
+ * Copyright 2024-2026 NXP
  * SPDX-License-Identifier: BSD-3-Clause
  */
 
@@ -90,6 +90,27 @@ void DisableZeroCopyNeutron(imx::Imx imx)
   if(imx.hasNeutronNPU()) {
     setenv("NEUTRON_ENABLE_ZERO_COPY","0",1);
   }
+}
+
+/**
+ * @brief Get latency value from environment variable with fallback to default.
+ *
+ * @param envVar: environment variable name.
+ * @param defaultValue: default value if environment variable is not set or invalid.
+ * @return latency value in nanoseconds.
+ */
+long long getLatencyFromEnv(const char* envVar, long long defaultValue)
+{
+  const char* envValue = getenv(envVar);
+  if (envValue != nullptr) {
+    try {
+      return std::stoll(envValue);
+    } catch (const std::exception&) {
+      // If conversion fails, use default value
+      return defaultValue;
+    }
+  }
+  return defaultValue;
 }
 
 /**

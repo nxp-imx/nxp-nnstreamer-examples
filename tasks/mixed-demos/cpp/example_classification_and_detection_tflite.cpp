@@ -1,5 +1,5 @@
 /**
- * Copyright 2024-2025 NXP
+ * Copyright 2024-2026 NXP
  * SPDX-License-Identifier: BSD-3-Clause 
  */ 
 
@@ -28,9 +28,9 @@
     ((optarg == NULL && optind < argc && argv[optind][0] != '-') \
      ? (bool) (optarg = argv[optind++]) \
      : (optarg != NULL))
-#define MODEL_LATENCY_NS_CPU      500000000
-#define MODEL_LATENCY_NS_GPU_VSI  1000000000
-#define MODEL_LATENCY_NS_NPU_VSI  25000000
+#define MODEL_LATENCY_NS_CPU  500000000
+#define MODEL_LATENCY_NS_GPU  1000000000
+#define MODEL_LATENCY_NS_NPU  25000000
 
 
 typedef struct {
@@ -361,13 +361,13 @@ int main(int argc, char **argv)
   pipeline.addBranch(teeName, imgQueue);
 
   // Set latency of model for video compositor
-  int latency;
+  long long latency;
   if (options.dBackend == "NPU") {
-    latency = MODEL_LATENCY_NS_NPU_VSI;
+   latency = getLatencyFromEnv("LATENCY_NPU", MODEL_LATENCY_NS_NPU);
   } else if (options.dBackend == "GPU") {
-    latency = MODEL_LATENCY_NS_GPU_VSI;
+    latency = getLatencyFromEnv("LATENCY_GPU", MODEL_LATENCY_NS_GPU);
   } else {
-    latency = MODEL_LATENCY_NS_CPU;
+    latency = getLatencyFromEnv("LATENCY_CPU", MODEL_LATENCY_NS_CPU);
   }
 
   // Add camera input to the compositor

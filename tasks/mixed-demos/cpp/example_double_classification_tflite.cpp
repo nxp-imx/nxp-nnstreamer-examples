@@ -1,5 +1,5 @@
 /**
- * Copyright 2024-2025 NXP
+ * Copyright 2024-2026 NXP
  * SPDX-License-Identifier: BSD-3-Clause 
  */ 
 
@@ -376,27 +376,27 @@ int main(int argc, char **argv)
   compositor.addToCompositor(pipeline, secondInputParams);
 
   // Set latency of model for video compositor
-  int latency;
+  long long latency;
   imx::Imx imx{};
   if ((options.backendCam1 == "NPU") && (options.backendCam2 == "NPU")) {
     if (imx.isIMX8())
-      latency = MODEL_LATENCY_NS_NPU_VSI;
+      latency = getLatencyFromEnv("LATENCY_NPU", MODEL_LATENCY_NS_NPU_VSI);
     else if (imx.hasEthosNPU())
-      latency = MODEL_LATENCY_NS_NPU_ETHOS;
+      latency = getLatencyFromEnv("LATENCY_NPU", MODEL_LATENCY_NS_NPU_ETHOS);
     else
-      latency = MODEL_LATENCY_NS_NPU_NEUTRON;
+      latency = getLatencyFromEnv("LATENCY_NPU", MODEL_LATENCY_NS_NPU_NEUTRON);
   } else if ((options.backendCam1 == "GPU") || (options.backendCam2 == "GPU")) {
     if (imx.isIMX8())
-      latency = MODEL_LATENCY_NS_GPU_VSI;
+      latency = getLatencyFromEnv("LATENCY_GPU", MODEL_LATENCY_NS_GPU_VSI);
     else
-      latency = MODEL_LATENCY_NS_GPU_95;
+      latency = getLatencyFromEnv("LATENCY_GPU", MODEL_LATENCY_NS_GPU_95);
   } else {
     if (imx.isIMX8())
-      latency = MODEL_LATENCY_NS_CPU_8MP;
+      latency = getLatencyFromEnv("LATENCY_CPU", MODEL_LATENCY_NS_CPU_8MP);
     else if (imx.isIMX93())
-      latency = MODEL_LATENCY_NS_CPU_93;
+      latency = getLatencyFromEnv("LATENCY_CPU", MODEL_LATENCY_NS_CPU_93);
     else
-    latency = MODEL_LATENCY_NS_CPU;
+      latency = getLatencyFromEnv("LATENCY_CPU", MODEL_LATENCY_NS_CPU);
   }
 
   // Add video compositor to display both cameras

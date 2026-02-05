@@ -1,5 +1,5 @@
 /**
- * Copyright 2024-2025 NXP
+ * Copyright 2024-2026 NXP
  * SPDX-License-Identifier: BSD-3-Clause
  */
 
@@ -64,6 +64,16 @@ void outlineText(cairo_t* cr,
                  int y,
                  std::string txt,
                  std::string color);
+
+
+/**
+ * @brief Get latency value from environment variable with fallback to default.
+ *
+ * @param envVar: environment variable name.
+ * @param defaultValue: default value if environment variable is not set or invalid.
+ * @return latency value in nanoseconds.
+ */
+long long getLatencyFromEnv(const char* envVar, long long defaultValue);
 
 
 /**

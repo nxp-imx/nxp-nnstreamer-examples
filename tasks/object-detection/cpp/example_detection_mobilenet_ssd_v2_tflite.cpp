@@ -1,5 +1,5 @@
 /**
- * Copyright 2024-2025 NXP
+ * Copyright 2024-2026 NXP
  * SPDX-License-Identifier: BSD-3-Clause 
  */ 
 
@@ -25,11 +25,11 @@
     ((optarg == NULL && optind < argc && argv[optind][0] != '-') \
      ? (bool) (optarg = argv[optind++]) \
      : (optarg != NULL))
-#define MODEL_LATENCY_NS_CPU          300000000
+#define MODEL_LATENCY_NS_CPU          80000000
 #define MODEL_LATENCY_NS_GPU_VSI      500000000
 #define MODEL_LATENCY_NS_NPU_VSI      20000000
 #define MODEL_LATENCY_NS_NPU_ETHOS    15000000
-#define MODEL_LATENCY_NS_NPU_NEUTRON  20000000
+#define MODEL_LATENCY_NS_NPU_NEUTRON  10000000
 
 
 typedef struct {
@@ -302,19 +302,19 @@ int main(int argc, char **argv)
   pipeline.addBranch(teeName, imgQueue);
 
   // Set latency of model for video compositor
-  int latency;
+  long long latency;
   imx::Imx imx{};
   if (options.backend == "NPU") {
     if (imx.isIMX8())
-      latency = MODEL_LATENCY_NS_NPU_VSI;
+      latency = getLatencyFromEnv("LATENCY_NPU", MODEL_LATENCY_NS_NPU_VSI);
     else if (imx.hasEthosNPU())
-      latency = MODEL_LATENCY_NS_NPU_ETHOS;
+      latency = getLatencyFromEnv("LATENCY_NPU", MODEL_LATENCY_NS_NPU_ETHOS);
     else
-      latency = MODEL_LATENCY_NS_NPU_NEUTRON;
+      latency = getLatencyFromEnv("LATENCY_NPU", MODEL_LATENCY_NS_NPU_NEUTRON);
   } else if (imx.isIMX8() && (options.backend == "GPU")) {
-    latency = MODEL_LATENCY_NS_GPU_VSI;
+    latency = getLatencyFromEnv("LATENCY_GPU", MODEL_LATENCY_NS_GPU_VSI);
   } else {
-    latency = MODEL_LATENCY_NS_CPU;
+    latency = getLatencyFromEnv("LATENCY_CPU", MODEL_LATENCY_NS_CPU);
   }
 
   // Add camera input to the compositor
