@@ -8,6 +8,11 @@
 #include <regex>
 
 
+#include <sys/types.h>
+#include <sys/stat.h>
+
+
+
 // Default font size is 15 pixels for a width of 640
 const float scaleFactor = 15.0f/640;
 // 38 pixels for a width of 640 is default for space between inference and duration text

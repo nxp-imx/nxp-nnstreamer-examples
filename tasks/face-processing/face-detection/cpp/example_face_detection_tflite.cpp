@@ -235,7 +235,7 @@ int main(int argc, char **argv)
 
   // Add model inference
   TFliteModelInfos faceDetection(options.modelPath, options.backend, options.norm);
-  faceDetection.addInferenceToPipeline(pipeline, "face_filter");
+  faceDetection.addInferenceToPipeline(pipeline, "face_filter", "GRAY8");
 
   // Get inference output for custom processing
   std::string tensorSinkName = "tsink_fd";
