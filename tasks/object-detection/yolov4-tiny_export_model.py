@@ -1,11 +1,11 @@
-# Copyright 2023 NXP
+# Copyright 2023,2026 NXP
 # SPDX-License-Identifier: BSD-3-Clause
 
 import os
 import numpy as np
 import struct
 import tensorflow as tf
-from tensorflow.keras.layers import Conv2D, Input, LeakyReLU, ZeroPadding2D, UpSampling2D, MaxPool2D, add, concatenate
+from tensorflow.keras.layers import Conv2D, Input, LeakyReLU, ZeroPadding2D, UpSampling2D, MaxPool2D, add, concatenate, Lambda
 from tensorflow.keras.models import Model
 import argparse
 import PIL.Image as im
@@ -38,14 +38,14 @@ def _conv_block(inp, convs, skip=False):
                    activation=None,
                    use_bias=True)(x)
 
-        if conv['activ'] == 1: x = LeakyReLU(alpha=0.1, name='leaky_' + str(conv['layer_idx']))(x)
+        if conv['activ'] == 1: x = LeakyReLU(negative_slope=0.1, name='leaky_' + str(conv['layer_idx']))(x)
 
     return add([skip_connection, x], name='add_' + str(conv['layer_idx'] + 1)) if skip else x
 
 
 def _split_block(input_layer, layer_idx):
-    s = tf.split(input_layer, num_or_size_splits=2, axis=-1, name=f"split_{layer_idx}")
-    return s[1]
+    s = Lambda(lambda x: tf.split(x, num_or_size_splits=2, axis=-1)[1], name=f"split_{layer_idx}")(input_layer)
+    return s
 
 
 def make_yolov4_tiny_model():
