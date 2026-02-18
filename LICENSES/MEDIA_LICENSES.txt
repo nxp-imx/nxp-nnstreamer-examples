@@ -1,0 +1,181 @@
+MEDIA ASSETS LICENSES
+
+This document lists all images included in this repository for demonstration 
+purposes by NXP.
+
+NXP does not claim copyright over these media files. All files are used under 
+their original licenses as specified below.
+
+Location: All image files listed below are located in downloads/media/images/
+
+All media files are used solely for demonstration and testing purposes within 
+the NXP NNStreamer examples.
+
+
+IMAGES
+
+File: quant0000.jpg
+Author: Abu Shawka
+Source: https://commons.wikimedia.org/wiki/File:Olea_europaea_cuspidata-africana_Cape_Town.JPG
+SPDX-License-Identifier: CC-PDM-1.0
+
+---
+
+File: quant0001.jpg
+Author: unknown author
+Source: https://commons.wikimedia.org/wiki/File:Sport-orange-red-color-tennis-organ-491989-pxhere.jpg
+SPDX-License-Identifier: CC0-1.0
+
+---
+
+File: quant0002.jpg
+Author: Wilfredor
+Source: https://commons.wikimedia.org/wiki/File:Domesticated_goose_head,_Chaguaramal,_Venezuela.jpg
+SPDX-License-Identifier: CC0-1.0
+
+---
+
+File: quant0003.jpg
+Author: Tamatukurikei
+Source: https://commons.wikimedia.org/wiki/File:20080831-R0012506.JPG
+SPDX-License-Identifier: CC-PDM-1.0
+
+---
+
+File: image0000.jpg
+Author: W.carter
+Source: https://commons.wikimedia.org/wiki/File:Plectranthus_verticillatus_in_a_ceramic_pot.jpg
+SPDX-License-Identifier: CC0-1.0
+
+---
+
+File: image0001.jpg
+Author: Michelangelo-36
+Source: https://commons.wikimedia.org/wiki/File:Maceta.jpg
+SPDX-License-Identifier: CC-PDM-1.0
+
+---
+
+File: image0002.jpg
+Author: Trajan 117 CE
+Source: https://commons.wikimedia.org/wiki/File:Stray_Cat,_Nafplio.jpg
+SPDX-License-Identifier: CC0-1.0
+
+---
+
+File: image0003.jpg
+Author: 이정임
+Source: https://commons.wikimedia.org/wiki/File:Feral_cat_7.jpg
+SPDX-License-Identifier: CC0-1.0
+
+---
+
+File: image0004.jpg
+Author: Karen Arnold
+Source: https://commons.wikimedia.org/wiki/File:Senior-lady-dog-walker.jpg
+SPDX-License-Identifier: CC0-1.0
+
+---
+
+File: image0005.jpg
+Author: Saruman
+Source: https://commons.wikimedia.org/wiki/File:Texel_avec_ses_agneaux.jpg
+SPDX-License-Identifier: CC-PDM-1.0
+
+---
+
+File: image0006.jpg
+Author: Cultureel Gelderland
+Source: https://commons.wikimedia.org/wiki/File:Cow_farm_in_Bemmel,_Lingewaard.jpg
+SPDX-License-Identifier: CC0-1.0
+
+---
+
+File: image0007.jpg
+Author: KF
+Source: https://commons.wikimedia.org/wiki/File:Urban_cycling_III.jpg
+SPDX-License-Identifier: CC-PDM-1.0
+
+---
+
+File: image0008.jpg
+Author: Jbyrne1701
+Source: https://commons.wikimedia.org/wiki/File:LomondRoadsTTRider.jpg
+SPDX-License-Identifier: CC0-1.0
+
+---
+
+File: image0009.jpg
+Author: Bharathiya
+Source: https://commons.wikimedia.org/wiki/File:Interceptor_of_Bangalore_Traffic_Police.jpg
+SPDX-License-Identifier: CC0-1.0
+
+---
+
+File: image0010.jpg
+Author: NPS / Jim Peaco
+Source: https://commons.wikimedia.org/wiki/File:Ranger_clearing_traffic_at_a_bison_jam_in_Lamar_Valley_(48fe8fe3-c1e3-4828-acec-496eaef43503).jpg
+SPDX-License-Identifier: CC-PDM-1.0
+
+---
+
+File: image0011.jpg
+Author: Adrian Pingstone
+Source: https://commons.wikimedia.org/wiki/File:Finnair.a320-200.oh-lxf.arp.jpg
+SPDX-License-Identifier: CC-PDM-1.0
+
+---
+
+File: image0012.jpg
+Author: Adrian Pingstone
+Source: https://commons.wikimedia.org/wiki/File:G-BGMP_Reims_F172_@Cotswold_Airport,_July_2005.jpg
+SPDX-License-Identifier: CC-PDM-1.0
+
+---
+
+File: image0013.jpg
+Author: umehanayuuki
+Source: https://commons.wikimedia.org/wiki/File:JNR_14_series_sleeper_Blue_Train_Hayabusa.jpg
+SPDX-License-Identifier: CC0-1.0
+
+---
+
+File: image0014.jpg
+Author: Orlovic
+Source: https://commons.wikimedia.org/wiki/File:7122_series_train_(12).JPG
+SPDX-License-Identifier: CC-PDM-1.0
+
+---
+
+File: image0015.jpg
+Author: Jebulon
+Source: https://commons.wikimedia.org/wiki/File:Blue_fishing_boat_harbour_Eretria_Euboea_Greece.jpg
+SPDX-License-Identifier: CC0-1.0
+
+---
+
+File: image0016.jpg
+Author: Syced
+Source: https://commons.wikimedia.org/wiki/File:KYOEI_boat_in_Kisarazu_port_3.jpg
+SPDX-License-Identifier: CC0-1.0
+
+---
+
+File: image0017.jpg
+Author: Andrej Shadura
+Source: https://commons.wikimedia.org/wiki/File:Jarritos_glass_bottle_(Mexico).jpg
+SPDX-License-Identifier: CC0-1.0
+
+---
+
+File: image0018.jpg
+Author: LeeKeoma
+Source: https://commons.wikimedia.org/wiki/File:Andechser_3_beers.JPG
+SPDX-License-Identifier: CC0-1.0
+
+---
+
+File: image0019.jpg
+Author: dankeck
+Source: https://commons.wikimedia.org/wiki/File:Ski_Citrus_Soda_(25395355114).jpg
+SPDX-License-Identifier: CC0-1.0

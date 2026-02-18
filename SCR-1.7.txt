@@ -9,9 +9,24 @@ Type of content:            Source code
 Outgoing License:           BSD-3-Clause
 License file:               LICENSE
 Description and comments:   NNStreamer examples for i.MX platforms
-Origin:                     NXP (BSD-3-Clause)
 Dependencies during runtime:
                             GStreamer (LGPL-2.1-only) - https://github.com/GStreamer/gstreamer
                             NNStreamer (LGPL-2.1-only) - https://github.com/nnstreamer/nnstreamer
+
+-------------------------------------------------------------------------------
+
+Location:                   * (except: downloads/media/images/*)
+Origin:                     NXP Semiconductors
+Outgoing License:           BSD-3-Clause
+License file:               LICENSE
+
+-------------------------------------------------------------------------------
+
+Location:                   downloads/media/images/*
+Origin:                     Various authors from Wikimedia Commons
+Outgoing License:           CC0-1.0 and CC-PDM-1.0
+License file:               LICENSES/CC0-1.0.txt
+Description and comments:   Licenses and attribution for each image can be
+                            found in LICENSES/MEDIA_LICENSES.txt
 
 -------------------------------------------------------------------------------

@@ -10,7 +10,7 @@ MEDIA_DIR="${BASEDIR}/downloads/media"
 
 # Define media
 export POWER_JUMP_VIDEO="${MEDIA_DIR}/movies/Conditioning_Drill_1-_Power_Jump.webm.480p.vp9.webm"
-export PASCAL_IMAGES="${MEDIA_DIR}/pascal_voc_2012_images/image%04d.jpg"
+export PASCAL_IMAGES="${MEDIA_DIR}/images/pascal_voc_2012_images/image%04d.jpg"
 export SAVE_VIDEO_PATH="/root/video.mkv"
 
 # Define cameras path for two cameras classification demo

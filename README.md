@@ -69,7 +69,7 @@ Snapshot | Name | Platforms | Implementations | Models | ML engine | Features
 [![monocular depth estimation demo](./tasks/monocular-depth-estimation/depth_demo.webp)](./tasks/monocular-depth-estimation/) | [Monocular Depth Estimation](./tasks/monocular-depth-estimation/) | i.MX 8M Plus<br>i.MX 93<br>i.MX 95 | C++ | MiDaS v2 | TFLite | v4l2/libcamera<br>video file decoding<br>gst-launch<br>custom model decoding
 [![mixed demo](./tasks/mixed-demos/mixed_demo.webp)](./tasks/mixed-demos/) | [Mixed Demos](./tasks/mixed-demos/) | i.MX 8M Plus<br>i.MX 93<br>i.MX 95 | C++ | MobileNet SSD<br>MobileNet<br>MoveNet<br>UltraFace-slim<br>Deepface-emotion | TFLite | v4l2/libcamera<br>video file decoding<br>gst-launch<br>custom model decoding<br>video file encoding
 
-*Images and video used have been released under Creative Commons CC0 1.0 license or belong to Public Domain*
+*Images and video used have been released under Creative Commons CC0 1.0 license or belong to Public Domain. Individual attribution and license information for each image can be found in [MEDIA_LICENSES.txt](./LICENSES/MEDIA_LICENSES.txt).*
 
 ## Use libcamera backend instead of v4l2 on i.MX 95
 
