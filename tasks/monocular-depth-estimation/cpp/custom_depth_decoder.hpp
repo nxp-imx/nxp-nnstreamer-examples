@@ -1,5 +1,5 @@
 /**
- * Copyright 2024-2025 NXP
+ * Copyright 2024-2026 NXP
  * SPDX-License-Identifier: BSD-3-Clause 
  */ 
 
@@ -19,10 +19,11 @@
 
 #define MODEL_THRESHOLD   1e-6
 #define MODEL_OUTPUT_DIM  65536
+#define DISPLAY_BUFFER_SIZE (MODEL_OUTPUT_DIM * 4)  // BGRx = 4 bytes per pixel
 
 
 typedef struct {
-  guchar output[MODEL_OUTPUT_DIM];
+  guchar output[DISPLAY_BUFFER_SIZE];
   GstElement *appSrc;
 } DecoderData;
 

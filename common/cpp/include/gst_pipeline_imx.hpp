@@ -115,6 +115,8 @@ class GstPipelineImx {
 
     void addBranch(const std::string &teeName, const GstQueueOptions &options);
 
+    void addQueue(const GstQueueOptions &options);
+
     static void busCallback(GstBus* bus,
                             GstMessage* message,
                             gpointer user_data);

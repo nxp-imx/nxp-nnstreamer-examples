@@ -227,6 +227,15 @@ int main(int argc, char **argv)
     video.addVideoToPipeline(pipeline);
   }
 
+  // Add queue before heavy processing
+  GstQueueOptions nnQueue = {
+    .queueName     = "nn-thread",
+    .maxSizeBuffer = 2,
+    .leakType      = (UseCameraSource) ? GstQueueLeaky::downstream : GstQueueLeaky::no,
+  };
+
+  pipeline.addQueue(nnQueue);
+
   // Add model inference
   TFliteModelInfos depthEstimation(options.modelPath,
                                    options.backend,
@@ -250,13 +259,9 @@ int main(int argc, char **argv)
                       3,
                       depthEstimation.getModelWidth(),
                       depthEstimation.getModelHeight(),
-                      "GRAY8",
+                      "BGRA",
                       30);
   appsrc.addAppSrcToPipeline(displayPipeline);
-
-  // Add video transform because display plugin doesn't support GRAY8 format
-  GstVideoImx gstvideoimx;
-  gstvideoimx.videoTransform(displayPipeline, "", -1, -1, false, false, true);
 
   // Display processed video
   GstVideoPostProcess postProcess;

@@ -1,5 +1,5 @@
 /**
- * Copyright 2024-2025 NXP
+ * Copyright 2024-2026 NXP
  * SPDX-License-Identifier: BSD-3-Clause 
  */ 
 
@@ -82,10 +82,14 @@ void newDataCallback(GstElement* element,
     #pragma omp parallel for schedule(static)
 #endif
     for (int i = 0; i < MODEL_OUTPUT_DIM; i++) {
-      data->output[i] = (guchar)std::round(scale * (outputData[i] - minVal));
+      guchar gray = (guchar)std::round(scale * (outputData[i] - minVal));
+      data->output[i*4 + 0] = gray;  // B
+      data->output[i*4 + 1] = gray;  // G
+      data->output[i*4 + 2] = gray;  // R
+      data->output[i*4 + 3] = 255;   // A
     }
   } else {
-    memset(data->output, 0, MODEL_OUTPUT_DIM);
+    memset(data->output, 0, DISPLAY_BUFFER_SIZE);
   }
 
   pushBuffer(data);
@@ -98,9 +102,9 @@ void pushBuffer(DecoderData* data)
   GstBuffer *buffer = gst_buffer_new_wrapped_full(
     GST_MEMORY_FLAG_READONLY,
     data->output,
-    MODEL_OUTPUT_DIM,
+    DISPLAY_BUFFER_SIZE,
     0,
-    MODEL_OUTPUT_DIM,
+    DISPLAY_BUFFER_SIZE,
     NULL,
     NULL
   );

@@ -265,20 +265,34 @@ void GstPipelineImx::freeData()
 void GstPipelineImx::addBranch(const std::string &teeName, 
                                const GstQueueOptions &options)
 {
+  const std::string cmd = teeName + ". ! ";
+  addToPipeline(cmd);
+  addQueue(options);
+}
+
+
+/**
+ * @brief Add a queue element.
+ * 
+ * @param options: structure for queue parameters.
+ */
+void GstPipelineImx::addQueue(const GstQueueOptions &options)
+{
+  std::string cmd;
   std::string cmdName;
-  std::string cmdBuffMaxSize;
+  std::string cmdMaxSizeBuffer;
   std::string cmdLeak;
 
   if (options.queueName.length() != 0)
     cmdName = " name=" + options.queueName;
   if (options.maxSizeBuffer != -1)
-    cmdBuffMaxSize = " max-size-buffers=" 
-                     + std::to_string(options.maxSizeBuffer);
+    cmdMaxSizeBuffer = " max-size-buffers="
+                       + std::to_string(options.maxSizeBuffer);
   if (options.leakType != GstQueueLeaky::no)
     cmdLeak = " leaky=" + std::to_string(static_cast<int>(options.leakType));
 
-  std::string cmd = teeName + ". ! " + "queue" + cmdName
-                    + cmdBuffMaxSize + cmdLeak +  " ! ";
+  cmd = "queue name=" + cmdName + cmdMaxSizeBuffer + cmdLeak + " ! ";
+
   addToPipeline(cmd);
 }
 
