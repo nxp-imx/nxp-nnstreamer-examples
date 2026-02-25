@@ -25,7 +25,7 @@ class FNModel:
         self.MODEL_FACENET_EMBEDDING_LEN = 512
 
         # Check for model-specific backend first, then fall back to global BACKEND
-        self.backend = os.getenv('BACKEND_FACENET', os.getenv('BACKEND', 'CPU'))
+        self.backend = os.getenv('BACKEND_FACENET', os.getenv('BACKEND', 'NPU'))
 
         self.match_threshold = match_threshold
 
@@ -36,11 +36,9 @@ class FNModel:
                 name = 'facenet512_uint8_vela.tflite'
             elif self.imx.has_npu_neutron():
                 if self.imx.is_imx95():
-                    #name = 'facenet512_uint8_imx95.tflite'
-                    name = 'facenet512_uint8.tflite'
+                    name = 'facenet512_uint8_imx95.tflite'
                 else: #imx952 device
-                    #name = 'facenet512_uint8_imx952.tflite'
-                    name = 'facenet512_uint8.tflite'
+                    name = 'facenet512_uint8_imx952.tflite'
             else: #imx8mp device
                 name = 'facenet512_uint8.tflite'
         else:  # backend = CPU

@@ -192,8 +192,8 @@ Press ```Esc or ctrl+C``` to stop the execution of the pipeline.
 | ------------ | --- | --- |
 | i.MX 8M Plus | :white_check_mark: | :white_check_mark: |
 |   i.MX 93    | :white_check_mark: | :white_check_mark: |
-|   i.MX 95    | :x: | :white_check_mark: |
-|   i.MX 952   | :x: | :white_check_mark: |
+|   i.MX 95    | :white_check_mark: | :white_check_mark: |
+|   i.MX 952   | :white_check_mark: | :white_check_mark: |
 
 Demo application is to be started from Linux. Camera device node may be configured via command line argument (default: `/dev/video3` on i.MX 8M Plus, `/dev/video0` on i.MX 93, `/dev/video13` on i.MX 95).
 Default backend can be overridden by explicitly defining BACKEND variable. To fine-tune each model individually, you can use BACKEND_ULTRAFACE and BACKEND_FACENET variables instead.<br>
