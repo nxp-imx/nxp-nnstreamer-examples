@@ -15,7 +15,7 @@ To use eIQ Neutron SDK to convert models for Neutron NPU (i.MX95 and i.MX952), p
 To install the SDK and set up the environment, follow these steps:
 ```bash
 # Install eIQ Neutron SDK from NXP repository
-pip install --index-url https://eiq.nxp.com/repository eiq-neutron-sdk==2.2.3
+pip install --index-url https://eiq.nxp.com/repository eiq-neutron-sdk==3.0.0
 ```
 
 More details on the SDK and its features can be found in the documentation of the eIQ Neutron SDK package which can be downloaded from [NXP eIQ website](https://www.nxp.com/design/design-center/software/eiq-ai-development-environment/eiq-toolkit-for-end-to-end-model-development-and-deployment:EIQ-TOOLKIT).
