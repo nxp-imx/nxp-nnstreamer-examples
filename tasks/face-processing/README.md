@@ -113,8 +113,8 @@ Press ```Esc or ctrl+C``` to stop the execution of the pipeline.
 | ------------ | --- | --- |
 | i.MX 8M Plus | :white_check_mark: | :white_check_mark: |
 |   i.MX 93    | :white_check_mark: | :white_check_mark: |
-|   i.MX 95    | :x: | :white_check_mark: |
-|   i.MX 952   | :x: | :white_check_mark: |
+|   i.MX 95    | :white_check_mark: | :white_check_mark: |
+|   i.MX 952   | :white_check_mark: | :white_check_mark: |
 
 Demo application is to be started from Linux. Camera device node may be configured via command line argument (default: `/dev/video3` on i.MX 8M Plus, `/dev/video0` on i.MX 93, `/dev/video13` on i.MX 95).
 Default backend can be overridden by explicitly defining BACKEND variable. To fine-tune each model individually, you can use BACKEND_ULTRAFACE and BACKEND_DEEPFACE variables instead.<br>
@@ -139,8 +139,8 @@ Option | Description
 | ------------ | --- | --- |
 | i.MX 8M Plus | :white_check_mark: | :white_check_mark: |
 |   i.MX 93    | :white_check_mark: | :white_check_mark: |
-|   i.MX 95    | :x: | :white_check_mark: |
-|   i.MX 952   | :x: | :white_check_mark: |
+|   i.MX 95    | :white_check_mark: | :white_check_mark: |
+|   i.MX 952   | :white_check_mark: | :white_check_mark: |
 
 C++ example script needs to be generated with [cross compilation](../). [setup_environment.sh](../tools/setup_environment.sh) script needs to be executed in [nxp-nnstreamer-examples](../) folder to define data paths:
 ```bash
@@ -153,6 +153,14 @@ C++ example script needs to be generated with [cross compilation](../). [setup_e
 For i.MX 93 NPU use vela converted model:
 ```bash
 ./build/face-processing/example_emotion_classification_tflite -p ${ULTRAFACE_QUANT_VELA},${EMOTION_QUANT_VELA}
+```
+For i.MX 95 NPU use neutron converted model:
+```bash
+./build/face-processing/example_emotion_classification_tflite -p ${ULTRAFACE_QUANT_IMX95},${EMOTION_QUANT_IMX95}
+```
+For i.MX 952 NPU use neutron converted model:
+```bash
+./build/face-processing/example_emotion_classification_tflite -p ${ULTRAFACE_QUANT_IMX952},${EMOTION_QUANT_IMX952}
 ```
 Inference on CPU with the following script:
 ```bash

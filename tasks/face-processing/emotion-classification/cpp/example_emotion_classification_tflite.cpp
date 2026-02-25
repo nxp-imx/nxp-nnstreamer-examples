@@ -224,12 +224,6 @@ int main(int argc, char **argv)
   options.useGpu3D = false;
   if (cmdParser(argc, argv, options))
     return 0;
-  
-  imx::Imx imx{};
-  if (imx.hasNeutronNPU() && (options.fBackend == "NPU")) {
-    log_error("Example can't run on NPU in i.MX95\n");
-    return 0;
-  }
 
   // Create a pipeline object for emotion detection inference
   GstPipelineImx emotionPipeline;

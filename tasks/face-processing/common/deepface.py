@@ -23,7 +23,7 @@ class DFModel:
         self.MODEL_DEEPFACE_CLASSES = ['angry', 'disgust', 'fear', 'happy', 'sad', 'surprise', 'neutral']
 
         # Check for model-specific backend first, then fall back to global BACKEND
-        self.backend = os.getenv('BACKEND_DEEPFACE', os.getenv('BACKEND', 'CPU'))
+        self.backend = os.getenv('BACKEND_DEEPFACE', os.getenv('BACKEND', 'NPU'))
 
         # model location
         self.imx = Imx()
@@ -32,11 +32,9 @@ class DFModel:
                 name = 'emotion_uint8_float32_vela.tflite'
             elif self.imx.has_npu_neutron():
                 if self.imx.is_imx95():
-                    #name = 'ultraface_slim_uint8_float32_imx95.tflite'
-                    name = 'emotion_uint8_float32.tflite'
+                    name = 'emotion_uint8_float32_imx95.tflite'
                 else: #imx952 device
-                    #name = 'ultraface_slim_uint8_float32_imx952.tflite'
-                    name = 'emotion_uint8_float32.tflite'
+                    name = 'emotion_uint8_float32_imx952.tflite'
             else: #imx8mp device
                 name = 'emotion_uint8_float32.tflite'
         else:  # backend = CPU

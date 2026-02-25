@@ -55,6 +55,8 @@ export ULTRAFACE_QUANT_IMX95="${FACE_DIR}/ultraface_slim_uint8_float32_imx95.tfl
 export ULTRAFACE_QUANT_IMX952="${FACE_DIR}/ultraface_slim_uint8_float32_imx952.tflite"
 export EMOTION_QUANT="${FACE_DIR}/emotion_uint8_float32.tflite"
 export EMOTION_QUANT_VELA="${FACE_DIR}/emotion_uint8_float32_vela.tflite"
+export EMOTION_QUANT_IMX95="${FACE_DIR}/emotion_uint8_float32_imx95.tflite"
+export EMOTION_QUANT_IMX952="${FACE_DIR}/emotion_uint8_float32_imx952.tflite"
 
 # Define pose data path
 POSE_DIR="${MODELS_DIR}/pose-estimation"
