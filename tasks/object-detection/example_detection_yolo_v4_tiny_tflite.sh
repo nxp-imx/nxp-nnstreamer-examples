@@ -18,6 +18,8 @@ declare -A MODEL_BACKEND
 declare -A MODEL_BACKEND_NPU
 MODEL_BACKEND_NPU[IMX8MP]="${MODELS_DIR}/yolov4-tiny_416_quant.tflite"
 MODEL_BACKEND_NPU[IMX93]="${MODELS_DIR}/yolov4-tiny_416_quant_vela.tflite"
+MODEL_BACKEND_NPU[IMX95]="${MODELS_DIR}/yolov4-tiny_416_quant_imx95.tflite"
+MODEL_BACKEND_NPU[IMX952]="${MODELS_DIR}/yolov4-tiny_416_quant_imx952.tflite"
 
 MODEL_BACKEND[CPU]="${MODELS_DIR}/yolov4-tiny_416_quant.tflite"
 MODEL_BACKEND[NPU]=${MODEL_BACKEND_NPU[${IMX}]}
@@ -32,6 +34,8 @@ MODEL_LATENCY_CPU_NS[IMX952]="70000000"
 declare -A MODEL_LATENCY_NPU_NS
 MODEL_LATENCY_NPU_NS[IMX8MP]="60000000"
 MODEL_LATENCY_NPU_NS[IMX93]="60000000"
+MODEL_LATENCY_NPU_NS[IMX95]="9500000"
+MODEL_LATENCY_NPU_NS[IMX952]="30000000"
 
 declare -A MODEL_LATENCY_NS
 MODEL_LATENCY_NS[CPU]=${MODEL_LATENCY_CPU_NS[${IMX}]}
@@ -52,6 +56,9 @@ FILTER_COMMON="tensor_filter name=${INFERENCE_NAME} framework=${FRAMEWORK} model
 declare -A FILTER_BACKEND_NPU
 FILTER_BACKEND_NPU[IMX8MP]=" custom=Delegate:External,ExtDelegateLib:libvx_delegate.so ! "
 FILTER_BACKEND_NPU[IMX93]=" custom=Delegate:External,ExtDelegateLib:libethosu_delegate.so ! "
+for platform in IMX95 IMX952; do
+    FILTER_BACKEND_NPU[$platform]=" custom=UseDefaultDelegates:true,Delegate:External,ExtDelegateLib:libneutron_delegate.so ! "
+done
 
 declare -A FILTER_BACKEND
 FILTER_BACKEND[CPU]="${FILTER_COMMON} custom=Delegate:XNNPACK,NumThreads:$(nproc --all) !"
