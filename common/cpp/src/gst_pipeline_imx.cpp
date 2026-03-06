@@ -291,7 +291,7 @@ void GstPipelineImx::addQueue(const GstQueueOptions &options)
   if (options.leakType != GstQueueLeaky::no)
     cmdLeak = " leaky=" + std::to_string(static_cast<int>(options.leakType));
 
-  cmd = "queue name=" + cmdName + cmdMaxSizeBuffer + cmdLeak + " ! ";
+  cmd = "queue" + cmdName + cmdMaxSizeBuffer + cmdLeak + " ! ";
 
   addToPipeline(cmd);
 }

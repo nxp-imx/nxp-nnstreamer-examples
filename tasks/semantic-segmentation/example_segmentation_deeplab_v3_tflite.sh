@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# Copyright 2022-2025 NXP
+# Copyright 2022-2026 NXP
 # SPDX-License-Identifier: BSD-3-Clause
 
 set -x
@@ -8,7 +8,7 @@ set -x
 REALPATH="$(readlink -e "$0")"
 BASEDIR="$(dirname "${REALPATH}")/../.."
 MODELS_DIR="${BASEDIR}/downloads/models/semantic-segmentation"
-MEDIA_DIR="${BASEDIR}/downloads/media"
+MEDIA_DIR="${BASEDIR}/downloads/media/images"
 IMAGES_DIR="${MEDIA_DIR}/pascal_voc_2012_images"
 REQUIRED_CAMERA=0
 
