@@ -1,0 +1,71 @@
+{
+  "SPDXID": "SPDXRef-DOCUMENT",
+  "spdxVersion": "SPDX-2.3",
+  "creationInfo": {
+    "created": "2026-03-09T10:07:08Z",
+    "creators": [
+      "Organization: NXP"
+    ],
+    "licenseListVersion": "3.26"
+  },
+  "name": "nxp-nnstreamer-examples-v1.8",
+  "dataLicense": "CC0-1.0",
+  "documentNamespace": "https://nxp.com/spdx/530668ef-bae9-483f-80fb-a0ae77e47037",
+  "packages": [
+    {
+      "SPDXID": "SPDXRef-package-530668ef-bae9-483f-80fb-a0ae77e47037",
+      "name": "nxp-nnstreamer-examples",
+      "versionInfo": "v1.8",
+      "licenseConcluded": "(BSD-3-Clause)",
+      "licenseDeclared": "(BSD-3-Clause)",
+      "downloadLocation": "NOASSERTION",
+      "originator": "Organization: NXP",
+      "supplier": "NOASSERTION",
+      "externalRefs": [],
+      "filesAnalyzed": false
+    },
+    {
+      "SPDXID": "SPDXRef-package-530668ef-bae9-483f-80fb-a0ae77e47037---9edc9540-f802-4e74-914a-d0b00a7f8148",
+      "name": "Wikimedia Commons - CC-PDM-1.0",
+      "versionInfo": "N/A (Wikimedia Commons is a continuously updated media repository; no fixed versioning)",
+      "licenseConcluded": "CC-PDM-1.0",
+      "licenseDeclared": "CC-PDM-1.0",
+      "homepage": "https://commons.wikimedia.org/wiki/Main_Page",
+      "downloadLocation": "https://dumps.wikimedia.org/",
+      "originator": "Organization: Wikimedia Commons - CC-PDM-1.0",
+      "supplier": "NOASSERTION",
+      "externalRefs": [],
+      "filesAnalyzed": false
+    },
+    {
+      "SPDXID": "SPDXRef-package-530668ef-bae9-483f-80fb-a0ae77e47037---6c14ac8f-6ddf-4cd4-8420-bdcca7bbf556",
+      "name": "Wikimedia Commons - CC0-1.0",
+      "versionInfo": "N/A (Wikimedia Commons is a continuously updated media repository; no fixed versioning)",
+      "licenseConcluded": "CC0-1.0",
+      "licenseDeclared": "CC0-1.0",
+      "homepage": "https://commons.wikimedia.org/wiki/Main_Page",
+      "downloadLocation": "https://dumps.wikimedia.org/",
+      "originator": "Organization: Wikimedia Commons - CC0-1.0",
+      "supplier": "NOASSERTION",
+      "externalRefs": [],
+      "filesAnalyzed": false
+    }
+  ],
+  "relationships": [
+    {
+      "spdxElementId": "SPDXRef-DOCUMENT",
+      "relationshipType": "DESCRIBES",
+      "relatedSpdxElement": "SPDXRef-package-530668ef-bae9-483f-80fb-a0ae77e47037"
+    },
+    {
+      "spdxElementId": "SPDXRef-package-530668ef-bae9-483f-80fb-a0ae77e47037",
+      "relationshipType": "DYNAMIC_LINK",
+      "relatedSpdxElement": "SPDXRef-package-530668ef-bae9-483f-80fb-a0ae77e47037---6c14ac8f-6ddf-4cd4-8420-bdcca7bbf556"
+    },
+    {
+      "spdxElementId": "SPDXRef-package-530668ef-bae9-483f-80fb-a0ae77e47037",
+      "relationshipType": "DYNAMIC_LINK",
+      "relatedSpdxElement": "SPDXRef-package-530668ef-bae9-483f-80fb-a0ae77e47037---9edc9540-f802-4e74-914a-d0b00a7f8148"
+    }
+  ]
+}
