@@ -72,14 +72,6 @@ Snapshot | Name | Platforms | Implementations | Models | ML engine | Features
 *Images and video used have been released under Creative Commons CC0 1.0 license or belong to Public Domain. Individual attribution and license information for each image can be found in [MEDIA_LICENSES.txt](./LICENSES/MEDIA_LICENSES.txt).*
 
 ## Use libcamera backend instead of v4l2 on i.MX 95
-
-Run "cam -l" command to find the camera path (/base/soc/<camera_path>). Then export following environment variables:
-```bash
-export LIBCAMERA_PIPELINES_MATCH_LIST='nxp/neo,imx8-isi,uvcvideo'
-export CAMERA_BACKEND='libcamera'
-export CAMERA_DEVICE='/base/soc/<camera_path>'
-```
-NOTE:
-- A default camera device path is set to the first camera found by cam -l command.
+- In the tools/setup_environement.sh script, `CAMERA_BACKEND=libcamera` is set to libcamera instead of v4l2.
 - USB cameras are currently not supported by libcamera backend.
 - More information is available on the [i.MX Linux User's Guide](https://www.nxp.com/design/design-center/documentation:DOCUMENTATION?collection=documents&start=0&max=12&language=en&query=type%3E%3EUser%20Guide&keyword=i.MX%2520Linux%2520User%27s%2520Guide&siblings=false) in libcamera section

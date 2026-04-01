@@ -23,6 +23,15 @@ CAM_INFO=$(cam -l | awk '/Available cameras:/ {getline; print}')
 CAM_DEVICE_DEFAULT=$(echo "$CAM_INFO" | sed -n "s/.*(\(.*\)).*/\1/p")
 export LIBCAMERA_CAM_DEVICE="${CAMERA_DEVICE:-${CAM_DEVICE_DEFAULT}}"
 
+# Configure libcamera backend for the i.MX 95
+# Check if running on i.MX 95
+if [ -f /sys/devices/soc0/soc_id ] && grep -q "i.MX95" /sys/devices/soc0/soc_id; then
+    export LIBCAMERA_PIPELINES_MATCH_LIST='nxp/neo,imx8-isi,uvcvideo'
+    export CAMERA_BACKEND='libcamera'
+    export CAMERA_DEVICE="${CAMERA_DEVICE:-${LIBCAMERA_CAM_DEVICE}}"
+    echo "i.MX 95 detected: libcamera backend enabled"
+fi
+
 # Define classification data path
 CLASSIFICATION_DIR="${MODELS_DIR}/classification"
 export MOBILENETV1_LABELS="${CLASSIFICATION_DIR}/labels_mobilenet_quant_v1_224.txt"
