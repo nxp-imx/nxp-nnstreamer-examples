@@ -8,68 +8,55 @@ Name | Implementation | Model | ML engine | Features
 [example_detection_yolo_v4_tiny_tflite.sh](./example_detection_yolo_v4_tiny_tflite.sh) | Bash | YOLOv4 Tiny | TFLite | camera<br>gst-launch<br>[custom python tensor_filter](./postprocess_yolov4_tiny.py)
 
 ## YOLOv4 Tiny object detection 
-### Bash
-|   Platforms  | NPU | CPU |
-| ------------ | --- | --- |
-| i.MX 8M Plus | :white_check_mark: | :white_check_mark: |
-|   i.MX 93    | :white_check_mark: | :white_check_mark: |
-|   i.MX 95    | :white_check_mark: | :white_check_mark: |
-|   i.MX 952   | :white_check_mark: | :white_check_mark: |
+### Bash Execution
 
 *NOTE: YOLOv4 Tiny output does not directly work with the YOLOv5 mode of tensor_decoder element, so a python filter is used to post-process and reshape this output as required.*
 
-The object detection demo in bash using YOLOv4 Tiny supports multiple backend for model inferences (refers to above table), default value can be overridden by explicitly defining BACKEND variable. Similarly, the GPU variable allows to choose between 2D GPU (GPU2D) or 3D GPU (GPU3D) if available for scaling and color space conversion operations.
+The object detection demo in bash using YOLOv4 Tiny supports multiple backend for model inferences, default value can be overridden by explicitly defining BACKEND variable. Similarly, the GPU variable allows to choose between 2D GPU (GPU2D) or 3D GPU (GPU3D) if available for scaling and color space conversion operations.
 For instance:
 ```bash
-BACKEND=CPU GPU=GPU2D ./tasks/object-detection/example_detection_yolo_v4_tiny_tflite.sh
+BACKEND=NPU GPU=GPU2D ./tasks/object-detection/example_detection_yolo_v4_tiny_tflite.sh
 ```
 
 ## SSD MobileNetV2 object detection
-### Bash
-|   Platforms  | NPU | CPU |
-| ------------ | --- | --- |
-| i.MX 8M Plus | :white_check_mark: | :white_check_mark: |
-|   i.MX 93    | :white_check_mark: | :white_check_mark: |
-|   i.MX 95    | :white_check_mark: | :white_check_mark: |
-|   i.MX 952   | :white_check_mark: | :white_check_mark: |
+### Bash Execution
 
-The object detection demo in bash using SSD MobiletNetV2 supports multiple backend for model inferences (refers to above table), default value can be overridden by explicitly defining BACKEND variable. Similarly, the GPU variable allows to choose between 2D GPU (GPU2D) or 3D GPU (GPU3D) if available for scaling and color space conversion operations.
+The object detection demo in bash using SSD MobiletNetV2 supports multiple backend for model inferences, default value can be overridden by explicitly defining BACKEND variable. Similarly, the GPU variable allows to choose between 2D GPU (GPU2D) or 3D GPU (GPU3D) if available for scaling and color space conversion operations.
 For instance:
 ```bash
-BACKEND=CPU GPU=GPU2D ./tasks/object-detection/example_detection_mobilenet_ssd_v2_tflite.sh
+BACKEND=NPU GPU=GPU2D ./tasks/object-detection/example_detection_mobilenet_ssd_v2_tflite.sh
 ```
-### C++
-|   Platforms  | NPU | CPU |
-| ------------ | --- | --- |
-| i.MX 8M Plus | :white_check_mark: | :white_check_mark: |
-|   i.MX 93    | :white_check_mark: | :white_check_mark: |
-|   i.MX 95    | :white_check_mark: | :white_check_mark: |
-|   i.MX 952   | :white_check_mark: | :white_check_mark: |
+
+### C++ Execution
 
 C++ example script needs to be generated with [cross compilation](../). [setup_environment.sh](../tools/setup_environment.sh) script needs to be executed in [nxp-nnstreamer-examples](../) folder to define data paths:
 ```bash
 . ./tools/setup_environment.sh
 ```
 
-It is possible to run the object detection demo inference on three different hardwares:<br>
-Inference on NPU with the following script:
+#### NPU Inference
+
+For i.MX 8M Plus (VSI NPU):
 ```bash
 ./build/object-detection/example_detection_mobilenet_ssd_v2_tflite -p  ${MOBILENETV2_QUANT} -l ${COCO_LABELS} -x ${MOBILENETV2_BOXES}
 ```
-For i.MX 93 NPU use vela converted model:
+
+For i.MX 93 (Ethos-U65):
 ```bash
 ./build/object-detection/example_detection_mobilenet_ssd_v2_tflite -p  ${MOBILENETV2_QUANT_VELA} -l ${COCO_LABELS} -x ${MOBILENETV2_BOXES}
 ```
 
-For i.MX 95 NPU use neutron converted model:
+For i.MX 95 (Neutron):
 ```bash
 ./build/object-detection/example_detection_mobilenet_ssd_v2_tflite -p  ${MOBILENETV2_QUANT_IMX95} -l ${COCO_LABELS} -x ${MOBILENETV2_BOXES}
 ```
 
-For i.MX 952 NPU use neutron converted model:
+For i.MX 952 (Neutron):
 ```bash
 ./build/object-detection/example_detection_mobilenet_ssd_v2_tflite -p  ${MOBILENETV2_QUANT_IMX952} -l ${COCO_LABELS} -x ${MOBILENETV2_BOXES}
 ```
+
+#### Inferences on other hardwares
 
 Inference on CPU with the following script:
 ```bash
@@ -80,6 +67,9 @@ NOTE: inferences on i.MX8MPlus GPU have low performances, but are possible with 
 ```bash
 ./build/object-detection/example_detection_mobilenet_ssd_v2_tflite -p  ${MOBILENETV2} -l ${COCO_LABELS} -x ${MOBILENETV2_BOXES} -b GPU -n centeredScaled
 ```
+
+#### C++ Execution Parameters
+
 The following execution parameters are available (Run ``` ./example_detection_mobilenet_ssd_v2_tflite -h``` to see option details):
 
 Option | Description

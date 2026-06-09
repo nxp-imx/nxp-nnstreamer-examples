@@ -6,13 +6,7 @@ Name |Platforms | Model | ML engine | Features
 [example_depth_midas_v2_tflite.cpp](./cpp/example_depth_midas_v2_tflite.cpp) | C++ | MiDaS v2 | TFLite | v4l2/libcamera<br>video file decoding<br>gst-launch<br>custom model decoding
 
 ## MiDaS v2 monocular depth estimation
-### C++
-|   Platforms  | NPU | CPU |
-| ------------ | --- | --- |
-| i.MX 8M Plus | :white_check_mark: | :white_check_mark: |
-|   i.MX 93    | :white_check_mark: | :white_check_mark: |
-|   i.MX 95    | :x: | :white_check_mark: |
-|   i.MX 952   | :x: | :white_check_mark: |
+### C++ Execution
 
 *NOTES:*
 * *Distances shown on screen are relative and not absolute from the camera*
@@ -23,15 +17,20 @@ C++ example script needs to be generated with [cross compilation](../). [setup_e
 . ./tools/setup_environment.sh
 ```
 
-It is possible to run the monocular depth estimation demo inference on three different hardwares:<br>
-Inference on NPU with the following script:
+#### NPU Inference
+
+For i.MX 8M Plus (VSI NPU):
 ```bash
 ./build/monocular-depth-estimation/example_depth_midas_v2_tflite -p ${MIDASV2}
 ```
-For i.MX 93 NPU use vela converted model:
+
+For i.MX 93 (Ethos-U65):
 ```bash
 ./build/monocular-depth-estimation/example_depth_midas_v2_tflite -p ${MIDASV2_VELA}
 ```
+
+#### Inferences on other hardwares
+
 Inference on CPU with the following script:
 ```bash
 ./build/monocular-depth-estimation/example_depth_midas_v2_tflite -p ${MIDASV2} -b CPU
@@ -40,6 +39,9 @@ NOTE: Inference on i.MX8MPlus GPU is possible but not recommended because of low
 ```bash
 ./build/monocular-depth-estimation/example_depth_midas_v2_tflite -p ${MIDASV2} -b GPU
 ```
+
+#### C++ Execution Parameters
+
 The following execution parameters are available (Run ``` ./example_depth_midas_v2_tflite -h``` to see option details):
 
 Option | Description

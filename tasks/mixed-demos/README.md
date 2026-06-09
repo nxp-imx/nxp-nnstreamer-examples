@@ -10,39 +10,46 @@ Name | Implementation | Model | ML engine | Features
 Mixed examples goal is to demonstrate the possibility to make applications which use multiple models running in parallel, while keeping good performances. Three examples are available:
 
 ## Classification and Object Detection (MobileNetV1/SSD MobileNetV2)
-### C++
-|   Platforms  | NPU | CPU |
-| ------------ | --- | --- |
-| i.MX 8M Plus | :white_check_mark: | :white_check_mark: |
-|   i.MX 93    | :white_check_mark: | :white_check_mark: |
-|   i.MX 95    | :white_check_mark: | :white_check_mark: |
-|   i.MX 952   | :white_check_mark: | :white_check_mark: |
+
+An example running classification and object detection inferences in parallel is provided, which use the video saving feature.
+
+### C++ Execution
 
 C++ example script needs to be generated with [cross compilation](../). [setup_environment.sh](../tools/setup_environment.sh) script needs to be executed in [nxp-nnstreamer-examples](../) folder to define data paths:
 ```bash
 . ./tools/setup_environment.sh
 ```
 
-An example running classification and object detection inferences in parallel is provided, which use the video saving feature. This example can be run with both models on NPU, using the following command:
+#### NPU Inference
+
+For i.MX 8M Plus (VSI NPU):
  ```bash
 ./build/mixed-demos/example_classification_and_detection_tflite -p ${MOBILENETV1_QUANT},${MOBILENETV2_QUANT} -l ${MOBILENETV1_LABELS},${COCO_LABELS} -x ${MOBILENETV2_BOXES} -s ${SAVE_VIDEO_PATH}
 ```
-For i.MX 93 NPU use vela converted models:<br>
+
+For i.MX 93 (Ethos-U65):<br>
 *NOTE: Video saving feature is not available on i.MX 93.*
  ```bash
 ./build/mixed-demos/example_classification_and_detection_tflite -p ${MOBILENETV1_QUANT_VELA},${MOBILENETV2_QUANT_VELA} -l ${MOBILENETV1_LABELS},${COCO_LABELS} -x ${MOBILENETV2_BOXES}
 ```
-For i.MX 95 NPU use neutron converted models:
+
+For i.MX 95 (Neutron):
  ```bash
 ./build/mixed-demos/example_classification_and_detection_tflite -p ${MOBILENETV1_QUANT_IMX95},${MOBILENETV2_QUANT_IMX95} -l ${MOBILENETV1_LABELS},${COCO_LABELS} -x ${MOBILENETV2_BOXES} -s ${SAVE_VIDEO_PATH}
 ```
-For i.MX 952 NPU use neutron converted models:
+
+For i.MX 952 (Neutron):
  ```bash
 ./build/mixed-demos/example_classification_and_detection_tflite -p ${MOBILENETV1_QUANT_IMX952},${MOBILENETV2_QUANT_IMX952} -l ${MOBILENETV1_LABELS},${COCO_LABELS} -x ${MOBILENETV2_BOXES} -s ${SAVE_VIDEO_PATH}
 ```
 
+#### Inferences on other hardwares
+
 To use CPU or GPU backend, refers to the execution parameter ```--backend``` below.<br>
-To use the non-quantized (float32) model, input normalization needs to be set with the execution parameter ```--normalization``` (description below): For MobileNetV1 and MobiletNetV2 use ```centeredScaled``` argument. Use ```MOBILENETV1``` or ```MOBILENETV2``` environment variable for model path.<br>
+To use the non-quantized (float32) model, input normalization needs to be set with the execution parameter ```--normalization``` (description below): For MobileNetV1 and MobiletNetV2 use ```centeredScaled``` argument. Use ```MOBILENETV1``` or ```MOBILENETV2``` environment variable for model path.
+
+#### C++ Execution Parameters
+
 The following execution parameters are available (Run ``` ./example_classification_and_detection_tflite -h``` to see option details):
 
 Option | Description
@@ -63,28 +70,34 @@ Option | Description
 Press ```Esc or ctrl+C``` to stop the execution of the pipeline.
 
 ## Pose Estimation and Face Detection (MoveNet/UltraFace-slim)
-### C++
-|   Platforms  | NPU | CPU |
-| ------------ | --- | --- |
-| i.MX 8M Plus | :white_check_mark: | :white_check_mark: |
-|   i.MX 93    | :white_check_mark: | :white_check_mark: |
-|   i.MX 95    | :x: | :x: |
-|   i.MX 952   | :x: | :x: |
+
+An example running face detection and pose estimation inferences in parallel is available.
+
+### C++ Execution
 
 C++ example script needs to be generated with [cross compilation](../). [setup_environment.sh](../tools/setup_environment.sh) script needs to be executed in [nxp-nnstreamer-examples](../) folder to define data paths:
 ```bash
 . ./tools/setup_environment.sh
 ```
 
-An example running face detection and pose estimation inferences in parallel is available. This example can be run with both models on NPU, using the following command:
+#### NPU Inference
+
+For i.MX 8M Plus (VSI NPU):
 ```bash
 ./build/mixed-demos/example_face_and_pose_detection_tflite -p ${ULTRAFACE_QUANT},${MOVENET_QUANT}
 ```
-For i.MX 93 NPU use vela converted model for face detection:
+
+For i.MX 93 (Ethos-U65):
 ```bash
 ./build/mixed-demos/example_face_and_pose_detection_tflite -p ${ULTRAFACE_QUANT_VELA},${MOVENET_QUANT} -b NPU,CPU
 ```
-To use CPU or GPU backend, refers to the execution parameter ```--backend``` below.<br>
+
+#### Inferences on other hardwares
+
+To use CPU or GPU backend, refers to the execution parameter ```--backend``` below.
+
+#### C++ Execution Parameters
+
 The following execution parameters are available (Run ``` ./example_face_and_pose_detection_tflite -h``` to see option details):
 
 Option | Description
@@ -103,13 +116,10 @@ Option | Description
 Press ```Esc or ctrl+C``` to stop the execution of the pipeline.
 
 ## Double MobileNetV1 Classification
-### C++
-|   Platforms  | NPU | CPU |
-| ------------ | --- | --- |
-| i.MX 8M Plus | :white_check_mark: | :white_check_mark: |
-|   i.MX 93    | :white_check_mark: | :white_check_mark: |
-|   i.MX 95    | :white_check_mark: | :white_check_mark: |
-|   i.MX 952   | :white_check_mark: | :white_check_mark: |
+
+An example running two classification inferences in parallel, with each inference using a different input camera data, is available.
+
+### C++ Execution
 
 *NOTES:*
 - *A warmup time for NPU inference on i.MX 95 can take up to 1 minute.*
@@ -120,25 +130,36 @@ C++ example script needs to be generated with [cross compilation](../). [setup_e
 ```bash
 . ./tools/setup_environment.sh
 ```
-An example running two classification inferences in parallel, with each inference using a different input camera data, is available. This example can be run with both models on NPU, using the following command:<br>
 
+#### NPU Inference
+
+For i.MX 8M Plus (VSI NPU):
 ```bash
 ./build/mixed-demos/example_double_classification_tflite -p ${MOBILENETV1_QUANT},${MOBILENETV1_QUANT} -l ${MOBILENETV1_LABELS} -c ${CAM1_PATH},${CAM2_PATH}
 ```
-For i.MX 93 NPU use vela converted models:
+
+For i.MX 93 (Ethos-U65):
 ```bash
 ./build/mixed-demos/example_double_classification_tflite -p ${MOBILENETV1_QUANT_VELA},${MOBILENETV1_QUANT_VELA} -l ${MOBILENETV1_LABELS} -c ${CAM1_PATH},${CAM2_PATH}
 ```
-For i.MX 95 NPU use neutron converted models:
+
+For i.MX 95 (Neutron):
 ```bash
 ./build/mixed-demos/example_double_classification_tflite -p ${MOBILENETV1_QUANT_IMX95},${MOBILENETV1_QUANT_IMX95} -l ${MOBILENETV1_LABELS} -c ${CAM1_PATH},${CAM2_PATH}
 ```
-For i.MX 952 NPU use neutron converted models:
+
+For i.MX 952 (Neutron):
 ```bash
 ./build/mixed-demos/example_double_classification_tflite -p ${MOBILENETV1_QUANT_IMX952},${MOBILENETV1_QUANT_IMX952} -l ${MOBILENETV1_LABELS} -c ${CAM1_PATH},${CAM2_PATH}
 ```
+
+#### Inferences on other hardwares
+
 To use CPU or GPU backend, refers to the execution parameter ```--backend``` below.<br>
-To use the non-quantized (float32) MobileNetV1 model, input normalization needs to be set with the execution parameter ```--normalization``` (description below) to ```centeredScaled``` and use ```MOBILENETV1``` environment variable for model path.<br>
+To use the non-quantized (float32) MobileNetV1 model, input normalization needs to be set with the execution parameter ```--normalization``` (description below) to ```centeredScaled``` and use ```MOBILENETV1``` environment variable for model path.
+
+#### C++ Execution Parameters
+
 The following execution parameters are available (Run ``` ./example_double_classification_tflite -h``` to see option details):
 
 Option | Description

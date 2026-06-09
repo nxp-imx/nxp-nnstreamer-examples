@@ -7,41 +7,34 @@ Name | Implementation | Model | ML engine | Features
 [example_segmentation_deeplab_v3_tflite.sh](./example_segmentation_deeplab_v3_tflite.sh) | Bash | DeepLabV3 | TFLite | jpeg files slideshow<br>gst-launch<br>
 
 ## DeepLabV3 segmentation
-### Bash
-|   Platforms  | NPU | CPU |
-| ------------ | --- | --- |
-| i.MX 8M Plus | :white_check_mark: | :white_check_mark: |
-|   i.MX 93    | :white_check_mark: | :white_check_mark: |
-|   i.MX 95    | :x: | :white_check_mark: |
-|   i.MX 952   | :x: | :white_check_mark: |
+### Bash Execution
 
-The semantic segmentation demo in bash supports multiple backend for model inferences (refers to above table), default value can be overridden by explicitly defining BACKEND variable, for instance:
+The semantic segmentation demo in bash supports multiple backend for model inferences, default value can be overridden by explicitly defining BACKEND variable, for instance:
 ```bash
-BACKEND=CPU ./tasks/semantic-segmentation/example_segmentation_deeplab_v3_tflite.sh
+BACKEND=NPU ./tasks/semantic-segmentation/example_segmentation_deeplab_v3_tflite.sh
 ```
 
-### C++
-|   Platforms  | NPU | CPU |
-| ------------ | --- | --- |
-| i.MX 8M Plus | :white_check_mark: | :white_check_mark: |
-|   i.MX 93    | :white_check_mark: | :white_check_mark: |
-|   i.MX 95    | :x: | :white_check_mark: |
-|   i.MX 952   | :x: | :white_check_mark: |
+### C++ Execution
 
 C++ example script needs to be generated with [cross compilation](../). [setup_environment.sh](../tools/setup_environment.sh) script needs to be executed in [nxp-nnstreamer-examples](../) folder to define data paths:
 ```bash
 . ./tools/setup_environment.sh
 ```
 
-It is possible to run the semantic segmentation demo inference on three different hardwares:<br>
-Inference on NPU with the following script:
+#### NPU Inference
+
+For i.MX 8M Plus (VSI NPU):
 ```bash
 ./build/semantic-segmentation/example_segmentation_deeplab_v3_tflite -p ${DEEPLABV3_QUANT} -f ${PASCAL_IMAGES}
 ```
-For i.MX 93 NPU use vela converted model:
+
+For i.MX 93 (Ethos-U65):
 ```bash
 ./build/semantic-segmentation/example_segmentation_deeplab_v3_tflite -p ${DEEPLABV3_QUANT_VELA} -f ${PASCAL_IMAGES}
 ```
+
+#### Inferences on other hardwares
+
 Inference on CPU with the following script:
 ```bash
 ./build/semantic-segmentation/example_segmentation_deeplab_v3_tflite -p ${DEEPLABV3_QUANT} -f ${PASCAL_IMAGES} -b CPU
@@ -51,6 +44,9 @@ NOTE: inferences on i.MX8MPlus GPU have low performances, but are possible with 
 ```bash
 ./build/semantic-segmentation/example_segmentation_deeplab_v3_tflite -p ${DEEPLABV3} -f ${PASCAL_IMAGES} -b GPU -n centeredScaled
 ```
+
+#### C++ Execution Parameters
+
 The following execution parameters are available (Run ``` ./example_segmentation_deeplab_v3_tflite -h``` to see option details):
 
 Option | Description

@@ -1,20 +1,43 @@
 # NXP NNStreamer examples
 Purpose of this repository is to provide, for demonstration purpose, functional examples of GStreamer/NNStreamer-based pipelines optimized and validated for some designated NXP i.MX application processors.
 
+# Additional Resources
+
+- **i.MX Machine Learning User's Guide**: https://www.nxp.com/docs/en/user-guide/UG10166.pdf
+- **NXP Vision Solutions**: https://www.nxp.com/applications/technologies/ai-and-machine-learning/embedded-vision:EMBEDDED-VISION
+
+# Prerequisites
+
+## Hardware Requirements
+- **Supported NXP i.MX board**: i.MX 8M Plus, i.MX 93, i.MX 95, or i.MX 952.
+- **Camera device**: can be USB or CSI for video input in applicable examples. If not available, video files can be used as input source.
+
+## Software Requirements
+- **BSP Image**: Yocto BSP image can be found in [Embedded Linux for i.MX Applications Processors](https://www.nxp.com/design/design-center/software/embedded-software/i-mx-software/embedded-linux-for-i-mx-applications-processors:IMXLINUX).
+- **Models and metadata**: Downloaded from host PC using provided Jupyter Notebook. Follow [download instruction](./downloads/README.md) for details.
+- **For C++ examples**: Cross-compilation SDK from Yocto BSP (see [C++ with cross-compilation](#c-with-cross-compilation) section below).
+
 # How to run examples
-## Models and metadata download
-Models and metadata files used by examples are not archived in this repository.
-Therefore they have to be downloaded over the network, prior to execution of the examples on the target. Download of those files is to be done from the host PC, running Jupyter Notebook [download.ipynb](./downloads).
-Refer to [download instruction](./downloads/README.md) for details.
+
 ## Execution on target
-### Python
 Once models have been fetched locally on host PC, repository will contain both examples and downloaded artifacts. Thus it can be uploaded to the target board for individual examples execution. Complete repository can either be uploaded from host PC to target using regular `scp` command or only the necessary directories using [upload.sh](./tools/upload.sh) script provided for host:
 ```bash
 # replace <target ip address> by relevant value
 cd /path/to/nxp-nnstreamer-examples
 ./tools/upload.sh root@<target ip address>
 ```
-### C++ with cross-compilation
+
+## Compile models on target for i.MX 93
+Quantized TFLite models must be compiled with vela for i.MX 93 Ethos-U NPU.
+This must be done directly on the target:
+```bash
+cd /path/to/nxp-nnstreamer-examples
+./downloads/compile_models.sh
+```
+Examples can then be run directly on the target. More information on individual examples execution is available in relevant sections.
+
+
+## C++ with cross-compilation
 1- Fetch the models locally on host PC. <br>
 2- Build a Yocto BSP SDK for the dedicated i.MX platform. Refer to the [imx-manifest](https://github.com/nxp-imx/imx-manifest) to setup the correct building environment, SDK needs to be compiled with bitbake using `imx-image-full` and `populate_sdk` command as followed:<br>
 ```bash
@@ -45,16 +68,14 @@ scp ./classification/example_classification_mobilenet_v1_tflite root@<target ip 
 ```
 C++ examples use a set of high-level classes to create optimized pipelines for NXP boards, which use NXP hardware optimizations. A description of how to use this set of classes can be found [here](./common/cpp/README.md).
 
-### Compile models on target for i.MX 93
-Quantized TFLite models must be compiled with vela for i.MX 93 Ethos-U NPU.
-This must be done directly on the target:
-```bash
-cd /path/to/nxp-nnstreamer-examples
-./downloads/compile_models.sh
-```
-Examples can then be run directly on the target. More information on individual examples execution is available in relevant sections.
+## Use libcamera backend instead of v4l2 on i.MX 95
+- In the tools/setup_environement.sh script, `CAMERA_BACKEND=libcamera` is set to libcamera instead of v4l2.
+- USB cameras are currently not supported by libcamera backend.
+- More information is available on the [i.MX Linux User's Guide](https://www.nxp.com/design/design-center/documentation:DOCUMENTATION?collection=documents&start=0&max=12&language=en&query=type%3E%3EUser%20Guide&keyword=i.MX%2520Linux%2520User%27s%2520Guide&siblings=false) in libcamera section
 
 # Tasks
+This repository provides various machine learning task examples demonstrating NNStreamer capabilities on NXP platforms. For detailed information about supported tasks, models, and platform compatibility, see the [Tasks README](./tasks/README.md).
+
 Note that examples may not run on all platforms - check table below for platform compatibility.
 
 ## Available examples
@@ -70,8 +91,3 @@ Snapshot | Name | Platforms | Implementations | Models | ML engine | Features
 [![mixed demo](./tasks/mixed-demos/mixed_demo.webp)](./tasks/mixed-demos/) | [Mixed Demos](./tasks/mixed-demos/) | i.MX 8M Plus<br>i.MX 93<br>i.MX 95<br>i.MX 952 | C++ | MobileNet SSD<br>MobileNet<br>MoveNet<br>UltraFace-slim<br>Deepface-emotion | TFLite | v4l2/libcamera<br>video file decoding<br>gst-launch<br>custom model decoding<br>video file encoding
 
 *Images and video used have been released under Creative Commons CC0 1.0 license or belong to Public Domain. Individual attribution and license information for each image can be found in [MEDIA_LICENSES.txt](./LICENSES/MEDIA_LICENSES.txt).*
-
-## Use libcamera backend instead of v4l2 on i.MX 95
-- In the tools/setup_environement.sh script, `CAMERA_BACKEND=libcamera` is set to libcamera instead of v4l2.
-- USB cameras are currently not supported by libcamera backend.
-- More information is available on the [i.MX Linux User's Guide](https://www.nxp.com/design/design-center/documentation:DOCUMENTATION?collection=documents&start=0&max=12&language=en&query=type%3E%3EUser%20Guide&keyword=i.MX%2520Linux%2520User%27s%2520Guide&siblings=false) in libcamera section

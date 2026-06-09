@@ -30,13 +30,7 @@ For face detection demo, display can be flipped using the --mirror option.<br>
 ![secondary](./secondary.svg)
 
 ## Face Detection
-### Python
-|   Platforms  | NPU | CPU |
-| ------------ | --- | --- |
-| i.MX 8M Plus | :white_check_mark: | :white_check_mark: |
-|   i.MX 93    | :white_check_mark: | :white_check_mark: |
-|   i.MX 95    | :white_check_mark: | :white_check_mark: |
-|   i.MX 952   | :white_check_mark: | :white_check_mark: |
+### Python Execution
 
 Demo application is to be started from Linux. Camera device node may be configured via command line argument (default: `/dev/video3` on i.MX 8M Plus and `/dev/video0` on i.MX 93, `/dev/video13` on i.MX 95).
 Default backend can be overridden by explicitly defining BACKEND variable.<br>
@@ -55,34 +49,37 @@ Option | Description
 -m, --mirror | Flips the camera stream when using a front camera
 -f, --fps FPS | Camera framerate
 
-### C++
-|   Platforms  | NPU | CPU |
-| ------------ | --- | --- |
-| i.MX 8M Plus | :white_check_mark: | :white_check_mark: |
-|   i.MX 93    | :white_check_mark: | :white_check_mark: |
-|   i.MX 95    | :white_check_mark: | :white_check_mark: |
-|   i.MX 952   | :white_check_mark: | :white_check_mark: |
+### C++ Execution
 
 C++ example script needs to be generated with [cross compilation](../). [setup_environment.sh](../tools/setup_environment.sh) script needs to be executed in [nxp-nnstreamer-examples](../) folder to define data paths:
 ```bash
 . ./tools/setup_environment.sh
 ```
-It is possible to run the face detection demo inference on NPU with the following script:
+
+#### NPU Inference
+
+For i.MX 8M Plus (VSI NPU):
 ```bash
 ./build/face-processing/example_face_detection_tflite -p ${ULTRAFACE_QUANT}
 ```
-For i.MX 93 NPU use vela converted model:
+
+For i.MX 93 (Ethos-U65):
 ```bash
 ./build/face-processing/example_face_detection_tflite -p ${ULTRAFACE_QUANT_VELA}
 ```
-For i.MX 95 NPU use neutron converted model:
+
+For i.MX 95 (Neutron):
 ```bash
 ./build/face-processing/example_face_detection_tflite -p ${ULTRAFACE_QUANT_IMX95}
 ```
-For i.MX 952 NPU use neutron converted model:
+
+For i.MX 952 (Neutron):
 ```bash
 ./build/face-processing/example_face_detection_tflite -p ${ULTRAFACE_QUANT_IMX952}
 ```
+
+#### Inferences on other hardwares
+
 Inference on CPU with the following script:
 ```bash
 ./build/face-processing/example_face_detection_tflite -p ${ULTRAFACE_QUANT} -b CPU
@@ -91,6 +88,9 @@ NOTE: inferences on i.MX8MPlus GPU have low performances, but are possible with 
 ```bash
 ./build/face-processing/example_face_detection_tflite -p ${ULTRAFACE_QUANT} -b GPU
 ```
+
+#### C++ Execution Parameters
+
 The following execution parameters are available (Run ``` ./example_face_detection_tflite -h``` to see option details):
 
 Option | Description
@@ -108,13 +108,7 @@ Option | Description
 Press ```Esc or ctrl+C``` to stop the execution of the pipeline.
 
 ## Emotion Classification
-### Python
-|   Platforms  | NPU | CPU |
-| ------------ | --- | --- |
-| i.MX 8M Plus | :white_check_mark: | :white_check_mark: |
-|   i.MX 93    | :white_check_mark: | :white_check_mark: |
-|   i.MX 95    | :white_check_mark: | :white_check_mark: |
-|   i.MX 952   | :white_check_mark: | :white_check_mark: |
+### Python Execution
 
 Demo application is to be started from Linux. Camera device node may be configured via command line argument (default: `/dev/video3` on i.MX 8M Plus, `/dev/video0` on i.MX 93, `/dev/video13` on i.MX 95).
 Default backend can be overridden by explicitly defining BACKEND variable. To fine-tune each model individually, you can use BACKEND_ULTRAFACE and BACKEND_DEEPFACE variables instead.<br>
@@ -134,34 +128,37 @@ Option | Description
 -m, --mirror | Flips the camera stream when using a front camera
 -f, --fps FPS | Camera framerate
 
-### C++
-|   Platforms  | NPU | CPU |
-| ------------ | --- | --- |
-| i.MX 8M Plus | :white_check_mark: | :white_check_mark: |
-|   i.MX 93    | :white_check_mark: | :white_check_mark: |
-|   i.MX 95    | :white_check_mark: | :white_check_mark: |
-|   i.MX 952   | :white_check_mark: | :white_check_mark: |
+### C++ Execution
 
 C++ example script needs to be generated with [cross compilation](../). [setup_environment.sh](../tools/setup_environment.sh) script needs to be executed in [nxp-nnstreamer-examples](../) folder to define data paths:
 ```bash
 . ./tools/setup_environment.sh
 ```
- It is possible to run the emotion detection demo inference on NPU with the following script:<br>
+
+#### NPU Inference
+
+For i.MX 8M Plus (VSI NPU):
 ```bash
 ./build/face-processing/example_emotion_classification_tflite -p ${ULTRAFACE_QUANT},${EMOTION_QUANT}
 ```
-For i.MX 93 NPU use vela converted model:
+
+For i.MX 93 (Ethos-U65):
 ```bash
 ./build/face-processing/example_emotion_classification_tflite -p ${ULTRAFACE_QUANT_VELA},${EMOTION_QUANT_VELA}
 ```
-For i.MX 95 NPU use neutron converted model:
+
+For i.MX 95 (Neutron):
 ```bash
 ./build/face-processing/example_emotion_classification_tflite -p ${ULTRAFACE_QUANT_IMX95},${EMOTION_QUANT_IMX95}
 ```
-For i.MX 952 NPU use neutron converted model:
+
+For i.MX 952 (Neutron):
 ```bash
 ./build/face-processing/example_emotion_classification_tflite -p ${ULTRAFACE_QUANT_IMX952},${EMOTION_QUANT_IMX952}
 ```
+
+#### Inferences on other hardwares
+
 Inference on CPU with the following script:
 ```bash
 ./build/face-processing/example_emotion_classification_tflite -p ${ULTRAFACE_QUANT},${EMOTION_QUANT} -b CPU,CPU
@@ -170,6 +167,9 @@ NOTE: Inference on i.MX8MPlus GPU is possible but not recommended because of low
 ```bash
 ./build/face-processing/example_emotion_classification_tflite -p ${ULTRAFACE_QUANT},${EMOTION_QUANT} -b GPU,GPU
 ```
+
+#### C++ Execution Parameters
+
 The following execution parameters are available (Run ``` ./example_emotion_classification_tflite -h``` to see option details):
 
 Option | Description
@@ -188,13 +188,7 @@ Option | Description
 Press ```Esc or ctrl+C``` to stop the execution of the pipeline.
 
 ## Face Recognition
-### Python
-|   Platforms  | NPU | CPU |
-| ------------ | --- | --- |
-| i.MX 8M Plus | :white_check_mark: | :white_check_mark: |
-|   i.MX 93    | :white_check_mark: | :white_check_mark: |
-|   i.MX 95    | :white_check_mark: | :white_check_mark: |
-|   i.MX 952   | :white_check_mark: | :white_check_mark: |
+### Python Execution
 
 Demo application is to be started from Linux. Camera device node may be configured via command line argument (default: `/dev/video3` on i.MX 8M Plus, `/dev/video0` on i.MX 93, `/dev/video13` on i.MX 95).
 Default backend can be overridden by explicitly defining BACKEND variable. To fine-tune each model individually, you can use BACKEND_ULTRAFACE and BACKEND_FACENET variables instead.<br>

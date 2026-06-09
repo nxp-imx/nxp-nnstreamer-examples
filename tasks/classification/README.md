@@ -7,53 +7,44 @@ Name | Implementation | Model | ML engine | Features
 [example_classification_mobilenet_v1_tflite.sh](./example_classification_mobilenet_v1_tflite.sh) | Bash | MobileNetV1 | TFLite | v4l2 camera<br>gst-launch<br>
 
 ## MobileNetV1 image classification
-### Bash
-|   Platforms  | NPU | CPU |
-| ------------ | --- | --- |
-| i.MX 8M Plus | :white_check_mark: | :white_check_mark: |
-|   i.MX 93    | :white_check_mark: | :white_check_mark: |
-|   i.MX 95    | :white_check_mark: | :white_check_mark: |
-|   i.MX 952   | :white_check_mark: | :white_check_mark: |
+### Bash Execution
 
-The image classification demo in bash supports multiple backend for model inferences (refers to above table), default value can be overridden by explicitly defining BACKEND variable. Similarly, the GPU variable allows to choose between 2D GPU (GPU2D) or 3D GPU (GPU3D) if available for scaling and color space conversion operations.
+The image classification demo in bash supports multiple backend for model inferences, default value can be overridden by explicitly defining BACKEND variable. Similarly, the GPU variable allows to choose between 2D GPU (GPU2D) or 3D GPU (GPU3D) if available for scaling and color space conversion operations.
 For instance:
 ```bash
-BACKEND=CPU GPU=GPU2D ./tasks/classification/example_classification_mobilenet_v1_tflite.sh
+BACKEND=NPU GPU=GPU2D ./tasks/classification/example_classification_mobilenet_v1_tflite.sh
 ```
 
-
-### C++
-|   Platforms  | NPU | CPU |
-| ------------ | --- | --- |
-| i.MX 8M Plus | :white_check_mark: | :white_check_mark: |
-|   i.MX 93    | :white_check_mark: | :white_check_mark: |
-|   i.MX 95    | :white_check_mark: | :white_check_mark: |
-|   i.MX 952   | :white_check_mark: | :white_check_mark: |
+### C++ Execution
 
 C++ example script needs to be generated with [cross compilation](../). [setup_environment.sh](../tools/setup_environment.sh) script needs to be executed in [nxp-nnstreamer-examples](../) folder to define data paths:
 ```bash
 . ./tools/setup_environment.sh
 ```
 
-Image classification demo can be run on different hardware (refers to above table):<br>
-Inference on NPU with the following script:
+#### NPU Inference
+
+For i.MX 8M Plus (VSI NPU):
 ```bash
 ./build/classification/example_classification_mobilenet_v1_tflite -p ${MOBILENETV1_QUANT} -l ${MOBILENETV1_LABELS}
 ```
-For i.MX 93 NPU use vela converted model:
+
+For i.MX 93 (Ethos-U65):
 ```bash
 ./build/classification/example_classification_mobilenet_v1_tflite -p ${MOBILENETV1_QUANT_VELA} -l ${MOBILENETV1_LABELS}
 ```
 
-For i.MX 95 NPU use neutron converted model:
+For i.MX 95 (Neutron):
 ```bash
 ./build/classification/example_classification_mobilenet_v1_tflite -p  ${MOBILENETV1_QUANT_IMX95} -l ${MOBILENETV1_LABELS}
 ```
 
-For i.MX 952 NPU use neutron converted model:
+For i.MX 952 (Neutron):
 ```bash
 ./build/classification/example_classification_mobilenet_v1_tflite -p  ${MOBILENETV1_QUANT_IMX952} -l ${MOBILENETV1_LABELS}
 ```
+
+#### Inferences on other hardwares
 
 Inference on CPU with the following script:
 ```bash
@@ -65,6 +56,8 @@ NOTE: inferences on i.MX8MPlus GPU have low performances, but are possible with 
 ./build/classification/example_classification_mobilenet_v1_tflite -p ${MOBILENETV1} -l ${MOBILENETV1_LABELS} -b GPU -n centeredScaled
 ```
 Input normalization needs to be specified, here input data needs to be centered and scaled to fit MobileNetV1 input specifications.
+
+#### C++ Execution Parameters
 
 The following execution parameters are available (Run ``` ./example_classification_mobilenet_v1_tflite -h``` to see option details):
 
