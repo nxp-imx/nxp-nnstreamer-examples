@@ -73,6 +73,8 @@ export EMOTION_QUANT_IMX952="${FACE_DIR}/emotion_uint8_float32_imx952.tflite"
 POSE_DIR="${MODELS_DIR}/pose-estimation"
 export MOVENET_QUANT="${POSE_DIR}/movenet_quant.tflite"
 export MOVENET_QUANT_VELA="${POSE_DIR}/movenet_quant_vela.tflite"
+export MOVENET_QUANT_IMX95="${POSE_DIR}/movenet_quant_imx95.tflite"
+export MOVENET_QUANT_IMX952="${POSE_DIR}/movenet_quant_imx952.tflite"
 
 # Define segmentation data path
 SEGMENTATION_DIR="${MODELS_DIR}/semantic-segmentation"

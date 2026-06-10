@@ -50,6 +50,16 @@ For i.MX 8M Plus (VSI NPU):
 ./build/pose-estimation/example_pose_movenet_tflite -p ${MOVENET_QUANT} -f ${POWER_JUMP_VIDEO}
 ```
 
+For i.MX 95 (Neutron):
+```bash
+./build/pose-estimation/example_pose_movenet_tflite -p ${MOVENET_QUANT_IMX95} -f ${POWER_JUMP_VIDEO}
+```
+
+For i.MX 952 (Neutron):
+```bash
+./build/pose-estimation/example_pose_movenet_tflite -p ${MOVENET_QUANT_IMX952} -f ${POWER_JUMP_VIDEO}
+```
+
 #### Inferences on other hardwares
 
 Inference on CPU with the following script:

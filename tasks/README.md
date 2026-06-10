@@ -14,7 +14,7 @@ For pre-trained models and conversion scripts used in these tasks, please refer 
 | Object Detection | YOLOv4 Tiny | :white_check_mark: | :white_check_mark: | :white_check_mark: | :white_check_mark: |
 | Object Detection | SSD MobileNetV2 | :white_check_mark: | :white_check_mark: | :white_check_mark: | :white_check_mark: |
 | Semantic Segmentation | DeepLabV3 | :white_check_mark: | :white_check_mark: | :x: | :x: |
-| Pose Estimation | MoveNet Lightning | :white_check_mark: | :x: | :x: | :x: |
+| Pose Estimation | MoveNet Lightning | :white_check_mark: | :x: | :white_check_mark: | :white_check_mark: |
 | Monocular Depth Estimation | MiDaS v2 | :white_check_mark: | :white_check_mark: | :white_check_mark: | :white_check_mark: |
 | Face Detection | UltraFace-slim | :white_check_mark: | :white_check_mark: | :white_check_mark: | :white_check_mark: |
 | Emotion Classification | Deepface-emotion | :white_check_mark: | :white_check_mark: | :white_check_mark: | :white_check_mark: |

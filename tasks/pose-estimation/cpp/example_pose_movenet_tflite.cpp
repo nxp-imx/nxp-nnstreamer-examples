@@ -216,7 +216,7 @@ int main(int argc, char **argv)
 
   imx::Imx imx{};
   if (options.backend == "NPU") {
-    if (imx.hasNeutronNPU() || imx.isIMX93()) {
+    if (imx.isIMX93()) {
       log_error("Example can't run on NPU in %s\n", imx.socName().c_str());
       return 0;
     }

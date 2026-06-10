@@ -135,27 +135,29 @@ class PoseExample:
         disable_zero_copy_neutron(self.imx)
 
         if self.backend == 'NPU':
-            if self.imx.is_imx93() or self.imx.is_imx95() or self.imx.is_imx952():
-                name = imx.name()
-                raise NotImplementedError(f"Example can't run on {name} NPU")
+            if self.imx.has_npu_ethos():
+                #name = 'movenet_quant_vela.tflite'
+                raise NotImplementedError(f"Example can't run on imx93 NPU")
+            elif self.imx.has_npu_neutron():
+                if self.imx.is_imx95():
+                    tflite_model = 'movenet_quant_imx95.tflite'
+                else: #imx952 device
+                    tflite_model = 'movenet_quant_imx952.tflite'
+            else: #imx8mp device
+                tflite_model = 'movenet_quant.tflite'
+        else:  # backend = CPU
+            tflite_model = 'movenet_quant.tflite'
 
         try:
-            if vela:
-                quantized_model = 'movenet_quant_vela.tflite'
-            else:
-                quantized_model = 'movenet_quant.tflite'
-            model = {
-                'CPU': 'movenet_quant.tflite',
-                'NPU': quantized_model,
-            }
-            tflite_model = model[self.backend]
-
             if self.imx.has_npu_vsi():
                 custom_ops = ('custom=Delegate:External,'
                               'ExtDelegateLib:libvx_delegate.so')
-            elif vela:
+            elif self.imx.has_npu_ethos():
                 custom_ops = ('custom=Delegate:External,'
                               'ExtDelegateLib:libethosu_delegate.so')
+            elif self.imx.has_npu_neutron():
+                custom_ops = ('custom=Delegate:External,'
+                              'ExtDelegateLib:libneutron_delegate.so')
             else:
                 custom_ops = ''
 
