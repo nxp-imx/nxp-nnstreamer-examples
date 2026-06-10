@@ -197,12 +197,6 @@ int main(int argc, char **argv)
   if (cmdParser(argc, argv, options))
     return 0;
 
-  imx::Imx imx{};
-  if (imx.hasNeutronNPU() && (options.backend == "NPU")) {
-    log_error("Example can't run on NPU in i.MX95\n");
-    return 0;
-  }
-
   // Initialize pipeline object
   GstPipelineImx pipeline;
 

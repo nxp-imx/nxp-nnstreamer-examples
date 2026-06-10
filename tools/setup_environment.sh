@@ -45,6 +45,8 @@ export MOBILENETV1_QUANT_IMX952="${CLASSIFICATION_DIR}/mobilenet_v1_1.0_224_quan
 DEPTH_DIR="${MODELS_DIR}/monocular-depth-estimation"
 export MIDASV2="${DEPTH_DIR}/midas_2_1_small_int8_quant.tflite"
 export MIDASV2_VELA="${DEPTH_DIR}/midas_2_1_small_int8_quant_vela.tflite"
+export MIDASV2_IMX95="${DEPTH_DIR}/midas_2_1_small_int8_quant_imx95.tflite"
+export MIDASV2_IMX952="${DEPTH_DIR}/midas_2_1_small_int8_quant_imx952.tflite"
 
 # Define detection data path
 DETECTION_DIR="${MODELS_DIR}/object-detection"

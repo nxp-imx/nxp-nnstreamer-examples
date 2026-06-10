@@ -29,6 +29,16 @@ For i.MX 93 (Ethos-U65):
 ./build/monocular-depth-estimation/example_depth_midas_v2_tflite -p ${MIDASV2_VELA}
 ```
 
+For i.MX 95 (Neutron):
+```bash
+./build/monocular-depth-estimation/example_depth_midas_v2_tflite -p ${MIDASV2_IMX95}
+```
+
+For i.MX 952 (Neutron):
+```bash
+./build/monocular-depth-estimation/example_depth_midas_v2_tflite -p ${MIDASV2_IMX952}
+```
+
 #### Inferences on other hardwares
 
 Inference on CPU with the following script:
