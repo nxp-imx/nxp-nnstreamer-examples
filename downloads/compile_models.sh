@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# Copyright 2023-2025 NXP
+# Copyright 2023-2026 NXP
 # SPDX-License-Identifier: BSD-3-Clause
 
 set -x
@@ -9,6 +9,9 @@ REALPATH="$(readlink -e "$0")"
 BASEDIR="${BASEDIR:-$(dirname "${REALPATH}")/..}"
 MODELS_DIR="${BASEDIR}/downloads/models"
 REQUIRED_CAMERA=0
+
+# List of target devices to exclude from compilation
+EXCLUDED_DEVICES=("imx95" "imx952")
 
 function compile_models(){
 # Compile a model if required by NPU
@@ -19,7 +22,15 @@ function compile_models(){
   then
     # Convert only quantized models to vela
     DESTINATION_DIR="${1}"
-    for FILE in $(find "${DESTINATION_DIR}" -name "*uint8*.tflite" -o -name "*quant*.tflite" | grep -v "vela")
+
+    # Build grep exclusion pattern from EXCLUDED_DEVICES array
+    EXCLUDE_PATTERN=""
+    for DEVICE in "${EXCLUDED_DEVICES[@]}"
+    do
+      EXCLUDE_PATTERN="${EXCLUDE_PATTERN} -e ${DEVICE}"
+    done
+
+    for FILE in $(find "${DESTINATION_DIR}" -name "*uint8*.tflite" -o -name "*quant*.tflite" | grep -v "vela" | grep -v ${EXCLUDE_PATTERN})
     do
       vela "${FILE}" --output-dir "${DESTINATION_DIR}/output"
     done
