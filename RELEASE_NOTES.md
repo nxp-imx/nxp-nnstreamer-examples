@@ -1,15 +1,32 @@
 # Release Notes
 
+## [Release v1.9](https://github.com/nxp-imx/nxp-nnstreamer-examples/tree/v1.9)
+
+### New Features
+
+| Name                           | Platforms             | Models    | Language  | Backend         |
+|--------------------------------|-----------------------|-----------|-----------|-----------------|
+| monocular depth estimation     | **i.MX 95 / i.MX 952**| MidasV2   | C++       | **Neutron NPU** |
+| pose estimation                | **i.MX 95 / i.MX 952**| MoveNet   | Python/C++| **Neutron NPU** |
+
+### Updates
+- Switch to eIQ Neutron SDK 3.1.2
+- Fix libcamera backend for object detection demos and use it by default for i.MX 95
+- Documentation restructured with new Prerequisites section covering hardware and software requirements
+- Added links to additional resources (i.MX Machine Learning User's Guide, NXP Vision Solutions)
+- Added Tasks README with comprehensive NPU enablement matrix across all platforms
+- Reorganized execution instructions with clear NPU-specific sections for each platform
+
 ## [Release v1.8](https://github.com/nxp-imx/nxp-nnstreamer-examples/tree/v1.8)
 
 ### New features
 
-| Name                           | Platforms   | Models                      | Language | Backend     |
-|--------------------------------|-------------|-----------------------------|----------|-------------|
-| face recognition               | **i.MX 952**| UltraFace-slim + FaceNet512 | Python   | CPU / NPU   |
-| emotion classification         | **i.MX 952**| UltraFace-slim + Deepface   | Python/C++| CPU / NPU  |
-| object detection               | **i.MX 952**| Yolov4-tiny                 | Bash+Python| CPU / NPU |
-| all existing examples          | **i.MX 952**|                             | Bash/Python/C++| CPU / NPU |
+| Name                           | Platforms   | Models                      | Language       | Backend     |
+|--------------------------------|-------------|-----------------------------|----------------|-------------|
+| face recognition               | **i.MX 952**| UltraFace-slim + FaceNet512 | Python         | CPU / NPU   |
+| emotion classification         | **i.MX 952**| UltraFace-slim + Deepface   | Python/C++     | CPU / NPU   |
+| object detection               | **i.MX 952**| Yolov4-tiny                 | Bash+Python    | CPU / NPU   |
+| all existing examples          | **i.MX 952**|                             | Bash/Python/C++| CPU / NPU   |
 
 ### Updates
 - i.MX 952 platform support across all examples (bash, Python, and C++)
@@ -59,13 +76,13 @@
 
 ### Updates
 
-| Name                  | Platforms   | Models         | Language      | Backend |
-|-----------------------|-------------|----------------|---------------|---------|
-| face detection        | **i.MX 95** | UltraFace-slim | Python/C++    | **NPU** |
-| object detection      | **i.MX 95** | Yolov4-tiny    | Bash + Python | **CPU** |
-| semantic segmentation | **i.MX 95** | DeepLab v3     | Bash          | **CPU** |
-| pose estimation       | **i.MX 95** | MoveNet        | Python        | **CPU** |
-| all existing examples | **i.MX 95** |                | C++           | **CPU** |
+| Name                  | Platforms   | Models         | Language      | Backend         |
+|-----------------------|-------------|----------------|---------------|-----------------|
+| face detection        | **i.MX 95** | UltraFace-slim | Python/C++    | **Neutron NPU** |
+| object detection      | **i.MX 95** | Yolov4-tiny    | Bash + Python | **CPU**         |
+| semantic segmentation | **i.MX 95** | DeepLab v3     | Bash          | **CPU**         |
+| pose estimation       | **i.MX 95** | MoveNet        | Python        | **CPU**         |
+| all existing examples | **i.MX 95** |                | C++           | **CPU**         |
 
 ### Other Changes
 - Update download procedure to compile models with latest eIQ Toolkit version (1.15) for i.MX 95 Neutron NPU
@@ -85,12 +102,12 @@
 
 ### Updates
 
-| Name                  | Platforms   | Models               | Language | Backend         |
-|-----------------------|-------------|----------------------|----------|-----------------|
-| semantic segmentation | **i.MX 93** | DeepLab v3           | Bash     | CPU / NPU       |
-| pose estimation       | **i.MX 93** | MoveNet              | Python   | CPU / NPU       |
-| image classification  | **i.MX 95** | MobileNet v1         | Bash/C++ | CPU / GPU / NPU |
-| object detection      | **i.MX 95** | ssdlite MobileNet v2 | Bash/C++ | CPU / GPU / NPU |
+| Name                  | Platforms   | Models               | Language | Backend                 |
+|-----------------------|-------------|----------------------|----------|-------------------------|
+| semantic segmentation | **i.MX 93** | DeepLab v3           | Bash     | CPU / NPU               |
+| pose estimation       | **i.MX 93** | MoveNet              | Python   | CPU / NPU               |
+| image classification  | **i.MX 95** | MobileNet v1         | Bash/C++ | CPU / GPU / Neutron NPU |
+| object detection      | **i.MX 95** | ssdlite MobileNet v2 | Bash/C++ | CPU / GPU / Neutron NPU |
 
 ### Other Changes
 - Accelerated flip for Python examples
