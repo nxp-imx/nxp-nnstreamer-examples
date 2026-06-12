@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# Copyright 2022-2025 NXP
+# Copyright 2022-2026 NXP
 # SPDX-License-Identifier: BSD-3-Clause
 
 function gst_exec_detection {
@@ -20,7 +20,7 @@ function gst_exec_detection {
 
   gst-launch-1.0 \
     ${CAMERA_SOURCE} \
-      video/x-raw,width=${CAMERA_WIDTH},height=${CAMERA_HEIGHT},framerate=${CAMERA_FPS}/1 ! \
+      video/x-raw,width=${CAMERA_WIDTH},height=${CAMERA_HEIGHT},framerate=${CAMERA_FPS}/1,format=YUY2 ! \
       tee name=t \
     t. ! queue name=thread-nn max-size-buffers=2 leaky=2 ! \
       ${VIDEO_SCALE} \
